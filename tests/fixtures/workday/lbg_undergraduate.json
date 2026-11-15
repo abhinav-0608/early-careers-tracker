@@ -1,0 +1,47 @@
+{
+  "total": 31,
+  "jobPostings": [
+    {
+      "title": "Imperial Work Placements - Regional",
+      "externalPath": "/job/Leeds-Wellington-Place/Imperial-Work-Placements---Regional_166436",
+      "timeType": "Full time",
+      "locationsText": "4 Locations",
+      "postedOn": "Posted 3 Days Ago",
+      "bulletFields": [
+        "166436"
+      ]
+    },
+    {
+      "title": "Imperial Work Placements",
+      "externalPath": "/job/London/Imperial-Work-Placements_166432",
+      "timeType": "Full time",
+      "locationsText": "London",
+      "postedOn": "Posted 3 Days Ago",
+      "bulletFields": [
+        "166432"
+      ]
+    },
+    {
+      "title": "Data Science and AI Industrial Placement (Edinburgh)",
+      "externalPath": "/job/Edinburgh/Data-Science-and-AI-Industrial-Placement--Edinburgh-_163439-1",
+      "timeType": "Full time",
+      "locationsText": "Edinburgh",
+      "postedOn": "Posted 9 Days Ago",
+      "bulletFields": [
+        "163439"
+      ]
+    },
+    {
+      "title": "Software Engineering Industrial Placement  (Leeds)",
+      "externalPath": "/job/Leeds/Software-Engineering-Industrial-Placement---Leeds-_163372",
+      "timeType": "Full time",
+      "locationsText": "Leeds",
+      "postedOn": "Posted 9 Days Ago",
+      "bulletFields": [
+        "163372"
+      ]
+    }
+  ],
+  "facets": [],
+  "userAuthenticated": false
+}

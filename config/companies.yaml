@@ -16,14 +16,19 @@
 #                  vc_backed  venture-funded and still private, or listed within about two years
 #                  yc         went through Y Combinator (kept after an IPO)
 #   regions      where the company hires, of uk / us / india (informational)
-#   ats          greenhouse | lever | ashby            polled now
-#                smartrecruiters | workable | workday  verified; polled once stage 3 adds the adapter
-#                custom                                own careers site; one module each in stage 3
+#   ats          greenhouse | lever | ashby | workday | talnet   polled now
+#                smartrecruiters | workable            verified; polled once the adapter is built
+#                custom                                own careers site, one module each under
+#                                                      sources/custom/; polled once that module
+#                                                      exists (today: google, jpmorgan)
 #                unsupported                           cannot be polled; the note says why
 #   board        the board identifier in the ATS's public API (module name for custom)
 #   tenant, host, sites
-#                Workday only: https://{tenant}.{host}.myworkdayjobs.com/{site}. A company
+#                Workday: https://{tenant}.{host}.myworkdayjobs.com/{site}. A company
 #                lists every site worth polling (experienced, campus, graduate ...).
+#   tenant, board, sites
+#                tal.net: https://{tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/
+#                board is the tenant's path prefix; sites are job-board numbers, quoted.
 #   verified     date the identifier last returned live postings. Absent means not yet
 #                verified; the note says why.
 #
@@ -74,7 +79,8 @@
   ats: custom
   board: google
   careers_url: https://www.google.com/about/careers/applications/
-  note: "Own careers site; adapter planned for stage 3"
+  note: "Intern and apprentice roles in the UK, India and the US only: robots.txt disallows paging through results, so each search is limited to its first 20"
+  verified: 2026-11-15
 
 - key: amazon
   name: Amazon
@@ -681,7 +687,8 @@
   ats: custom
   board: google
   careers_url: https://deepmind.google/careers/
-  note: "Left Greenhouse; roles are now listed on Google Careers (company=DeepMind), so this waits for the Google adapter in stage 3"
+  note: "Listed on Google Careers (company=DeepMind). Intern and apprentice roles only, for the same robots.txt reason as Google"
+  verified: 2026-11-15
 
 - key: mistral-ai
   name: Mistral AI
@@ -1264,7 +1271,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://www.citadel.com/careers
-  note: "Own careers site (citadel.com)"
+  note: "Careers pages answer with a Cloudflare browser challenge (HTTP 403 without JavaScript), so they would need a headless browser. Checked 2026-11-15"
 
 - key: hudson-river-trading
   name: Hudson River Trading
@@ -1305,7 +1312,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://www.citadelsecurities.com/careers
-  note: "Own careers site (citadelsecurities.com)"
+  note: "Whole site, robots.txt included, answers with a Cloudflare browser challenge (HTTP 403 without JavaScript), so it would need a headless browser. Checked 2026-11-15"
 
 - key: two-sigma
   name: Two Sigma
@@ -1818,19 +1825,34 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://higher.gs.com
-  note: "Own careers site (higher.gs.com)"
+  note: "robots.txt on higher.gs.com disallows everything except single role pages (/roles/), so the pages that list roles may not be read. Checked 2026-11-15"
 
 - key: jpmorgan-chase
   name: JPMorgan Chase
   industry: finance
   tags: []
   regions: [uk, us, india]
-  ats: unsupported
+  ats: custom
+  board: jpmorgan
   careers_url: https://careers.jpmorgan.com
-  note: "Oracle Cloud HCM (jpmc.fa.oraclecloud.com)"
+  note: "Oracle Recruiting Cloud (jpmc.fa.oraclecloud.com), narrowed to the Program Analysts & Associate job family"
+  verified: 2026-11-15
 
 - key: morgan-stanley
   name: Morgan Stanley
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  ats: talnet
+  tenant: morganstanley
+  board: lang-en-GB/mobile-0/appcentre-ext/brand-2
+  sites: ["1", "2"]        # 1 = Global Programs, 2 = Campus Events
+  careers_url: https://www.morganstanley.com/careers/students-graduates
+  note: "Campus boards (spring weeks, insight, internships). Experienced hires are a separate entry, morgan-stanley-experienced"
+  verified: 2026-11-15
+
+- key: morgan-stanley-experienced
+  name: Morgan Stanley (experienced hires)
   industry: finance
   tags: []
   regions: [uk, us, india]
@@ -1839,7 +1861,7 @@
   host: wd5
   sites: [External]
   careers_url: https://www.morganstanley.com/careers
-  note: "Campus programmes (spring weeks, insight) are on tal.net and are not covered by this board"
+  note: "Experienced-hire board; campus programmes are under morgan-stanley"
   verified: 2026-11-15
 
 - key: bank-of-america
@@ -1847,9 +1869,13 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  ats: unsupported
+  ats: talnet
+  tenant: bankcampuscareers
+  board: lang-en-GB/mobile-0/brand-4
+  sites: ["1", "2"]        # 1 = Global Programs, 2 = Campus Events
   careers_url: https://campus.bankofamerica.com
-  note: "Campus programmes are on bankcampuscareers.tal.net; its Workday sites carry experienced hires only"
+  note: "Campus boards only; its Workday sites carry experienced hires and are not polled"
+  verified: 2026-11-15
 
 - key: citi
   name: Citi
@@ -1926,9 +1952,13 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  ats: unsupported
-  careers_url: https://www.nomura.com/careers/
-  note: "Own careers site; campus programmes on tal.net"
+  ats: talnet
+  tenant: nomuracampus
+  board: lang-en-GB/mobile-0/appcentre-ext/brand-4
+  sites: ["1", "2"]        # 1 = Student Opportunities, 2 = Events
+  careers_url: https://www.nomura.com/careers/early-careers/
+  note: "Campus boards only"
+  verified: 2026-11-15
 
 - key: rbc
   name: RBC Capital Markets
@@ -1944,9 +1974,13 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  ats: unsupported
-  careers_url: https://www.jefferies.com/careers/
-  note: "tal.net (jefferies.tal.net), no adapter"
+  ats: talnet
+  tenant: jefferies
+  board: lang-en-GB/mobile-0/appcentre-ext/brand-4
+  sites: ["1", "2"]        # 1 = Events, 2 = Campus Opportunities (3 = experienced hires, not polled)
+  careers_url: https://www.jefferies.com/careers/students-and-graduates/
+  note: "Campus board only. It publishes no location field: the city is in the title, so locations show as unclear"
+  verified: 2026-11-15
 
 - key: macquarie
   name: Macquarie
@@ -2441,7 +2475,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://www.revolut.com/careers/
-  note: "Own careers site (revolut.com/careers)"
+  note: "Careers page answers with a browser security check (HTTP 403 without JavaScript), and robots.txt disallows /api/ and every URL with a query string. Checked 2026-11-15"
 
 - key: monzo
   name: Monzo

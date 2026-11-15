@@ -13,6 +13,7 @@ import pytest
 
 from jobtracker.config import Config, Filters, Profile, load_config
 from jobtracker.filters import Decision
+from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
 
 ROOT = Path(__file__).parent.parent
@@ -29,6 +30,28 @@ MATCHED = Decision(True, "test", role_type="spring_week", fields=("software",), 
 
 def load_fixture(relative_path: str):
     return json.loads((FIXTURES / relative_path).read_text(encoding="utf-8"))
+
+
+def load_text(relative_path: str) -> str:
+    return (FIXTURES / relative_path).read_text(encoding="utf-8")
+
+
+def mock_client(settings, handler, robots_txt: str | None = None, **kwargs) -> HttpClient:
+    """An HttpClient over a fake transport.
+
+    The client reads robots.txt before the first request to a host. That request is
+    answered here, so a test's handler sees only the requests the test is about: with
+    `robots_txt` as the file's content, or with 404 (no rules) when none is given.
+    """
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/robots.txt":
+            if robots_txt is None:
+                return httpx.Response(404)
+            return httpx.Response(200, text=robots_txt)
+        return handler(request)
+
+    return HttpClient(settings, transport=httpx.MockTransport(handle), **kwargs)
 
 
 def make_company(key: str = "acme", ats: str = "greenhouse", **overrides) -> Company:
@@ -122,6 +145,7 @@ class FakeWeb:
         }
         self.own_boards: dict[str, dict] = {}  # Greenhouse board id -> payload
         self.broken_hosts: set[str] = set()
+        self.robots: dict[str, str] = {}  # host -> robots.txt; hosts not listed have none
         self.ntfy_down = False
         self.rejected_topics: set[str] = set()  # ntfy fails for these topics only
         self.published: list[dict] = []
@@ -135,6 +159,10 @@ class FakeWeb:
                 return httpx.Response(503)
             self.published.append(message)
             return httpx.Response(200, json={})
+        if request.url.path == "/robots.txt":
+            if host in self.robots:
+                return httpx.Response(200, text=self.robots[host])
+            return httpx.Response(404)
         self.fetches.append(host + request.url.path)
         if host in self.broken_hosts:
             return httpx.Response(500)

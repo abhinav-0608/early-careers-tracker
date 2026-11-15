@@ -5,8 +5,7 @@ from datetime import date
 
 import httpx
 
-from conftest import load_fixture, make_company
-from jobtracker.http import HttpClient
+from conftest import load_fixture, make_company, mock_client
 from jobtracker.sources import ashby
 
 OPENAI = make_company("openai", ats="ashby")
@@ -60,7 +59,7 @@ def test_fetch_requests_the_board_url(settings):
         requested.append(str(request.url))
         return httpx.Response(200, json=load_fixture("ashby/openai.json"))
 
-    jobs = ashby.fetch(OPENAI, HttpClient(settings, transport=httpx.MockTransport(handler)))
+    jobs = ashby.fetch(OPENAI, mock_client(settings, handler))
 
     assert requested == ["https://api.ashbyhq.com/posting-api/job-board/openai"]
     assert len(jobs) == 2

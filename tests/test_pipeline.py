@@ -173,6 +173,28 @@ def test_one_broken_source_does_not_stop_the_others(tracker, web):
     assert web.published == []  # no repeat while it stays broken
 
 
+def test_a_source_robots_txt_disallows_is_reported_as_blocked_and_not_fetched(tracker, web):
+    web.robots["api.lever.co"] = "User-agent: *\nDisallow: /v0/postings/\n"
+    report = tracker()
+
+    statuses = {result.company.key: result.status for result in report.results}
+    assert statuses == {"point72": "ok", "palantir": "blocked", "openai": "ok"}
+    assert not any(fetch.startswith("api.lever.co") for fetch in web.fetches)
+    assert report.total("baselined") == 1  # the other sources carried on
+
+    web.published.clear()
+    tracker(NOW + RUN)
+
+    (alert,) = web.sent_to(HEALTH_TOPIC)  # reported like any failing source
+    assert alert["title"] == "Source failing: Palantir"
+    assert "blocked, robots.txt on api.lever.co disallows /v0/postings/palantir" in alert["message"]
+
+
+def test_results_come_back_in_config_order_whatever_order_hosts_finish_in(tracker):
+    report = tracker()
+    assert [result.company.key for result in report.results] == ["point72", "palantir", "openai"]
+
+
 def test_broken_source_recovers_and_is_baselined_then(tracker, web):
     web.broken_hosts.add("api.lever.co")
     tracker()

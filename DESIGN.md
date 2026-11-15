@@ -1,7 +1,8 @@
 # Job Alert Tracker — Design
 
-Status: **approved 2026-11-15**. Stages 1 and 2 are built, and the tracker is profile-ready
-(section 2a); sections below are kept in step with the code.
+Status: **approved 2026-11-15**. Stages 1 and 2 are built, the tracker is profile-ready
+(section 2a), and stage 3 is part built (section 13 says which part); sections below are
+kept in step with the code.
 
 ## 1. Goals and constraints
 
@@ -72,7 +73,9 @@ src/jobtracker/
   pipeline.py          orchestrates one run (the diagram above)
   models.py            Company, Job, SourceResult dataclasses
   config.py            YAML loading + validation
-  http.py              shared HTTP client: User-Agent, timeouts, retries, per-host delay
+  http.py              shared HTTP client: User-Agent, timeouts, retries, per-host delay,
+                       robots.txt and checked redirects
+  robots.py            robots.txt parsing and matching (wildcards, crawl delay)
   text.py              text normalisation shared by filters and dedupe
   filters.py           classification and matching
   state.py             StoredJob, ProfileState, SourceState; load/save the JSON state files
@@ -86,7 +89,9 @@ src/jobtracker/
     common.py          date / list parsing helpers shared by adapters
     greenhouse.py  lever.py  ashby.py  smartrecruiters.py  workable.py
     workday.py         one generic adapter, configured per company
-    custom/            one module per dream-tier company with its own careers site
+    talnet.py          one generic adapter for tal.net (Oleeo) campus boards
+    custom/            one module per company with its own careers site
+      google.py  jpmorgan.py
     boards/            grad boards / community repos (stage 4, only if permitted)
 state/
   sources.json         per-board health, shared
@@ -103,8 +108,9 @@ tests/
 
 ### Dependencies
 
-`httpx` (HTTP), `PyYAML` (config), `pytest` (tests). `selectolax` is added only if a custom
-scraper has to parse HTML. Config validation is hand-written in `config.py` rather than using
+`httpx` (HTTP), `PyYAML` (config), `pytest` (tests). The one adapter that reads HTML
+(tal.net) uses the standard library's `html.parser`, so no HTML library was added. Config
+validation is hand-written in `config.py` rather than using
 pydantic: it is about 100 lines, gives clearer error messages, and is one less thing to
 explain. No headless browser is planned; if a dream-tier site cannot be read without one, it
 is marked `unsupported` and reported to you rather than adding Playwright quietly.
@@ -271,7 +277,7 @@ http:
   timeout_seconds: 20
   retries: 2                 # on 429 / 5xx / timeouts, with backoff; honours Retry-After
   per_host_delay_seconds: 1.0
-  max_workers: 6             # hosts run in parallel; requests to one host are serial
+  max_workers: 8             # hosts run in parallel; requests to one host are serial
 notify:
   batch_threshold: 5         # more than this many new jobs in one run → one summary
   priority: {dream: 5, normal: 3}
@@ -385,7 +391,7 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   regions: [uk, us]
   opt_in: false          # true = only profiles naming this company watch it (section 2a)
   ats: greenhouse        # greenhouse | lever | ashby | smartrecruiters | workable |
-                         # workday | custom | unsupported
+                         # workday | talnet | custom | unsupported
   board: janestreet      # board id in the ATS's API (module name for custom)
   careers_url: https://www.janestreet.com/join-jane-street/
   verified: 2026-11-15   # date the board id last returned live postings
@@ -395,6 +401,12 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   tenant: lbg            # https://{tenant}.{host}.myworkdayjobs.com/{site}
   host: wd3
   sites: [LBG_Careers, Undergraduate_careers, Graduate_careers]
+- key: morgan-stanley
+  name: Morgan Stanley
+  ats: talnet
+  tenant: morganstanley  # https://{tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/
+  board: lang-en-GB/mobile-0/appcentre-ext/brand-2
+  sites: ["1", "2"]      # job-board numbers: 1 = programmes, 2 = events
 - key: some-company
   name: Some Company
   ats: unsupported
@@ -411,10 +423,18 @@ The list is shared by every profile and holds nothing personal. Dream tier used 
 `tier:` field here; it now lives in each profile, and validation rejects a leftover `tier:`
 rather than ignoring it.
 
+tal.net entries carry `tenant` (the subdomain), `board` (the tenant's path prefix) and
+`sites` (job-board numbers, quoted so that YAML reads them as text). A `custom` company
+names its module under `sources/custom/` in `board`.
+
 `unsupported` companies stay in the file with a `note` giving the reason (validation rejects
 an unsupported entry without one) and are listed in the README, so nothing is dropped
-silently. A company whose `ats` has no adapter yet is loaded and validated like any other
-and simply not polled.
+silently. A company whose `ats` has no adapter yet, or a `custom` company whose module is
+not written yet, is loaded and validated like any other and simply not polled.
+
+A company has one `ats`. Where a firm's campus roles and experienced roles live on different
+systems it gets two entries: `morgan-stanley` is the tal.net campus boards (and the one on
+the dream list), `morgan-stanley-experienced` its Workday board.
 
 **Tags** drive the India location rule, so validation rejects any tag outside this set:
 
@@ -442,7 +462,9 @@ def parse(company: Company, payload) -> list[Job]: ...
 ```
 
 `fetch` makes one HTTP call (or a short pagination loop) and `parse` is a pure translation. Tests feed recorded fixtures into `parse`, and use
-`httpx.MockTransport` for `fetch`, so no test touches the network.
+`httpx.MockTransport` for `fetch`, so no test touches the network. (Workday's `parse` also
+takes the site name, which is part of each posting's URL.) `sources.adapter_for(company)`
+returns the function that fetches a company, or `None` if it cannot be polled.
 
 | Source | Endpoint (public, unauthenticated) | Notes |
 |---|---|---|
@@ -451,46 +473,101 @@ def parse(company: Company, payload) -> list[Job]: ...
 | Ashby | `GET api.ashbyhq.com/posting-api/job-board/{board}` | Remote is read from `workplaceType`; `isRemote` is unreliable (true on hundreds of hybrid jobs) |
 | SmartRecruiters | `GET api.smartrecruiters.com/v1/companies/{id}/postings` | Paginated (`offset`/`limit`) |
 | Workable | `GET apply.workable.com/api/v1/widget/accounts/{id}` | Whole board in one response |
-| Workday | `POST {tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` | Paginated, 20 per page; `searchText` narrows large tenants |
-| Custom | One module per company | Plain HTTP/JSON endpoints the site's own front end uses |
+| Workday | `POST {tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` | Paginated, 20 per page; `searchText` narrows large tenants. No usable date ("Posted 3 Days Ago") |
+| tal.net (Oleeo) | `GET {tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/` | The HTML job board a candidate sees; 50 per page (`?start=50`). No date. `Crawl-delay: 10` |
+| Custom: JPMorgan | `GET jpmc.fa.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions` | Oracle Recruiting Cloud, 200 per page, narrowed to one job family |
+| Custom: Google | `GET www.google.com/about/careers/applications/jobs/results` | JSON embedded in the page; first page of each search only (robots.txt) |
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
 
-Greenhouse, Lever and Ashby were verified against live boards on 2026-11-15 and their test
-fixtures are trimmed copies of those responses. The remaining endpoints are from memory of
-the public documentation and are verified the same way in the stage that builds them.
+Greenhouse, Lever, Ashby, Workday, tal.net, JPMorgan and Google were verified against the
+live sites on 2026-11-15 and their test fixtures are trimmed copies of those responses.
+SmartRecruiters and Workable are from memory of the public documentation and are verified
+the same way when they are built.
 
 **Workday and robots.txt.** Each tenant publishes a `robots.txt` naming its sites. Where it
 disallows a site (Citi, RBC, PIMCO, Zoom, eBay, Palo Alto Networks, Darktrace and a few
 others disallow their main one), that company is marked `unsupported` rather than polled.
 The JSON endpoint sits on a different path and is not literally covered by the rule, but the
-owner's intent is clear enough to respect.
+owner's intent is clear enough to respect. The adapter enforces this on every run as well:
+before calling the endpoint it asks `HttpClient.require_allowed()` whether the site's own
+page (`/{site}/`) is allowed, so a tenant that starts disallowing a site stops being
+polled and shows up as `blocked`.
 
 **Workable rate limits.** `apply.workable.com` sits behind a Cloudflare rate limit that
 blocked a few hundred requests made about a second apart during stage 2. The handful of
 Workable boards must be polled gently (stage 3: a longer per-host delay, and not every run).
 
 **Workday at scale.** Large tenants hold thousands of postings at 20 per page. Fetching all
-of them every 15 minutes is rude and slow, so the Workday adapter issues a few targeted
-searches (`searchText` values derived from the enabled role types, configurable per company)
-and merges results by job ID.
+of them every 15 minutes is rude and slow. A site with up to 200 postings is read in full
+(31 of the 64 tenants today). A larger one is searched instead: its first page, then one
+`searchText` query per term (`spring`, `insight`, `discovery`, `first year`, `explore`,
+`intern`, `placement`, `graduate`), two pages each, merged by posting id. That is about 15
+requests per large site per run.
 
-**Custom scrapers (stage 3).** Expected approach per dream-tier company, to be confirmed
-then: NVIDIA via the generic Workday adapter; Anthropic via Greenhouse; OpenAI via Ashby;
-Palantir via Lever; Amazon via its public `search.json`; Apple, Microsoft, Google, Meta, Tesla
-and AMD (iCIMS) need individual investigation. Google DeepMind has left Greenhouse and now
-lists its roles on Google Careers, so it is covered by the Google adapter. Meta and Tesla are the most likely to end up
-`unsupported` (GraphQL with rotating tokens, and aggressive bot protection respectively). I
-will report what is and is not feasible rather than force it.
+- The terms are a fixed list in `workday.py`, not derived from a profile's filters as first
+  planned: a board is fetched once and shared by every profile, so the fetch cannot depend
+  on one person's rules. The list covers every role type a profile can enable.
+- The search reads descriptions as well as titles and ranks by relevance, so broad terms
+  overflow two pages on most large tenants ("intern" on all 33). What is cut off is logged
+  (`workday_search_truncated`). For the role types enabled today this loses little; if
+  internships are enabled later, large tenants will need a deeper search or a per-tenant
+  facet, and the log says where.
+
+**tal.net (Oleeo).** Morgan Stanley, Bank of America, Jefferies and Nomura run campus
+recruiting on tal.net, each on its own subdomain. `robots.txt` (identical on all four)
+allows the candidate job boards, disallows `/*/ats/`, `/*/agent/` and `/*/channel/`, and
+sets `Crawl-delay: 10`. The adapter reads the board page with `html.parser`: a board shows
+each posting as a table row, a tile, or both, and the parser reads whichever is there and
+merges by posting id. An Atom feed exists on some tenants but is switched off on Morgan
+Stanley and Nomura, so the page is the one source that works for all. Jefferies publishes
+no location field (the city is in the title), so its roles are labelled "unclear". A page
+with no results section (a login page, an error, a redesign) raises instead of looking like
+an empty board. A tenant's root URL redirects to `/ats/login`, which is disallowed; the
+adapter never requests the root, and the client would refuse the redirect if it did.
+
+**Custom scrapers (stage 3).** What was found for each dream-tier company investigated so
+far (2026-11-15). A site that needs a headless browser, or whose robots.txt disallows the
+pages that list roles, is `unsupported` with the reason in its `note`.
+
+| Company | Outcome | Why |
+|---|---|---|
+| NVIDIA, G-Research | Polled | Generic Workday adapter |
+| Morgan Stanley | Polled | Generic tal.net adapter (campus boards) |
+| JPMorgan Chase | Polled | Oracle Recruiting Cloud's public API. The site holds about 7,000 postings, so the request uses the site's own "Program Analysts & Associate" job-family filter (about 250 analyst, associate, internship and programme roles): 2 requests per run instead of 35. A role filed under another job family is not seen. Its `/robots.txt` answers 403 to every client, which RFC 9309 treats as "no rules" |
+| Google, Google DeepMind | Polled, with a limit | No API; the results page embeds its data as JSON. robots.txt allows the results page but disallows every paginated form of it, so only the first 20 results of a search may be read. The adapter therefore runs narrow searches, newest first: intern-and-apprentice level only; Google in the UK, India and the US (one search each), DeepMind worldwide. A search that overflows is logged (`google_results_truncated`). Graduate roles and other countries are not seen |
+| Goldman Sachs | Unsupported | `higher.gs.com/robots.txt` allows only single role pages (`/roles/`) and disallows everything else, including every page that lists roles. The site's data API is on another host with no robots.txt, but as with Workday the owner's intent is clear |
+| Citadel, Citadel Securities | Unsupported | Careers pages answer with a Cloudflare browser challenge (403 without JavaScript) |
+| Revolut | Unsupported | Careers page answers with a browser security check (403 without JavaScript); robots.txt also disallows `/api/` and any URL with a query string |
+
+Still to investigate: Amazon (public `search.json`), Apple, Microsoft, Meta, Tesla and AMD
+(iCIMS). Meta and Tesla are the most likely to end up `unsupported` (GraphQL with rotating
+tokens, and aggressive bot protection respectively). Anthropic (Greenhouse), OpenAI (Ashby)
+and Palantir (Lever) were already covered.
 
 **Politeness, enforced in `http.py` so no adapter can skip it:**
 
 - Honest User-Agent naming the project and linking to the repo.
-- Requests to the same host are serialised with a delay between them. Different hosts run in
-  a small thread pool, so ~300 companies finish in a few minutes without hammering anyone.
+- Requests to the same host are serialised with a delay between them. Companies are queued
+  by host and each queue gets one thread of a small pool, so every thread is always working
+  on a different host and ~340 companies finish in about four minutes without hammering
+  anyone.
 - `429` and `Retry-After` are honoured. Retries are capped at 2.
-- (Stage 3, with the first non-API source.) For custom scrapers and boards, `robots.txt` is fetched and checked with
-  `urllib.robotparser` before any request; a disallowed path makes the source fail with a
-  health alert instead of fetching.
+- **robots.txt, for every adapter.** The client reads each host's `robots.txt` once per run,
+  before the first request to it, and checks every request against it (path and query). A
+  disallowed path is never requested and the source is reported as `blocked`.
+  - Parsing is our own (`robots.py`, following RFC 9309) rather than
+    `urllib.robotparser`, which ignores the `*` wildcard and would read tal.net's
+    `Disallow: /*/ats/` as allowing everything.
+  - A 4xx answer for `robots.txt` means the host has no rules. A 5xx, a 429 or a timeout
+    means the rules are unknown, and then nothing is fetched from that host for the run.
+  - The only request that skips the check is publishing to ntfy, which is not crawling.
+- **Redirects are never followed blindly.** The client follows a redirect one hop at a time
+  and puts each hop through the same checks as any request, so a redirect into a disallowed
+  path (or to a never-scrape host) is refused before it is requested. A redirected POST is
+  an error.
+- **Crawl-delay is always honoured, per host.** The gap between requests to a host is the
+  configured delay or the host's `Crawl-delay`, whichever is longer. A host asking for more
+  than 60 seconds is not fetched at all, because a 12-minute run could not honour it.
 - (Stage 4.) Per-source `poll_every_minutes` lets boards and scrapers be polled hourly rather than every
   run.
 - LinkedIn, Indeed and Glassdoor are refused by hostname in `http.py`, as a hard guard.
@@ -734,7 +811,15 @@ them; which one (the owner's, most likely) is settled when the table is built in
 ## 12. Testing
 
 - **Adapters:** recorded fixture per source → exact expected `Job` list; plus malformed
-  payload, empty board and pagination cases.
+  payload, empty board and pagination cases. tal.net has a fixture for each board layout
+  (table, tiles, both) and for an empty board; Workday for a small site read in full and a
+  large one searched; Google for a search that overflows its one page.
+- **robots.txt and redirects** (`test_robots.py`, `test_http.py`): wildcard and `$`
+  matching, group selection, longest-match; the real files from tal.net, Google, Goldman
+  Sachs and a Workday tenant; a disallowed path is never requested; **a redirect into a
+  disallowed path is refused** (generically, and for tal.net's redirect to `/ats/login`);
+  Crawl-delay sets the gap for its own host only; an unreadable `robots.txt` stops the
+  host; a `blocked` source is reported and the rest of the run carries on.
 - **Filters:** a table of real title variants that must match ("Spring Week", "Spring Insight
   Programme", "Early Insight", "Discovery Day", "First Year Programme", "STEP Intern",
   "Explore Microsoft") and near-misses that must not ("Spring Boot Engineer", "Internal
@@ -764,10 +849,16 @@ As you specified, stopping after each for review:
 2. Research and verify `companies.yaml`; propose dream-tier picks for the non-big-tech
    industries for you to confirm. (Built: 421 companies, 269 polled today.)
 3. SmartRecruiters, Workable, Workday, and custom scrapers for dream-tier companies,
-   prioritising those running UK spring weeks and insight programmes. Also investigate
-   tal.net (Oleeo) as a generic adapter, since several UK banks (Morgan Stanley, Bank of
-   America, Jefferies, Nomura) host their spring weeks there; its robots.txt is checked
-   before anything is built.
+   prioritising those running UK spring weeks and insight programmes. Also tal.net (Oleeo)
+   as a generic adapter, since several UK banks host their spring weeks there.
+   - **Built:** robots.txt, checked redirects and crawl delay in the shared client; the
+     tal.net adapter (Morgan Stanley, Bank of America, Jefferies, Nomura); the Workday
+     adapter (64 tenants); custom adapters for JPMorgan and Google (which covers DeepMind).
+     340 companies are polled, up from 269.
+   - **Investigated and unsupported:** Goldman Sachs, Citadel, Citadel Securities, Revolut
+     (section 5).
+   - **Still to do:** SmartRecruiters and Workable (6 companies each); Amazon, Apple,
+     Microsoft, Meta, Tesla and AMD.
 4. Grad boards and community repos: terms and robots.txt report first, build only what is
    allowed.
 5. README table, keep-alive, full tests and CI, hardening.
@@ -808,3 +899,9 @@ As you specified, stopping after each for review:
    filters, scope, dream list, topic and state per profile; a profile can never change what
    another receives (section 2a). The existing configuration became the first profile,
    `abhinav`. Friend onboarding is stage 6.
+10. **robots.txt is binding** (2026-11-15, stage 3). No adapter follows a redirect into a
+    disallowed path, every host's Crawl-delay is honoured, and a source that needs a
+    headless browser or that robots.txt disallows is marked `unsupported` with the reason
+    rather than worked around. This is why Goldman Sachs, Citadel, Citadel Securities and
+    Revolut are not polled although all four are on the dream list, and why Google is
+    limited to the first page of each search.

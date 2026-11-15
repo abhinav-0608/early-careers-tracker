@@ -1,8 +1,18 @@
 """The one HTTP client every adapter and the notifier use.
 
-Politeness rules live here so that no adapter can forget them: an honest User-Agent,
-a timeout on every request, a minimum gap between requests to the same host, a small
-number of retries that honour Retry-After, and a hard refusal of hosts we never scrape.
+Politeness rules live here so that no adapter can forget them:
+
+  - an honest User-Agent and a timeout on every request;
+  - robots.txt is read once per host and checked before every fetch. A path it
+    disallows is never requested, and that includes the target of a redirect: redirects
+    are followed one hop at a time, each hop checked like any other request;
+  - a minimum gap between requests to the same host, raised to the host's Crawl-delay
+    when its robots.txt sets one;
+  - a small number of retries that honour Retry-After;
+  - a hard refusal of hosts we never scrape.
+
+The notifier is the one caller that skips the robots.txt check: publishing a message to
+ntfy's API is not crawling, and ntfy has no say over what the tracker reads elsewhere.
 """
 
 from __future__ import annotations
@@ -15,6 +25,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from jobtracker import robots
 from jobtracker.config import Settings
 
 # Never fetched, whatever a config file says.
@@ -23,9 +34,24 @@ BLOCKED_DOMAINS = ("linkedin.com", "indeed.com", "glassdoor.com", "glassdoor.co.
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 MAX_RETRY_WAIT_SECONDS = 30.0
 
+REDIRECT_STATUS = {301, 302, 303, 307, 308}
+MAX_REDIRECTS = 5
+
+# A Crawl-delay is always honoured. One longer than this cannot be honoured inside a
+# 12-minute run, so the host is not fetched at all rather than fetched too fast.
+MAX_CRAWL_DELAY_SECONDS = 60.0
+
 
 class BlockedHostError(Exception):
     """Raised when something tries to fetch a host on the never-scrape list."""
+
+
+class RobotsDisallowedError(Exception):
+    """The host's robots.txt does not allow this request.
+
+    Also raised when robots.txt could not be read (server error, timeout): not knowing
+    the rules is treated as not being allowed, for this run.
+    """
 
 
 class HttpClient:
@@ -40,12 +66,18 @@ class HttpClient:
         self._delay = settings.per_host_delay_seconds
         self._sleep = sleep
         self._clock = clock
+        self._agent = robots.product_token(settings.user_agent)
         self._client = httpx.Client(
             headers={"User-Agent": settings.user_agent, "Accept": "application/json"},
             timeout=settings.timeout_seconds,
-            follow_redirects=True,
+            # Redirects are followed by hand in _request, so each hop can be checked.
+            follow_redirects=False,
             transport=transport,
         )
+        # robots.txt per host, read on the first request to it and kept for the run.
+        # A host whose robots.txt could not be read is remembered with the reason.
+        self._robots: dict[str, robots.RobotsRules] = {}
+        self._robots_errors: dict[str, str] = {}
         # One lock per host: different hosts are fetched in parallel, but requests to
         # the same host queue up and are spaced out.
         self._host_locks: dict[str, threading.Lock] = {}
@@ -53,39 +85,147 @@ class HttpClient:
         self._last_request_at: dict[str, float] = {}
 
     def get_json(self, url: str, params: dict[str, Any] | None = None) -> Any:
-        return self._request("GET", url, params=params).json()
+        return self._request("GET", _with_params(url, params)).json()
 
-    def post_json(self, url: str, payload: dict[str, Any]) -> httpx.Response:
-        return self._request("POST", url, json=payload)
+    def get_text(self, url: str, params: dict[str, Any] | None = None) -> str:
+        """Fetch a page (HTML or XML) as text."""
+        headers = {"Accept": "text/html,application/xhtml+xml"}
+        return self._request("GET", _with_params(url, params), headers=headers).text
+
+    def post_json(
+        self, url: str, payload: dict[str, Any], check_robots: bool = True
+    ) -> httpx.Response:
+        return self._request("POST", url, check_robots=check_robots, json=payload)
+
+    def require_allowed(self, url: str) -> None:
+        """Raise RobotsDisallowedError if robots.txt disallows `url`. Fetches only robots.txt.
+
+        For an adapter whose data comes from an endpoint robots.txt does not mention
+        while the page it stands for is disallowed: the adapter names the page here
+        before calling the endpoint, so the owner's rule is respected either way.
+        """
+        parts = urlsplit(url)
+        host = parts.hostname or ""
+        with self._lock_for(host):
+            self._check_robots(parts.scheme, host, _path_of(url))
 
     def close(self) -> None:
         self._client.close()
 
-    def _request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
-        host = urlsplit(url).hostname or ""
+    def _request(
+        self, method: str, url: str, check_robots: bool = True, **kwargs: Any
+    ) -> httpx.Response:
+        """Make a request, following redirects one checked hop at a time."""
+        for _ in range(MAX_REDIRECTS + 1):
+            response = self._send(method, url, check_robots, **kwargs)
+            if response.status_code not in REDIRECT_STATUS or method != "GET":
+                response.raise_for_status()  # a redirected POST is an error, not followed
+                return response
+            # The next hop goes through _send like any request, so a redirect to a
+            # never-scrape host or into a path robots.txt disallows is refused there.
+            url = str(response.url.join(response.headers.get("Location", "")))
+        raise httpx.TooManyRedirects(
+            f"more than {MAX_REDIRECTS} redirects", request=response.request
+        )
+
+    def _send(self, method: str, url: str, check_robots: bool, **kwargs: Any) -> httpx.Response:
+        """One request to one URL: host guard, robots.txt, spacing and retries."""
+        parts = urlsplit(url)
+        host = parts.hostname or ""
         if any(host == domain or host.endswith("." + domain) for domain in BLOCKED_DOMAINS):
             raise BlockedHostError(f"refusing to fetch {host}: on the never-scrape list")
 
         with self._lock_for(host):
-            for attempt in range(self._retries + 1):
-                last_attempt = attempt == self._retries
-                self._wait_for_turn(host)
-                try:
-                    response = self._client.request(method, url, **kwargs)
-                except httpx.TransportError:  # timeouts, connection resets, DNS failures
-                    if last_attempt:
-                        raise
-                    self._sleep(_backoff(attempt))
-                    continue
-                finally:
-                    self._last_request_at[host] = self._clock()
+            if check_robots:
+                self._check_robots(parts.scheme, host, _path_of(url))
+            return self._attempt(method, url, host, **kwargs)
 
-                if response.status_code in RETRYABLE_STATUS and not last_attempt:
-                    self._sleep(_retry_after(response) or _backoff(attempt))
-                    continue
-                response.raise_for_status()
-                return response
+    def _attempt(self, method: str, url: str, host: str, **kwargs: Any) -> httpx.Response:
+        """Send with retries. The caller holds the host's lock.
+
+        Returns whatever the last attempt returned, error statuses included; a network
+        failure on the last attempt is raised.
+        """
+        for attempt in range(self._retries + 1):
+            last_attempt = attempt == self._retries
+            self._wait_for_turn(host)
+            try:
+                response = self._client.request(method, url, **kwargs)
+            except httpx.TransportError:  # timeouts, connection resets, DNS failures
+                if last_attempt:
+                    raise
+                self._sleep(_backoff(attempt))
+                continue
+            finally:
+                self._last_request_at[host] = self._clock()
+
+            if response.status_code in RETRYABLE_STATUS and not last_attempt:
+                self._sleep(_retry_after(response) or _backoff(attempt))
+                continue
+            return response
         raise AssertionError("unreachable: the loop always returns or raises")
+
+    # --- robots.txt --------------------------------------------------------------------
+
+    def _check_robots(self, scheme: str, host: str, path: str) -> None:
+        """Raise unless the host's robots.txt allows `path`. The caller holds the lock."""
+        rule = self._rules_for(scheme, host).rule_for(path)
+        if rule is not None and not rule.allow:
+            raise RobotsDisallowedError(
+                f"robots.txt on {host} disallows {path.split('?')[0]} (Disallow: {rule.pattern})"
+            )
+
+    def _rules_for(self, scheme: str, host: str) -> robots.RobotsRules:
+        """This host's robots.txt, fetched on first use. The caller holds the lock.
+
+        Following RFC 9309: a 4xx answer means there is no robots.txt and nothing is
+        restricted; a 5xx answer, a 429 or a network failure means the rules are
+        unknown, and then nothing is fetched from the host for the rest of the run.
+        """
+        if host in self._robots:
+            return self._robots[host]
+        if host not in self._robots_errors:
+            problem = None
+            try:
+                response = self._fetch_robots(f"{scheme}://{host}/robots.txt", host)
+            except httpx.TransportError as exc:
+                problem = type(exc).__name__
+            else:
+                status = response.status_code
+                if response.is_success:
+                    rules = robots.parse(response.text, self._agent)
+                elif 400 <= status < 500 and status != 429:
+                    rules = robots.ALLOW_ALL
+                elif status in REDIRECT_STATUS:
+                    problem = "it redirects somewhere that is not a robots.txt"
+                else:
+                    problem = f"HTTP {status}"
+            if problem:
+                self._robots_errors[host] = f"robots.txt on {host} could not be read ({problem})"
+            elif (rules.crawl_delay or 0) > MAX_CRAWL_DELAY_SECONDS:
+                self._robots_errors[host] = (
+                    f"robots.txt on {host} asks for {rules.crawl_delay:g}s between requests, "
+                    "longer than a run can honour"
+                )
+            else:
+                self._robots[host] = rules
+                return rules
+        raise RobotsDisallowedError(self._robots_errors[host])
+
+    def _fetch_robots(self, url: str, host: str) -> httpx.Response:
+        """GET a robots.txt, following a redirect only to another robots.txt.
+
+        Sites commonly redirect /robots.txt to the same file on their www host. Any other
+        target is not followed: with the rules still unread there is no telling whether
+        it is a path the site allows. The redirect response is returned as it is.
+        """
+        for _ in range(MAX_REDIRECTS):
+            response = self._attempt("GET", url, host)
+            target = response.url.join(response.headers.get("Location", ""))
+            if response.status_code not in REDIRECT_STATUS or target.path != "/robots.txt":
+                return response
+            url = str(target)
+        return response
 
     def _lock_for(self, host: str) -> threading.Lock:
         with self._host_locks_guard:
@@ -95,9 +235,23 @@ class HttpClient:
         last = self._last_request_at.get(host)
         if last is None:
             return
-        remaining = self._delay - (self._clock() - last)
+        # The configured gap, or the host's own Crawl-delay when that is longer.
+        known = self._robots.get(host)
+        delay = max(self._delay, (known.crawl_delay or 0.0) if known else 0.0)
+        remaining = delay - (self._clock() - last)
         if remaining > 0:
             self._sleep(remaining)
+
+
+def _with_params(url: str, params: dict[str, Any] | None) -> str:
+    """The full URL including its query, so robots.txt rules can see the query too."""
+    return str(httpx.URL(url, params=params)) if params else url
+
+
+def _path_of(url: str) -> str:
+    """What robots.txt rules are matched against: the path, plus ?query when present."""
+    parts = urlsplit(url)
+    return (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
 
 
 def _backoff(attempt: int) -> float:

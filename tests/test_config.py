@@ -4,7 +4,7 @@ import pytest
 
 from conftest import OWNER, ROOT, make_company, make_profile
 from jobtracker.config import KNOWN_ATS, ConfigError, load_config
-from jobtracker.sources import ADAPTERS
+from jobtracker.sources import ADAPTERS, adapter_for
 
 
 def test_shipped_config_is_valid(config):
@@ -124,6 +124,68 @@ def test_workday_company_needs_tenant_host_and_sites(tmp_path):
     entry = "- {key: acme, name: Acme, ats: workday, tenant: acme, host: wd3, sites: [A, B]}"
     company = load_config(_companies_file(tmp_path / "valid", entry)).companies[0]
     assert (company.tenant, company.host, company.sites) == ("acme", "wd3", ("A", "B"))
+
+
+def test_talnet_company_needs_tenant_board_and_quoted_sites(tmp_path):
+    entry = "- {key: acme, name: Acme, ats: talnet, board: lang-en-GB/brand-4, sites: ['1']}"
+    with pytest.raises(ConfigError, match="acme.*missing required key 'tenant'"):
+        load_config(_companies_file(tmp_path / "no-tenant", entry))
+
+    entry = "- {key: acme, name: Acme, ats: talnet, tenant: acme, sites: ['1']}"
+    with pytest.raises(ConfigError, match="acme: board is required"):
+        load_config(_companies_file(tmp_path / "no-board", entry))
+
+    # An unquoted board number is a YAML integer, which cannot be put in a URL as it is.
+    entry = "- {key: acme, name: Acme, ats: talnet, tenant: acme, board: b, sites: [1, 2]}"
+    with pytest.raises(ConfigError, match="acme: a talnet company needs a list of sites"):
+        load_config(_companies_file(tmp_path / "numbers", entry))
+
+    entry = "- {key: acme, name: Acme, ats: talnet, tenant: acme, board: b, sites: ['1', '2']}"
+    company = load_config(_companies_file(tmp_path / "valid", entry)).companies[0]
+    assert (company.tenant, company.board, company.sites) == ("acme", "b", ("1", "2"))
+
+
+def test_companies_are_queued_by_the_host_that_serves_them():
+    """One queue per host is what lets every worker thread fetch from a different host."""
+    groups = {
+        make_company("a", ats="greenhouse").host_group,
+        make_company("b", ats="greenhouse").host_group,
+        make_company("c", ats="workday", tenant="acme", board=None).host_group,
+        make_company("d", ats="workday", tenant="other", board=None).host_group,
+        make_company("e", ats="talnet", tenant="acme", board="x").host_group,
+        make_company("google", ats="custom", board="google").host_group,
+        make_company("google-deepmind", ats="custom", board="google").host_group,
+        make_company("jpmorgan-chase", ats="custom", board="jpmorgan").host_group,
+    }
+    assert groups == {
+        "greenhouse",
+        "workday:acme",
+        "workday:other",
+        "talnet:acme",
+        "custom:google",
+        "custom:jpmorgan",
+    }
+
+
+def test_every_polled_company_has_what_its_adapter_needs(config):
+    """The shipped list: nothing an adapter reads from a company may be missing."""
+    polled = [company for company in config.companies if adapter_for(company)]
+    assert {company.ats for company in polled} == {
+        "greenhouse", "lever", "ashby", "workday", "talnet", "custom",
+    }  # fmt: skip
+    for company in polled:
+        if company.ats in ("workday", "talnet"):
+            assert company.tenant and company.sites, company.key
+        if company.ats == "workday":
+            assert company.host, company.key
+        else:
+            assert company.board, company.key
+    # The dream-tier companies this stage set out to cover, and the ones it could not.
+    by_key = {company.key: company for company in config.companies}
+    for key in ("morgan-stanley", "jpmorgan-chase", "google", "google-deepmind"):
+        assert adapter_for(by_key[key]) is not None, key
+    for key in ("goldman-sachs", "citadel", "citadel-securities", "revolut"):
+        assert by_key[key].ats == "unsupported" and by_key[key].note, key
 
 
 def test_unsupported_company_needs_a_note(tmp_path):

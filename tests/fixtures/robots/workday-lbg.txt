@@ -1,0 +1,19 @@
+Sitemap: https://lbg.wd3.myworkdayjobs.com/broadbean_external/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/LBG_Careers/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/LBG_HigherApprenticeCareers/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/Undergraduate_careers/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/LBG_Singapore/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/Graduate_careers/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/Lloyds_Technology_Centre/siteMap.xml
+Sitemap: https://lbg.wd3.myworkdayjobs.com/USA_Careers/siteMap.xml
+
+User-agent: *
+Allow: /broadbean_external/
+Allow: /LBG_Careers/
+Allow: /LBG_HigherApprenticeCareers/
+Allow: /Undergraduate_careers/
+Allow: /LBG_Singapore/
+Allow: /Graduate_careers/
+Allow: /Lloyds_Technology_Centre/
+Allow: /USA_Careers/
+Disallow: /refreshFacet/

@@ -33,10 +33,10 @@ from jobtracker import health, log
 from jobtracker.config import Config, Profile
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
 from jobtracker.filters import classify
-from jobtracker.http import HttpClient
-from jobtracker.models import ERROR, OK, TIMEOUT, Company, SourceResult
+from jobtracker.http import HttpClient, RobotsDisallowedError
+from jobtracker.models import BLOCKED, ERROR, OK, TIMEOUT, Company, SourceResult
 from jobtracker.notify import Notifier, baseline_notification, plan_job_notifications
-from jobtracker.sources import ADAPTERS
+from jobtracker.sources import adapter_for
 from jobtracker.state import (
     LEGACY_OWNER,
     OPEN,
@@ -142,7 +142,7 @@ def run(
     # --- fetch, once per company -------------------------------------------------------
     # Companies with no adapter (ats: unsupported, or a source not built yet) are kept in
     # the config for visibility but are not polled. Nor is one that nobody is watching.
-    pollable = [company for company in config.companies if company.ats in ADAPTERS]
+    pollable = [company for company in config.companies if adapter_for(company)]
     watched = [c for c in pollable if any(profile.watches(c) for profile in active)]
     targets = [company for company in watched if not only or company.key in only]
     log.event(
@@ -278,13 +278,29 @@ def run_profile(
 
 
 def fetch_all(companies: list[Company], http: HttpClient, max_workers: int) -> list[SourceResult]:
-    """Fetch every company in a small thread pool, returning results in config order.
+    """Fetch every company, returning results in config order.
 
-    Threads only overlap across different hosts; HttpClient serialises and spaces out
-    requests to any single host.
+    Companies are grouped by the host that serves them and each group is one queue,
+    worked through by one thread. HttpClient only ever makes one request to a host at a
+    time, so a second thread on the same host could do nothing but wait; giving each
+    host exactly one thread keeps every worker busy on a different host. The longest
+    queues start first, since the run cannot finish before they do.
     """
+    queues: dict[str, list[Company]] = {}
+    for company in companies:
+        queues.setdefault(company.host_group, []).append(company)
+    longest_first = sorted(queues.values(), key=len, reverse=True)
+
+    def work(queue: list[Company]) -> list[SourceResult]:
+        return [fetch_company(company, http) for company in queue]
+
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        return list(pool.map(lambda company: fetch_company(company, http), companies))
+        fetched = {
+            result.company.key: result
+            for results in pool.map(work, longest_first)
+            for result in results
+        }
+    return [fetched[company.key] for company in companies]
 
 
 def fetch_company(company: Company, http: HttpClient) -> SourceResult:
@@ -292,7 +308,14 @@ def fetch_company(company: Company, http: HttpClient) -> SourceResult:
     result = SourceResult(company=company)
     started = time.monotonic()
     try:
-        result.jobs = ADAPTERS[company.ats](company, http)
+        adapter = adapter_for(company)
+        if adapter is None:
+            raise LookupError(f"no adapter for ats '{company.ats}'")
+        result.jobs = adapter(company, http)
+    except RobotsDisallowedError as exc:
+        # Not fetched, on the site owner's instruction. Reported like any failing source,
+        # so a board that becomes disallowed is noticed and can be marked unsupported.
+        result.status, result.error = BLOCKED, str(exc)
     except httpx.TimeoutException as exc:
         result.status, result.error = TIMEOUT, type(exc).__name__
     except Exception as exc:  # noqa: BLE001 - one broken source must never fail the run

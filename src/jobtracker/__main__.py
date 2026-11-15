@@ -25,7 +25,7 @@ from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
 from jobtracker.notify import Notifier
 from jobtracker.pipeline import fetch_company, run
-from jobtracker.sources import ADAPTERS
+from jobtracker.sources import adapter_for
 from jobtracker.text import normalise
 
 
@@ -178,7 +178,7 @@ def explain_titles(config: Config, profile: Profile, args: argparse.Namespace) -
 def explain_company(config: Config, profile: Profile, args: argparse.Namespace) -> int:
     """Fetch one company's live jobs and show how each one classifies."""
     company = config.company(args.company)
-    if company is None or company.ats not in ADAPTERS:
+    if company is None or adapter_for(company) is None:
         print(f"No pollable company with key '{args.company}'.", file=sys.stderr)
         return 2
     if not profile.watches(company):

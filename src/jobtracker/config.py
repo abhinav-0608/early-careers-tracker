@@ -34,8 +34,9 @@ COMPANY_TAGS = {"big_tech", "vc_backed", "yc"}
 # Every value "ats" may take. A company whose ats has no adapter yet is loaded and
 # validated like any other, and simply not polled until its adapter exists.
 WORKDAY = "workday"
+TALNET = "talnet"
 UNSUPPORTED = "unsupported"
-BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom"}
+BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom", TALNET}
 KNOWN_ATS = BOARD_ATS | {WORKDAY, UNSUPPORTED}
 
 # A profile's key is its folder name. It ends up in a file name and in the name of an
@@ -418,8 +419,13 @@ def load_companies(path: Path) -> tuple[Company, ...]:
         if ats == WORKDAY:
             for part in ("tenant", "host"):
                 _get(raw, part, str, f"{where} (workday)")
+        if ats == TALNET:
+            # https://{tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/
+            _get(raw, "tenant", str, f"{where} (talnet)")
+        if ats in (WORKDAY, TALNET):
+            # Quoted in YAML: a bare 1 would be a number, and sites are parts of a URL.
             if not sites or not all(isinstance(site, str) for site in sites):
-                raise ConfigError(f"{where}: a workday company needs a list of sites")
+                raise ConfigError(f"{where}: a {ats} company needs a list of sites (strings)")
         if ats == UNSUPPORTED and not raw.get("note"):
             # An unsupported company is a known gap; the note says why, for the README.
             raise ConfigError(f"{where}: an unsupported company needs a note saying why")

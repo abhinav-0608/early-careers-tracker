@@ -1,0 +1,25 @@
+{
+  "total": 2000,
+  "jobPostings": [
+    {
+      "title": "Senior Hardware System Engineer",
+      "externalPath": "/job/China-Shenzhen/Senior-Hardware-System-Engineer_JR2027818",
+      "locationsText": "China, Shenzhen",
+      "postedOn": "Posted Today",
+      "bulletFields": [
+        "JR2027818"
+      ]
+    },
+    {
+      "title": "Senior QA Engineer, System Product Engineering",
+      "externalPath": "/job/Israel-Yokneam/Senior-QA-Engineer--System-Product-Engineering_JR2008526",
+      "locationsText": "Israel, Yokneam",
+      "postedOn": "Posted Today",
+      "bulletFields": [
+        "JR2008526"
+      ]
+    }
+  ],
+  "facets": [],
+  "userAuthenticated": false
+}

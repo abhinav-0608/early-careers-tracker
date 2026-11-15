@@ -4,8 +4,7 @@ from datetime import date
 
 import httpx
 
-from conftest import load_fixture, make_company
-from jobtracker.http import HttpClient
+from conftest import load_fixture, make_company, mock_client
 from jobtracker.sources import greenhouse
 
 POINT72 = make_company("point72")
@@ -62,7 +61,7 @@ def test_fetch_requests_the_board_url(settings):
         requested.append(str(request.url))
         return httpx.Response(200, json=load_fixture("greenhouse/point72.json"))
 
-    jobs = greenhouse.fetch(POINT72, HttpClient(settings, transport=httpx.MockTransport(handler)))
+    jobs = greenhouse.fetch(POINT72, mock_client(settings, handler))
 
     assert requested == ["https://boards-api.greenhouse.io/v1/boards/point72/jobs"]
     assert len(jobs) == 3

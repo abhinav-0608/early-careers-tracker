@@ -10,7 +10,7 @@ http:
   timeout_seconds: 20
   retries: 2                    # extra attempts on 429 / 5xx / network errors
   per_host_delay_seconds: 1.0   # minimum gap between two requests to the same host
-  max_workers: 6                # companies fetched in parallel (one request per host at a time)
+  max_workers: 8                # hosts fetched in parallel (one request per host at a time)
 
 notify:
   server: "https://ntfy.sh"

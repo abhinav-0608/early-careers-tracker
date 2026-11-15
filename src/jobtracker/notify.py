@@ -95,7 +95,7 @@ class Notifier:
         if notification.click:
             payload["click"] = notification.click
         try:
-            self._http.post_json(self._server, payload)
+            self._http.post_json(self._server, payload, check_robots=False)
         except httpx.HTTPError as exc:
             # Log the kind of failure only. The exception text is never logged, so
             # nothing derived from the request can end up in a public Actions log.

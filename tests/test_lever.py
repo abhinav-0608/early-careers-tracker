@@ -4,8 +4,7 @@ from datetime import date
 
 import httpx
 
-from conftest import load_fixture, make_company
-from jobtracker.http import HttpClient
+from conftest import load_fixture, make_company, mock_client
 from jobtracker.sources import lever
 
 PALANTIR = make_company("palantir", ats="lever")
@@ -63,7 +62,7 @@ def test_fetch_asks_for_json(settings):
         requested.append(str(request.url))
         return httpx.Response(200, json=load_fixture("lever/palantir.json"))
 
-    jobs = lever.fetch(PALANTIR, HttpClient(settings, transport=httpx.MockTransport(handler)))
+    jobs = lever.fetch(PALANTIR, mock_client(settings, handler))
 
     assert requested == ["https://api.lever.co/v0/postings/palantir?mode=json"]
     assert len(jobs) == 3

@@ -38,6 +38,17 @@ class Company:
         """Identifies this company's board in state, e.g. "greenhouse:jane-street"."""
         return f"{self.ats}:{self.key}"
 
+    @property
+    def host_group(self) -> str:
+        """Companies with the same value are fetched from the same host.
+
+        Every Greenhouse board is on one host; every Workday or tal.net tenant has its
+        own; a custom company has its own site. Requests to one host are made one at a
+        time, so the run fetches each group in a single queue (see pipeline.fetch_all).
+        """
+        own_host = self.tenant or (self.board if self.ats == "custom" else None)
+        return f"{self.ats}:{own_host}" if own_host else self.ats
+
 
 @dataclass(frozen=True)
 class Job:
@@ -68,6 +79,7 @@ OK = "ok"
 ERROR = "error"  # HTTP error, malformed response, unexpected shape
 TIMEOUT = "timeout"
 EMPTY = "empty"  # returned 0 jobs after previously returning some
+BLOCKED = "blocked"  # robots.txt disallows the fetch, or could not be read
 
 
 @dataclass

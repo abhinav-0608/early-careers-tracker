@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "SiteNumber": "CX_1001",
+      "SelectedTitlesFacet": "PAA",
+      "Limit": 200,
+      "Offset": 0,
+      "TotalJobsCount": 3,
+      "requisitionList": [
+        {
+          "Id": "210775780",
+          "Title": "2027 Quantitative Research Markets Associate Program – Off-Cycle Internship – London",
+          "PostedDate": "2026-11-13",
+          "PrimaryLocationCountry": "GB",
+          "JobFamily": "Seasonal Employee",
+          "JobFunction": "Program Analysts & Associate",
+          "PrimaryLocation": "LONDON, LONDON, United Kingdom",
+          "WorkplaceType": "",
+          "secondaryLocations": []
+        },
+        {
+          "Id": "210690282",
+          "Title": "2027 Markets Summer Analyst Program - Research",
+          "PostedDate": "2026-11-13",
+          "PrimaryLocationCountry": "US",
+          "JobFamily": "Analysts",
+          "JobFunction": "Program Analysts & Associate",
+          "PrimaryLocation": "New York, NY, United States",
+          "WorkplaceType": "",
+          "secondaryLocations": []
+        },
+        {
+          "Id": "210804313",
+          "Title": "Banker Analyst - Multinational Corporations - Analyst",
+          "PostedDate": "2026-11-04",
+          "PrimaryLocationCountry": "US",
+          "JobFamily": "Analysts",
+          "JobFunction": "Program Analysts & Associate",
+          "PrimaryLocation": "Boston, MA, United States",
+          "WorkplaceType": "",
+          "secondaryLocations": [
+            {
+              "RequisitionLocationId": 300098152710726,
+              "GeographyNodeId": 100302248437957,
+              "GeographyId": 300000020691072,
+              "Name": "Philadelphia, PA, United States",
+              "CountryCode": "US",
+              "Latitude": 39.95222,
+              "Longitude": -75.16218
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "count": 1,
+  "hasMore": false
+}
