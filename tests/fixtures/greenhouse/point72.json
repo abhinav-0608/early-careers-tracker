@@ -1,0 +1,109 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://boards.greenhouse.io/point72/jobs/8845395002?gh_jid=8845395002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "education": "education_required",
+      "internal_job_id": 6541208002,
+      "location": {
+        "name": "London, UK"
+      },
+      "metadata": [
+        {
+          "id": 4076300002,
+          "name": "Time Type",
+          "value": "Part Time",
+          "value_type": "single_select"
+        }
+      ],
+      "id": 8845395002,
+      "updated_at": "2026-11-12T14:22:50-05:00",
+      "requisition_id": "7878",
+      "title": "2027 Point72 Academy Spring Insight Programme – UK",
+      "company_name": "Point72 ",
+      "first_published": "2026-09-29T10:41:39-04:00",
+      "language": "en",
+      "application_deadline": null
+    },
+    {
+      "absolute_url": "https://boards.greenhouse.io/point72/jobs/8811167002?gh_jid=8811167002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "education": "education_required",
+      "internal_job_id": 6526276002,
+      "location": {
+        "name": "New York, New York, United States, Stamford, Connecticut, United States"
+      },
+      "metadata": [
+        {
+          "id": 4076300002,
+          "name": "Time Type",
+          "value": "Full Time",
+          "value_type": "single_select"
+        }
+      ],
+      "id": 8811167002,
+      "updated_at": "2026-11-09T22:51:55-05:00",
+      "requisition_id": "2261",
+      "title": "2027 Summer Internship - Investment Services",
+      "company_name": "Point72 ",
+      "first_published": "2026-09-18T17:01:15-04:00",
+      "language": "en",
+      "application_deadline": null
+    },
+    {
+      "absolute_url": "https://boards.greenhouse.io/point72/jobs/7297657002?gh_jid=7297657002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "education": "education_required",
+      "internal_job_id": 5863630002,
+      "location": {
+        "name": "London, Paris, Hong Kong, Tokyo"
+      },
+      "metadata": [
+        {
+          "id": 4076300002,
+          "name": "Time Type",
+          "value": "Full Time",
+          "value_type": "single_select"
+        }
+      ],
+      "id": 7297657002,
+      "updated_at": "2026-11-09T22:51:55-05:00",
+      "requisition_id": "1296",
+      "title": "Quantitative Researcher - Intern",
+      "company_name": "Point72 ",
+      "first_published": "2024-08-15T17:02:22-04:00",
+      "language": "en",
+      "application_deadline": null
+    }
+  ],
+  "meta": {
+    "total": 3
+  }
+}

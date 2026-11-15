@@ -1,0 +1,100 @@
+name: Poll
+
+on:
+  schedule:
+    # Every 15 minutes, offset from :00/:15/:30/:45 where GitHub's scheduler is busiest.
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+# Only one poll at a time. A run that starts while another is in progress waits for it,
+# so two runs can never push state at the same moment.
+concurrency:
+  group: poll
+  cancel-in-progress: false
+
+permissions:
+  contents: write # commit state back to the repo
+  actions: read # look up the previous run's result for the failure alert
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install --quiet .
+
+      - name: Poll sources and send alerts
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
+        run: python -m jobtracker run
+
+      - name: Commit state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state
+          if git diff --cached --quiet; then
+            echo "State unchanged; nothing to commit."
+            exit 0
+          fi
+          git commit --quiet -m "Update state"
+          # Someone may have pushed (a config change, say) while this run was in progress.
+          for attempt in 1 2 3; do
+            if git pull --quiet --rebase && git push --quiet; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Could not push state after 3 attempts." >&2
+          exit 1
+
+      # Dead-man's switch. healthchecks.io expects this ping after every successful run and
+      # alerts the health topic itself if the pings stop, which is the one failure nothing
+      # inside GitHub Actions can report: Actions not running at all.
+      - name: Ping healthchecks.io
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+        run: |
+          if [ -z "$HEALTHCHECK_URL" ]; then
+            echo "::warning::HEALTHCHECK_URL is not set; the dead-man's switch is off."
+            exit 0
+          fi
+          # A failed ping must not fail the run; a run of missed pings raises the alarm anyway.
+          curl --fail --silent --show-error --output /dev/null --max-time 10 --retry 3 \
+            "$HEALTHCHECK_URL" || echo "::warning::healthchecks.io ping failed."
+
+      # Source failures are reported by the tracker itself. This step covers the run as a
+      # whole failing: a crash, a bad config file, a failed push.
+      - name: Alert if the run failed
+        if: failure()
+        env:
+          NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Alert on the first failure only, not every 15 minutes while it stays broken.
+          previous=$(gh run list --workflow poll.yml --status completed --limit 1 \
+            --json conclusion --jq '.[0].conclusion // "none"')
+          if [ "$previous" = "failure" ]; then
+            echo "Previous run also failed; already alerted."
+            exit 0
+          fi
+          # The topic goes in the JSON body, never in the URL.
+          jq -n --arg topic "$NTFY_HEALTH_TOPIC" --arg url "$RUN_URL" '{
+            topic: $topic,
+            title: "Tracker run failed",
+            message: "The poll workflow failed before finishing. Tap to open the run.",
+            priority: 4,
+            tags: ["rotating_light"],
+            click: $url
+          }' | curl --fail --silent --show-error --output /dev/null \
+            -H "Content-Type: application/json" --data @- https://ntfy.sh

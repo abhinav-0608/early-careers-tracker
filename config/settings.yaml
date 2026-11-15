@@ -1,0 +1,30 @@
+# Run-level settings. Everything here is a knob; none of it is secret.
+
+# Sent with every request so site owners can see who is calling and why.
+user_agent: "job-alert-tracker/1.0 (+https://github.com/abhinav-0608/early-careers-tracker)"
+
+# Where batched summaries link to.
+repo_url: "https://github.com/abhinav-0608/early-careers-tracker"
+
+http:
+  timeout_seconds: 20
+  retries: 2                    # extra attempts on 429 / 5xx / network errors
+  per_host_delay_seconds: 1.0   # minimum gap between two requests to the same host
+  max_workers: 6                # companies fetched in parallel (one request per host at a time)
+
+notify:
+  server: "https://ntfy.sh"
+  batch_threshold: 5            # more than this many new jobs in one run -> one summary
+  priority:
+    dream: 5
+    normal: 3
+
+state:
+  close_after_missing_runs: 2   # successful fetches a job must be absent from before it closes
+  repost_window_days: 30        # a closed job reappearing within this window is a repost (no alert)
+  prune_closed_after_days: 90   # closed jobs are deleted from state after this long
+
+health:
+  fail_after_consecutive: 2     # failed runs in a row before a health alert is sent
+  reminder_hours: 24            # repeat the alert this often while the source stays broken
+  accept_empty_after_runs: 8    # a board that stays empty this many runs is accepted as empty

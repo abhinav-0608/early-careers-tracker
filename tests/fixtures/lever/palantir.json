@@ -1,0 +1,98 @@
+[
+  {
+    "additionalPlain": "Life at Palantir\n \nWe want every Palantirian to achieve their best outcomes, tha...",
+    "additional": "<div><strong><span style=\"font-size: 18px;\">Life at Palantir</span></strong></di...",
+    "categories": {
+      "commitment": "Internship",
+      "location": "London, United Kingdom",
+      "team": "Dev",
+      "allLocations": [
+        "London, United Kingdom"
+      ]
+    },
+    "createdAt": 1625177031312,
+    "descriptionPlain": "A World-Changing Company\n \nPalantir builds the world’s leading software for data...",
+    "description": "<div><strong><span style=\"font-size: 18px;\">A World-Changing Company</span></str...",
+    "id": "76a60923-bb49-40f5-b061-7c7eb1299602",
+    "lists": [
+      {
+        "text": "What We Value",
+        "content": "\n<li>Ability to communicate and collaborate with a variety of individuals, inclu..."
+      },
+      {
+        "text": "What We Require",
+        "content": "\n<li>Engineering background in fields such as Computer Science, Mathematics, Sof..."
+      }
+    ],
+    "text": "Software Engineer, Internship",
+    "country": "GB",
+    "workplaceType": "onsite",
+    "opening": "<div><strong><span style=\"font-size: 18px;\">A World-Changing Company</span></str...",
+    "openingPlain": "A World-Changing Company\n \nPalantir builds the world’s leading software for data...",
+    "descriptionBody": "<div><strong style=\"font-size: 18px;\">The Role</strong></div>\n<div>&nbsp;</div>\n...",
+    "descriptionBodyPlain": "The Role\n \nSoftware Engineers at Palantir build software at scale to transform h...",
+    "hostedUrl": "https://jobs.lever.co/palantir/76a60923-bb49-40f5-b061-7c7eb1299602",
+    "applyUrl": "https://jobs.lever.co/palantir/76a60923-bb49-40f5-b061-7c7eb1299602/apply"
+  },
+  {
+    "additionalPlain": "Please note that you will never be asked to submit a payment or share financial ...",
+    "additional": "<div><em>Please note that you will never be asked to submit a payment or share f...",
+    "categories": {
+      "commitment": "Scholarship",
+      "location": "North America",
+      "team": "Business Development",
+      "allLocations": [
+        "North America"
+      ]
+    },
+    "createdAt": 1750119374985,
+    "descriptionPlain": "A World-Changing Company\n \nPalantir builds the world’s leading software for data...",
+    "description": "<div><strong style=\"font-size: 18px;\">A World-Changing Company</strong></div>\n<d...",
+    "id": "0ccbe620-a3ef-41d1-a5c4-68e56b3c91d0",
+    "lists": [
+      {
+        "text": "What We’re Looking For",
+        "content": "<div>We want builders: people who are hungry to learn whatever it takes to succe..."
+      },
+      {
+        "text": "What We Value",
+        "content": "<div>Show us where you've flexed that builder's mindset. That could look like:\n\n..."
+      }
+    ],
+    "text": "American Tech Fellowship",
+    "country": "US",
+    "workplaceType": "remote",
+    "opening": "",
+    "openingPlain": "",
+    "descriptionBody": "<div><strong style=\"font-size: 18px;\">A World-Changing Company</strong></div>\n<d...",
+    "descriptionBodyPlain": "A World-Changing Company\n \nPalantir builds the world’s leading software for data...",
+    "hostedUrl": "https://jobs.lever.co/palantir/0ccbe620-a3ef-41d1-a5c4-68e56b3c91d0",
+    "applyUrl": "https://jobs.lever.co/palantir/0ccbe620-a3ef-41d1-a5c4-68e56b3c91d0/apply"
+  },
+  {
+    "additionalPlain": "Une entreprise qui transforme le monde qui nous entoure\nPalantir construit le pr...",
+    "additional": "<h3>Une entreprise qui transforme le monde qui nous entoure</h3>\n<p>Palantir con...",
+    "categories": {
+      "commitment": "Internship",
+      "location": "Paris, France",
+      "team": "Echo",
+      "allLocations": [
+        "Paris, France"
+      ]
+    },
+    "createdAt": 1778517108152,
+    "descriptionPlain": "A World-Changing Company \n Palantir builds the world’s leading software for data...",
+    "description": "<div>\n<h3><strong>A World-Changing Company </strong></h3>\nPalantir builds the wo...",
+    "id": "774cf5c9-bf6a-4d77-bf60-d50ef1beb1a0",
+    "lists": [],
+    "text": "Deployment Strategist, Internship",
+    "country": "FR",
+    "workplaceType": "onsite",
+    "opening": "",
+    "openingPlain": "",
+    "descriptionBody": "<div>\n<h3><strong>A World-Changing Company </strong></h3>\nPalantir builds the wo...",
+    "descriptionBodyPlain": "A World-Changing Company \n Palantir builds the world’s leading software for data...",
+    "hostedUrl": "https://jobs.lever.co/palantir/774cf5c9-bf6a-4d77-bf60-d50ef1beb1a0",
+    "applyUrl": "https://jobs.lever.co/palantir/774cf5c9-bf6a-4d77-bf60-d50ef1beb1a0/apply"
+  }
+]

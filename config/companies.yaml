@@ -1,0 +1,76 @@
+# Companies to poll. Stage 1 holds a small verified set; stage 2 expands it.
+#
+#   key          stable id used in state and job keys (never rename once in use)
+#   industry     big_tech | ai_lab | quant | finance | fintech | cybersecurity | startup
+#   tags         big_tech / vc_backed / yc (the India location rule depends on these)
+#   regions      where the company hires (informational)
+#   tier         dream (priority 5 alerts, never batched) | normal
+#   ats          greenhouse | lever | ashby | unsupported
+#   board        the board identifier in the ATS's public API
+#   verified     date the board identifier last returned data
+
+- key: anthropic
+  name: Anthropic
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: dream
+  ats: greenhouse
+  board: anthropic
+  careers_url: https://www.anthropic.com/careers
+  verified: 2026-11-15
+
+- key: openai
+  name: OpenAI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: dream
+  ats: ashby
+  board: openai
+  careers_url: https://openai.com/careers
+  verified: 2026-11-15
+
+- key: palantir
+  name: Palantir
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us]
+  tier: dream
+  ats: lever
+  board: palantir
+  careers_url: https://www.palantir.com/careers
+  verified: 2026-11-15
+
+- key: jane-street
+  name: Jane Street
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: janestreet
+  careers_url: https://www.janestreet.com/join-jane-street
+  verified: 2026-11-15
+
+- key: point72
+  name: Point72
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: point72
+  careers_url: https://careers.point72.com
+  verified: 2026-11-15
+
+- key: optiver
+  name: Optiver
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: optiverus
+  careers_url: https://optiver.com/working-at-optiver/career-opportunities
+  verified: 2026-11-15

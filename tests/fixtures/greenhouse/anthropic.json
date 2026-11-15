@@ -1,0 +1,73 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/anthropic/jobs/5183044008",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 4381824008,
+      "location": {
+        "name": "London, UK; Ontario, CAN; Remote-Friendly, United States; San Francisco, CA"
+      },
+      "metadata": [
+        {
+          "id": 4036944008,
+          "name": "Location Type",
+          "value": "On-Site",
+          "value_type": "single_select"
+        }
+      ],
+      "id": 5183044008,
+      "updated_at": "2026-11-11T20:39:10-05:00",
+      "requisition_id": "PIP-11677",
+      "title": "Anthropic Fellows Program, AI Safety & Security",
+      "company_name": "Anthropic",
+      "first_published": "2026-04-09T20:28:23-04:00",
+      "language": "en",
+      "application_deadline": null
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/anthropic/jobs/5473195008",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 4572230008,
+      "location": {
+        "name": "San Francisco, CA | New York City, NY"
+      },
+      "metadata": [
+        {
+          "id": 4036944008,
+          "name": "Location Type",
+          "value": "On-Site",
+          "value_type": "single_select"
+        }
+      ],
+      "id": 5473195008,
+      "updated_at": "2026-11-06T12:43:11-05:00",
+      "requisition_id": "REQ-26-1571-01",
+      "title": "Applied AI Architect, International Policy",
+      "company_name": "Anthropic",
+      "first_published": "2026-11-06T12:43:11-05:00",
+      "language": "en",
+      "application_deadline": null
+    }
+  ],
+  "meta": {
+    "total": 2
+  }
+}

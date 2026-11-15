@@ -1,0 +1,645 @@
+# What counts as a matching job. A job must pass all three checks:
+#
+#   1. ROLE TYPE  decided from the title only
+#   2. FIELD      decided from the title plus department
+#   3. LOCATION   decided from the location strings
+#
+# Keyword syntax
+#   - Matching ignores case, accents and punctuation: "first-year" == "First Year".
+#   - A keyword matches whole words only: "intern" does not match "internal".
+#   - A trailing * on a word matches any ending: "program*" matches program, programme,
+#     programmes. It works on any word in a phrase: "insight* day*".
+#
+# To see why a job did or did not match:  python -m jobtracker explain <company-key>
+
+# ---------------------------------------------------------------------------------------
+# 1. Role types
+#
+# Checked top to bottom; the first one whose keywords match wins, so specific types sit
+# above generic ones. A job that lands on a disabled type is dropped; it does not fall
+# through to a later type. To start receiving a type, set enabled: true. Existing matches
+# are then recorded with one "baseline" summary rather than an alert each.
+#
+# field_match
+#   lenient  passes unless the title names a discipline in field_exclude and none of yours.
+#            Used for programmes often titled with no discipline at all.
+#   strict   the title or department must name one of your fields.
+# ---------------------------------------------------------------------------------------
+role_types:
+  spring_week:
+    label: Spring week
+    enabled: true
+    field_match: lenient
+    ntfy_tags: [cherry_blossom]
+    include:
+      - spring week*
+      - spring insight*
+      - spring program*
+      - spring intern*        # UK "Spring Internship". "Intern, Spring 2027" does not match.
+      - spring into
+      - spring experience*
+      - spring event*
+      - spring scheme*
+      - spring academy
+    exclude:
+      - spring boot
+      - spring framework
+      - spring cloud
+
+  insight:
+    label: Insight programme
+    enabled: true
+    field_match: lenient
+    ntfy_tags: [bulb]
+    include:
+      - insight* day*
+      - insight* week*
+      - insight* program*
+      - insight* event*
+      - insight* evening*
+      - insight* session*
+      - insight* experience*
+      - insight* series
+      - insight* scheme*
+      - insight* into
+      - early insight*
+      - tech* insight*
+      - engineering insight*
+      - trading insight*
+      - quant* insight*
+      - discovery day*
+      - discovery week*
+      - discovery evening*
+      - discovery event*
+      - open day*
+      - open evening*
+      - taster
+      - women in tech*
+
+  first_year:
+    label: First-year programme
+    enabled: true
+    field_match: lenient
+    ntfy_tags: [seedling]
+    include:
+      - first year*
+      - 1st year*
+      - first and second year*
+      - 1st and 2nd year*
+      - freshman
+      - freshmen
+      - sophomore*
+      - underclass*
+      - pre intern*
+      - externship*
+      - discovery program*
+      - discovery intern*
+      - discovery fellowship
+      - explore program*
+      - explore intern*
+      # Branded programmes that do not say "first year" in the title.
+      - step intern*              # Google STEP
+      - student training in engineering
+      - explore microsoft         # Microsoft Explore
+      - microsoft explore
+      - meta university
+      - uberstar
+      - discover citadel
+      - fttp                      # Jane Street First-Year Trading and Technology Programme
+      - futurefocus               # Optiver
+      - future focus
+
+  placement:
+    label: Industrial placement
+    enabled: false
+    field_match: strict
+    ntfy_tags: [calendar]
+    include:
+      - placement*
+      - year in industry
+      - 12 month*
+      - 13 month*
+      - sandwich
+      - industrial trainee*
+
+  graduate:
+    label: Graduate role
+    enabled: false
+    field_match: strict
+    ntfy_tags: [mortar_board]
+    include:
+      - graduate*
+      - new grad*
+      - university grad*
+      - recent grad*
+      - grad program*
+      - grad scheme*
+      - early career*
+      - campus hire*
+      - entry level
+
+  summer_internship:
+    label: Internship
+    enabled: false
+    field_match: strict
+    ntfy_tags: [sunny]
+    include:
+      - summer intern*
+      - summer analyst*
+      - summer student*
+      - summer program*
+      - intern
+      - interns
+      - internship*
+      - off cycle
+      - co op
+      - coop
+
+# Titles containing any of these are dropped whatever the role type.
+# "phd" is deliberately absent: titles like "Intern (Bachelor, Master or PhD)" are relevant.
+global_exclude:
+  - senior
+  - sr
+  - staff
+  - principal
+  - director
+  - head of
+  - vice president
+  - vp
+  - manager
+  - lead
+  - recruiter
+  - recruiting
+  - recruitment
+  - postdoc*
+  - mba
+  - experienced
+
+# ---------------------------------------------------------------------------------------
+# 2. Fields
+#
+# A field matches when one of its include keywords appears and none of its exclude
+# keywords do.
+# ---------------------------------------------------------------------------------------
+fields:
+  software:
+    include:
+      - software
+      - swe
+      - sde
+      - developer*
+      - programmer*
+      - engineer*
+      - engineering
+      - technology
+      - tech
+      - technical
+      - computer science
+      - full stack
+      - fullstack
+      - backend
+      - back end
+      - frontend
+      - front end
+      - devops
+      - sre
+      - site reliability
+      - infrastructure
+      - platform
+      - cloud
+      - mobile
+      - ios
+      - android
+      - web
+      - systems
+      - embedded
+      - firmware
+      - fpga
+    exclude:
+      - mechanical engineer*
+      - civil engineer*
+      - electrical engineer*
+      - chemical engineer*
+      - structural engineer*
+      - manufacturing engineer*
+      - sales engineer*
+      - process engineer*
+      - field engineer*
+      - building services
+  ml_ai:
+    include:
+      - machine learning
+      - ml
+      - ai
+      - artificial intelligence
+      - deep learning
+      - reinforcement learning
+      - nlp
+      - llm*
+      - computer vision
+      - research engineer*
+      - research scientist*
+      - applied scientist*
+  quant:
+    include:
+      - quant*
+      - trading
+      - trader*
+      - strats
+      - market mak*
+      - markets
+      - algorithmic
+      - systematic
+  security:
+    include:
+      - security
+      - cyber*
+      - infosec
+      - appsec
+      - penetration test*
+      - pentest*
+      - threat
+      - vulnerability
+      - cryptograph*
+      - red team
+    exclude:
+      - physical security
+      - security guard*
+      - security officer*
+  data:
+    include:
+      - data
+      - analytics
+      - business intelligence
+      - statistic*
+    exclude:
+      - data entry
+      - data cent* technician*
+
+# Disciplines that are not yours. Only consulted for lenient role types, and only when
+# none of your fields matched: "Spring Week - Legal" is dropped, "Spring Week" and
+# "Spring Week - Technology & Operations" are kept.
+field_exclude:
+  - legal
+  - law
+  - tax
+  - audit*
+  - accounting
+  - accountan*
+  - finance
+  - human resources
+  - hr
+  - marketing
+  - sales
+  - communications
+  - public relations
+  - investment banking
+  - corporate banking
+  - private bank*
+  - wealth management
+  - real estate
+  - operations
+  - compliance
+  - procurement
+  - customer service
+  - customer support
+
+# ---------------------------------------------------------------------------------------
+# 3. Locations
+#
+# Each location string is assigned to the regions whose keywords it contains, then checked
+# against that region's rules:
+#   allow                  onsite and/or remote ("hybrid" counts as onsite)
+#   require_company_tags   the company must carry at least one of these tags
+#   exclude                phrases that cancel a match ("cambridge ma" is not the UK)
+#
+# A string that matches no region and nothing in other_locations is "unclear" and PASSES,
+# labelled as unclear, so an unrecognised town never causes a silent miss. If you get an
+# alert for somewhere irrelevant, add the place to other_locations.
+# ---------------------------------------------------------------------------------------
+regions:
+  uk:
+    label: United Kingdom
+    allow: [onsite, remote]
+    match:
+      - united kingdom
+      - uk
+      - u k
+      - gb
+      - great britain
+      - britain
+      - england
+      - scotland
+      - wales
+      - northern ireland
+      - london
+      - manchester
+      - edinburgh
+      - glasgow
+      - bristol
+      - cambridge
+      - oxford
+      - birmingham
+      - leeds
+      - belfast
+      - cardiff
+      - newcastle
+      - reading
+      - cheltenham
+      - bournemouth
+      - sheffield
+      - nottingham
+      - liverpool
+      - brighton
+      - southampton
+      - guildford
+      - milton keynes
+      - swindon
+      - coventry
+      - canary wharf
+    exclude:
+      - cambridge ma
+      - cambridge massachusetts
+      - birmingham al
+      - birmingham alabama
+      - manchester nh
+      - london ontario
+      - london on
+      - new england
+      - new south wales
+
+  us:
+    label: United States
+    allow: [remote]
+    match:
+      - united states
+      - usa
+      - us
+      - u s
+      - america
+      # States. Two-letter codes that are also common words (in, or, me, hi, ok, de, la,
+      # co, id, al ...) are left out on purpose.
+      - alabama
+      - alaska
+      - arizona
+      - arkansas
+      - california
+      - colorado
+      - connecticut
+      - delaware
+      - florida
+      - georgia
+      - hawaii
+      - idaho
+      - illinois
+      - indiana
+      - iowa
+      - kansas
+      - kentucky
+      - louisiana
+      - maine
+      - maryland
+      - massachusetts
+      - michigan
+      - minnesota
+      - mississippi
+      - missouri
+      - montana
+      - nebraska
+      - nevada
+      - new hampshire
+      - new jersey
+      - new mexico
+      - new york
+      - north carolina
+      - north dakota
+      - ohio
+      - oklahoma
+      - oregon
+      - pennsylvania
+      - rhode island
+      - south carolina
+      - south dakota
+      - tennessee
+      - texas
+      - utah
+      - vermont
+      - virginia
+      - washington
+      - west virginia
+      - wisconsin
+      - wyoming
+      - ny
+      - nyc
+      - ca
+      - tx
+      - wa
+      - ma
+      - il
+      - nj
+      - ct
+      - fl
+      - ga
+      - va
+      - md
+      - nc
+      - pa
+      - az
+      - ut
+      - mn
+      - mi
+      - oh
+      - tn
+      - dc
+      - d c
+      # Cities often listed without a state.
+      - san francisco
+      - sf
+      - bay area
+      - silicon valley
+      - mountain view
+      - palo alto
+      - menlo park
+      - sunnyvale
+      - cupertino
+      - san jose
+      - santa clara
+      - redwood city
+      - los angeles
+      - san diego
+      - seattle
+      - redmond
+      - bellevue
+      - boston
+      - chicago
+      - austin
+      - dallas
+      - houston
+      - denver
+      - boulder
+      - atlanta
+      - miami
+      - philadelphia
+      - pittsburgh
+      - portland
+      - honolulu
+      - jersey city
+      - greenwich
+      - stamford
+      - bala cynwyd
+
+  india:
+    label: India
+    allow: [onsite, remote]
+    require_company_tags: [big_tech, vc_backed, yc]
+    match:
+      - india
+      - bengaluru
+      - bangalore
+      - hyderabad
+      - pune
+      - mumbai
+      - gurgaon
+      - gurugram
+      - noida
+      - chennai
+      - delhi
+      - kolkata
+      - ahmedabad
+
+# Places that are definitely outside your regions. A location matching one of these (and
+# none of the regions above) is dropped.
+other_locations:
+  - canada
+  - toronto
+  - vancouver
+  - montreal
+  - waterloo
+  - ontario
+  - quebec
+  - british columbia
+  - mexico
+  - brazil
+  - sao paulo
+  - argentina
+  - buenos aires
+  - colombia
+  - bogota
+  - chile
+  - latam
+  - ireland
+  - dublin
+  - cork
+  - france
+  - paris
+  - germany
+  - berlin
+  - munich
+  - frankfurt
+  - hamburg
+  - netherlands
+  - amsterdam
+  - belgium
+  - brussels
+  - luxembourg
+  - switzerland
+  - zurich
+  - geneva
+  - zug
+  - austria
+  - vienna
+  - spain
+  - madrid
+  - barcelona
+  - portugal
+  - lisbon
+  - italy
+  - milan
+  - rome
+  - sweden
+  - stockholm
+  - denmark
+  - copenhagen
+  - norway
+  - oslo
+  - finland
+  - helsinki
+  - poland
+  - warsaw
+  - krakow
+  - wroclaw
+  - czech*
+  - prague
+  - hungary
+  - budapest
+  - romania
+  - bucharest
+  - bulgaria
+  - sofia
+  - greece
+  - athens
+  - estonia
+  - tallinn
+  - lithuania
+  - vilnius
+  - ukraine
+  - kyiv
+  - turkey
+  - istanbul
+  - israel
+  - tel aviv
+  - uae
+  - united arab emirates
+  - dubai
+  - abu dhabi
+  - saudi arabia
+  - riyadh
+  - qatar
+  - doha
+  - south africa
+  - johannesburg
+  - cape town
+  - nigeria
+  - lagos
+  - kenya
+  - nairobi
+  - egypt
+  - cairo
+  - singapore
+  - hong kong
+  - china
+  - shanghai
+  - beijing
+  - shenzhen
+  - taiwan
+  - taipei
+  - japan
+  - tokyo
+  - korea
+  - seoul
+  - australia
+  - sydney
+  - melbourne
+  - new zealand
+  - auckland
+  - malaysia
+  - kuala lumpur
+  - indonesia
+  - jakarta
+  - thailand
+  - bangkok
+  - vietnam
+  - philippines
+  - manila
+  - apac
+
+# A location containing one of these counts as remote. Some sources also flag remote
+# explicitly, which is honoured as well.
+remote_keywords:
+  - remote
+  - work from home
+  - wfh
+  - distributed
+  - anywhere
+  - virtual
+  - telecommute
