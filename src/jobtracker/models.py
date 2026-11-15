@@ -49,6 +49,14 @@ class Company:
         own_host = self.tenant or (self.board if self.ats == "custom" else None)
         return f"{self.ats}:{own_host}" if own_host else self.ats
 
+    @property
+    def poll_kind(self) -> str:
+        """The key this company's polling interval is set under in settings.yaml.
+
+        The ATS name, or for a custom company the name of its module ("google").
+        """
+        return (self.board or self.ats) if self.ats == "custom" else self.ats
+
 
 @dataclass(frozen=True)
 class Job:
@@ -80,6 +88,7 @@ ERROR = "error"  # HTTP error, malformed response, unexpected shape
 TIMEOUT = "timeout"
 EMPTY = "empty"  # returned 0 jobs after previously returning some
 BLOCKED = "blocked"  # robots.txt disallows the fetch, or could not be read
+NOT_DUE = "not_due"  # skipped this run by its polling interval: neither a failure nor a fetch
 
 
 @dataclass
@@ -95,3 +104,10 @@ class SourceResult:
     jobs: list[Job] = field(default_factory=list)
     error: str | None = None
     duration_ms: int = 0
+    # True when the fetch succeeded but left out the part of the source that has a
+    # polling interval and was not due (a large Workday site's searches). The jobs it
+    # did find count as usual; a job it did not find proves nothing, so none is closed.
+    partial: bool = False
+    # The polling-interval key this fetch used up, if any: the source's own kind, or
+    # "workday_search" when a Workday tenant's large sites were searched.
+    polled_kind: str | None = None

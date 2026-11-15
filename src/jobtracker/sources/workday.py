@@ -13,10 +13,16 @@ posting that appears on two of them is kept once.
 Small sites are read in full. Large tenants hold thousands of postings, and paging
 through all of them every 15 minutes would be both slow and rude, so a site with more
 than FULL_FETCH_MAX_JOBS postings is searched instead: one query per term in
-SEARCH_TERMS, a few pages each, merged by posting id. The terms are fixed here rather
-than taken from anyone's filters because a board is fetched once and shared by every
-profile. They cover every role type a profile can enable; a role type whose titles none
-of them would find needs a term added here.
+SEARCH_TERMS, a few pages each, merged by posting id.
+
+The searches are still the bulk of the requests, so they have a polling interval of
+their own (settings.yaml, polling.every_minutes.workday_search). On a run where they
+are not due, a large site contributes only its first page (its 20 newest postings) and
+the fetch is reported as partial; the tenant's small sites are read in full as always.
+
+The terms are fixed here rather than taken from anyone's filters because a board is
+fetched once and shared by every profile. They cover every role type a profile can
+enable; a role type whose titles none of them would find needs a term added here.
 
 Two things the API does not give: an exact posting date (only "Posted 3 Days Ago", which
 is not stored, to keep state from changing as the days tick over) and a location for
@@ -59,16 +65,32 @@ SEARCH_TERMS = (
 
 
 def fetch(company: Company, http: HttpClient) -> list[Job]:
+    """Everything: small sites in full, large sites searched."""
+    return fetch_sites(company, http, search=True)[0]
+
+
+def fetch_sites(company: Company, http: HttpClient, search: bool) -> tuple[list[Job], int]:
+    """Fetch every site. Returns the jobs and how many of the sites were large.
+
+    With search=False a large site is not searched: only its first page is read. The
+    caller can tell from the count whether anything was left out.
+    """
     jobs: dict[str, Job] = {}
+    large_sites = 0
     for site in company.sites:
         base = BASE.format(tenant=company.tenant, host=company.host)
         http.require_allowed(f"{base}/{site}/")
-        for job in _fetch_site(company, site, http):
+        found, large = _fetch_site(company, site, http, search)
+        large_sites += large
+        for job in found:
             jobs.setdefault(job.job_id, job)  # the same posting on two sites
-    return list(jobs.values())
+    return list(jobs.values()), large_sites
 
 
-def _fetch_site(company: Company, site: str, http: HttpClient) -> list[Job]:
+def _fetch_site(
+    company: Company, site: str, http: HttpClient, search: bool
+) -> tuple[list[Job], bool]:
+    """One site's jobs, and whether the site is too large to read in full."""
     url = API.format(tenant=company.tenant, host=company.host, site=site)
     first = _page(http, url, "", 0)
     total = first.get("total") or 0
@@ -77,7 +99,9 @@ def _fetch_site(company: Company, site: str, http: HttpClient) -> list[Job]:
     if total <= FULL_FETCH_MAX_JOBS:
         for offset in range(PAGE_SIZE, total, PAGE_SIZE):
             jobs += parse(company, _page(http, url, "", offset), site)
-        return jobs
+        return jobs, False
+    if not search:
+        return jobs, True  # just the first page: the site's newest postings
 
     # A large site: the first page (its newest postings) plus the targeted searches.
     for term in SEARCH_TERMS:
@@ -97,7 +121,7 @@ def _fetch_site(company: Company, site: str, http: HttpClient) -> list[Job]:
                 found=found,
                 read=limit,
             )
-    return jobs
+    return jobs, True
 
 
 def _page(http: HttpClient, url: str, search: str, offset: int) -> dict[str, Any]:

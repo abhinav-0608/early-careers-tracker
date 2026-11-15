@@ -67,6 +67,10 @@ class SourceState:
     failing_since: str | None = None  # ISO timestamp of the first failure in this streak
     alerted: bool = False  # a health alert has been sent for the current streak
     last_alert_at: str | None = None  # ISO timestamp
+    # When the part of this source that has a polling interval last ran (ISO timestamp,
+    # to the minute). Only ever set for sources with an interval, and left out of the
+    # file otherwise, so every-run sources add nothing to the state file.
+    interval_polled_at: str | None = None
 
 
 @dataclass
@@ -98,7 +102,11 @@ def load_sources(state_dir: Path | str) -> dict[str, SourceState]:
 
 
 def save_sources(sources: dict[str, SourceState], state_dir: Path | str) -> None:
-    data = {key: asdict(source) for key, source in sources.items()}
+    data = {}
+    for key, source in sources.items():
+        data[key] = asdict(source)
+        if source.interval_polled_at is None:
+            del data[key]["interval_polled_at"]
     _write(Path(state_dir) / "sources.json", {"version": VERSION, "sources": data})
 
 

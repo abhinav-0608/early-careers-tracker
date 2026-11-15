@@ -173,3 +173,33 @@ def test_fetch_does_not_call_a_site_its_robots_txt_disallows(settings):
     http = mock_client(settings, handler, robots_txt=robots_txt)
     with pytest.raises(RobotsDisallowedError, match="Undergraduate_careers"):
         workday.fetch(LLOYDS, http)
+
+
+def test_fetch_sites_without_search_reads_only_the_first_page_of_a_large_site(settings):
+    """Between searches a large site costs one request, and says it was left incomplete."""
+    company = make_company(
+        "acme", ats="workday", tenant="acme", host="wd1", sites=("Campus", "Main")
+    )
+
+    def respond(site, search, offset):
+        if site == "Campus":  # 25 postings: small, read in full whatever `search` says
+            return page(range(offset, min(offset + 20, 25)), total=25 if offset == 0 else 0)
+        return page(range(100, 120), total=2000 if offset == 0 else 0)
+
+    handler, calls = workday_handler(respond)
+    jobs, large_sites = workday.fetch_sites(company, mock_client(settings, handler), search=False)
+
+    assert calls == [("Campus", "", 0), ("Campus", "", 20), ("Main", "", 0)]
+    assert large_sites == 1
+    assert len(jobs) == 25 + 20
+
+    handler, calls = workday_handler(respond)
+    jobs, large_sites = workday.fetch_sites(company, mock_client(settings, handler), search=True)
+    assert large_sites == 1
+    assert [search for _, search, offset in calls if offset == 0][1:] == ["", *workday.SEARCH_TERMS]
+
+
+def test_fetch_sites_reports_no_large_site_for_a_small_tenant(settings):
+    handler, _ = workday_handler(lambda site, search, offset: page([1, 2], total=2))
+    jobs, large_sites = workday.fetch_sites(LLOYDS, mock_client(settings, handler), search=False)
+    assert (len(jobs), large_sites) == (2, 0)

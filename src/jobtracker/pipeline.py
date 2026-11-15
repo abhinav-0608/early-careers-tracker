@@ -24,19 +24,27 @@ import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import httpx
 
 from jobtracker import health, log
-from jobtracker.config import Config, Profile
+from jobtracker.config import WORKDAY_SEARCH, Config, Profile, Settings
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
 from jobtracker.filters import classify
 from jobtracker.http import HttpClient, RobotsDisallowedError
-from jobtracker.models import BLOCKED, ERROR, OK, TIMEOUT, Company, SourceResult
+from jobtracker.models import (
+    BLOCKED,
+    ERROR,
+    NOT_DUE,
+    OK,
+    TIMEOUT,
+    Company,
+    SourceResult,
+)
 from jobtracker.notify import Notifier, baseline_notification, plan_job_notifications
-from jobtracker.sources import adapter_for
+from jobtracker.sources import adapter_for, workday
 from jobtracker.state import (
     LEGACY_OWNER,
     OPEN,
@@ -48,6 +56,10 @@ from jobtracker.state import (
     save_profile_state,
     save_sources,
 )
+
+# A run that starts a little early must not push an hourly source back a whole run, so
+# an interval counts as elapsed this long before it strictly has.
+POLL_TOLERANCE = timedelta(minutes=2)
 
 # Why a profile took no part in a run (ProfileReport.status), besides OK and ERROR.
 INVALID = "invalid"  # its config files failed validation
@@ -151,15 +163,36 @@ def run(
         companies=len(targets),
         skipped=len(config.companies) - len(pollable),
     )
-    report.results = fetch_all(targets, http, settings.max_workers)
+    # A source with a polling interval is fetched only when the interval has passed since
+    # its last poll. One that is not due gets a NOT_DUE result and no request at all.
+    sources = load_sources(state_dir)
+    due: list[Company] = []
+    search_due: dict[str, bool] = {}  # Workday: are the large-site searches due?
+    for company in targets:
+        last = sources.get(company.source_key)
+        if interval_elapsed(last, settings.poll_interval(company.poll_kind), now):
+            due.append(company)
+            search_due[company.key] = interval_elapsed(
+                last, settings.poll_interval(WORKDAY_SEARCH), now
+            )
+    fetched = {result.company.key: result for result in fetch_all(due, http, settings, search_due)}
+    report.results = [
+        fetched.get(company.key) or SourceResult(company=company, status=NOT_DUE)
+        for company in targets
+    ]
 
     # --- board health (shared) ---------------------------------------------------------
-    sources = load_sources(state_dir)
     health_report = health.HealthReport()
     for result in report.results:
+        if result.status == NOT_DUE:
+            continue  # nothing was asked of it, so there is nothing to record
         source = sources.setdefault(result.company.source_key, SourceState())
-        health.check_empty(source, result, settings)
+        if not result.partial:  # a partial fetch says nothing about the board being empty
+            health.check_empty(source, result, settings)
         health.record_outcome(source, result, now, settings, health_report)
+        if result.status == OK and settings.poll_interval(result.polled_kind) > 0:
+            # To the minute: all the hourly sources of a run then share one timestamp.
+            source.interval_polled_at = now.replace(second=0, microsecond=0).isoformat()
     configured = {company.source_key for company in pollable}
     sources = {key: value for key, value in sources.items() if key in configured}
 
@@ -220,15 +253,25 @@ def run_profile(
 
     for result in results:
         company = result.company
+        # A failed fetch, or a source its polling interval skipped this run, is left
+        # exactly as it was: nothing new, nothing counted as missing, nothing closed.
         if result.status != OK or not profile.watches(company):
             continue
-        fetched.add(company.source_key)
-        counts = report.sources.setdefault(company.source_key, SourceCounts())
 
         # A board is baselined (recorded without individual alerts) the first time this
         # profile sees it and again whenever the profile's filter rules have changed since.
         previous_hash = state.baselines.get(company.source_key)
         baseline = previous_hash != filters.hash
+        if result.partial:
+            # Part of the board was not read this run. A baseline taken from it would be
+            # incomplete, and the rest would then arrive as a flood of alerts, so the
+            # baseline waits for the next complete fetch.
+            if baseline:
+                continue
+        else:
+            # Only a complete fetch can show that a job has gone.
+            fetched.add(company.source_key)
+        counts = report.sources.setdefault(company.source_key, SourceCounts())
         if baseline:
             baseline_ran = True
             filters_changed = filters_changed or previous_hash is not None
@@ -277,24 +320,44 @@ def run_profile(
     return report
 
 
-def fetch_all(companies: list[Company], http: HttpClient, max_workers: int) -> list[SourceResult]:
-    """Fetch every company, returning results in config order.
+def interval_elapsed(source: SourceState | None, minutes: int, now: datetime) -> bool:
+    """Is a source with this polling interval due? One never polled always is."""
+    if minutes <= 0 or source is None or source.interval_polled_at is None:
+        return True
+    last = datetime.fromisoformat(source.interval_polled_at)
+    return now - last >= timedelta(minutes=minutes) - POLL_TOLERANCE
+
+
+def fetch_all(
+    companies: list[Company],
+    http: HttpClient,
+    settings: Settings,
+    search_due: dict[str, bool] | None = None,
+) -> list[SourceResult]:
+    """Fetch every company, returning results in the order given.
 
     Companies are grouped by the host that serves them and each group is one queue,
     worked through by one thread. HttpClient only ever makes one request to a host at a
     time, so a second thread on the same host could do nothing but wait; giving each
     host exactly one thread keeps every worker busy on a different host. The longest
     queues start first, since the run cannot finish before they do.
+
+    `search_due` says, per company key, whether a Workday tenant's large-site searches
+    are due this run; a company not listed is fetched in full.
     """
+    search_due = search_due or {}
     queues: dict[str, list[Company]] = {}
     for company in companies:
         queues.setdefault(company.host_group, []).append(company)
     longest_first = sorted(queues.values(), key=len, reverse=True)
 
     def work(queue: list[Company]) -> list[SourceResult]:
-        return [fetch_company(company, http) for company in queue]
+        return [
+            fetch_company(company, http, search=search_due.get(company.key, True))
+            for company in queue
+        ]
 
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+    with ThreadPoolExecutor(max_workers=settings.max_workers) as pool:
         fetched = {
             result.company.key: result
             for results in pool.map(work, longest_first)
@@ -303,15 +366,25 @@ def fetch_all(companies: list[Company], http: HttpClient, max_workers: int) -> l
     return [fetched[company.key] for company in companies]
 
 
-def fetch_company(company: Company, http: HttpClient) -> SourceResult:
-    """Fetch one company. Never raises: every failure becomes a SourceResult."""
+def fetch_company(company: Company, http: HttpClient, search: bool = True) -> SourceResult:
+    """Fetch one company. Never raises: every failure becomes a SourceResult.
+
+    `search` only matters to Workday: False leaves a large site's searches for a later
+    run (see sources/workday.py), and the result is then marked partial.
+    """
     result = SourceResult(company=company)
     started = time.monotonic()
     try:
         adapter = adapter_for(company)
         if adapter is None:
             raise LookupError(f"no adapter for ats '{company.ats}'")
-        result.jobs = adapter(company, http)
+        if company.ats == workday.NAME:
+            result.jobs, large_sites = workday.fetch_sites(company, http, search)
+            result.partial = large_sites > 0 and not search
+            result.polled_kind = WORKDAY_SEARCH if large_sites and search else None
+        else:
+            result.jobs = adapter(company, http)
+            result.polled_kind = company.poll_kind
     except RobotsDisallowedError as exc:
         # Not fetched, on the site owner's instruction. Reported like any failing source,
         # so a board that becomes disallowed is noticed and can be marked unsupported.
@@ -339,6 +412,7 @@ def log_report(report: RunReport) -> None:
             source=result.company.ats,
             status=result.status,
             fetched=len(result.jobs),
+            partial=result.partial,
             error=result.error,
             duration_ms=result.duration_ms,
         )
@@ -378,7 +452,8 @@ def log_report(report: RunReport) -> None:
     log.event(
         "run_summary",
         sources_ok=sum(result.status == OK for result in report.results),
-        sources_failed=sum(result.status != OK for result in report.results),
+        sources_failed=sum(result.status not in (OK, NOT_DUE) for result in report.results),
+        sources_not_due=sum(result.status == NOT_DUE for result in report.results),
         fetched=sum(len(result.jobs) for result in report.results),
         profiles_ok=sum(profile.status == OK for profile in report.profiles),
         profiles_not_run=sum(profile.status != OK for profile in report.profiles),

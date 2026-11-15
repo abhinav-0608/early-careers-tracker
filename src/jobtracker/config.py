@@ -34,6 +34,9 @@ COMPANY_TAGS = {"big_tech", "vc_backed", "yc"}
 # Every value "ats" may take. A company whose ats has no adapter yet is loaded and
 # validated like any other, and simply not polled until its adapter exists.
 WORKDAY = "workday"
+# The polling-interval key for the expensive half of the Workday adapter: the searches it
+# runs on sites too large to read in full.
+WORKDAY_SEARCH = "workday_search"
 TALNET = "talnet"
 UNSUPPORTED = "unsupported"
 BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom", TALNET}
@@ -70,6 +73,12 @@ class Settings:
     fail_after_consecutive: int
     reminder_hours: int
     accept_empty_after_runs: int
+    # polling: minimum minutes between polls, by kind of source. Not listed = every run.
+    poll_every_minutes: dict[str, int] = field(default_factory=dict)
+
+    def poll_interval(self, kind: str | None) -> int:
+        """Minimum minutes between polls of this kind of source; 0 means every run."""
+        return self.poll_every_minutes.get(kind or "", 0)
 
 
 @dataclass(frozen=True)
@@ -176,12 +185,29 @@ def load_config(config_dir: Path | str = "config") -> Config:
     config_dir = Path(config_dir)
     settings = load_settings(config_dir / "settings.yaml")
     companies = load_companies(config_dir / "companies.yaml")
+    _check_poll_kinds(settings, config_dir / "settings.yaml")
     profiles, errors = load_profiles(config_dir / "profiles", companies)
     if not profiles:
         # With nobody to alert there is nothing useful a run could do.
         problems = "; ".join(errors.values()) or f"{config_dir / 'profiles'}: no profiles found"
         raise ConfigError(problems)
     return Config(settings=settings, companies=companies, profiles=profiles, profile_errors=errors)
+
+
+def _check_poll_kinds(settings: Settings, path: Path) -> None:
+    """Reject a polling interval set for a source that does not exist.
+
+    A misspelt key ("gogle: 60") would otherwise quietly leave its source on every run.
+    """
+    # Imported here because the adapters themselves import this module.
+    from jobtracker.sources.custom import MODULES
+
+    known = (KNOWN_ATS - {"custom", UNSUPPORTED}) | {WORKDAY_SEARCH} | set(MODULES)
+    for kind in sorted(set(settings.poll_every_minutes) - known):
+        raise ConfigError(
+            f"{path}: polling.every_minutes: no source is called '{kind}' "
+            f"(expected one of {sorted(known)})"
+        )
 
 
 # --- settings.yaml ---------------------------------------------------------------------
@@ -194,6 +220,20 @@ def load_settings(path: Path) -> Settings:
     priority = _get(notify, "priority", dict, f"{path}: notify")
     state = _get(data, "state", dict, path)
     health = _get(data, "health", dict, path)
+    polling = _get(data, "polling", dict, path, default={})
+    _only_keys(polling, {"every_minutes"}, f"{path}: polling")
+    every = _get(polling, "every_minutes", dict, f"{path}: polling", default={})
+    for kind, minutes in every.items():
+        _expect(minutes, int, f"{path}: polling.every_minutes.{kind}")
+        if minutes < 0:
+            raise ConfigError(f"{path}: polling.every_minutes.{kind} must be 0 or more")
+    if every.get(WORKDAY, 0) > 0:
+        # Workday is split in two: small sites every run, large-site searches on an
+        # interval. One interval for both would hide which of them it applied to.
+        raise ConfigError(
+            f"{path}: polling.every_minutes.workday must be 0; "
+            f"set '{WORKDAY_SEARCH}' to slow down the large Workday sites"
+        )
 
     settings = Settings(
         user_agent=_get(data, "user_agent", str, path),
@@ -214,6 +254,7 @@ def load_settings(path: Path) -> Settings:
         fail_after_consecutive=_get(health, "fail_after_consecutive", int, f"{path}: health"),
         reminder_hours=_get(health, "reminder_hours", int, f"{path}: health"),
         accept_empty_after_runs=_get(health, "accept_empty_after_runs", int, f"{path}: health"),
+        poll_every_minutes={str(kind): minutes for kind, minutes in every.items()},
     )
 
     if settings.max_workers < 1:

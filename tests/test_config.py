@@ -206,6 +206,40 @@ def test_wrong_type_is_rejected_with_the_location_of_the_mistake(tmp_path):
         load_config(config_dir)
 
 
+def test_shipped_polling_intervals_slow_down_only_the_expensive_sources(config):
+    settings = config.settings
+    for every_run in ("greenhouse", "lever", "ashby", "talnet", "jpmorgan", "workday"):
+        assert settings.poll_interval(every_run) == 0, every_run
+    assert settings.poll_interval("workday_search") == 60
+    assert settings.poll_interval("google") == 60
+    assert settings.poll_interval("not-listed") == 0  # anything not listed: every run
+    # Every polled company's interval is set explicitly, so none is on a default by accident.
+    kinds = {company.poll_kind for company in config.companies if adapter_for(company)}
+    assert kinds <= set(settings.poll_every_minutes)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("google: 60", "gogle: 60", "no source is called 'gogle'"),
+        ("google: 60", "google: -5", "google must be 0 or more"),
+        ("google: 60", "google: hourly", "google: expected int, got str"),
+        ("workday: 0 ", "workday: 60", "workday must be 0; set 'workday_search'"),
+        ("every_minutes:", "every_minute:", "polling: unknown key 'every_minute'"),
+    ],
+)
+def test_a_mistake_in_the_polling_intervals_is_rejected(tmp_path, old, new, message):
+    config_dir = _config_with(tmp_path, "settings.yaml", old, new)
+    with pytest.raises(ConfigError, match=message):
+        load_config(config_dir)
+
+
+def test_custom_companies_take_their_interval_from_their_module_name():
+    assert make_company("google-deepmind", ats="custom", board="google").poll_kind == "google"
+    assert make_company("jpmorgan-chase", ats="custom", board="jpmorgan").poll_kind == "jpmorgan"
+    assert make_company("nvidia", ats="workday", board=None).poll_kind == "workday"
+
+
 def test_prune_window_shorter_than_repost_window_is_rejected(tmp_path):
     config_dir = _config_with(
         tmp_path, "settings.yaml", "prune_closed_after_days: 90", "prune_closed_after_days: 7"

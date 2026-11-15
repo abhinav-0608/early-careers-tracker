@@ -236,10 +236,17 @@ everyone.
       "failing_since": null,
       "alerted": false,
       "last_alert_at": null
+    },
+    "custom:google": {
+      "...": "...",
+      "interval_polled_at": "2026-11-15T12:00:00+00:00"
     }
   }
 }
 ```
+
+`interval_polled_at` is written only for a source that has a polling interval (section 5),
+when the interval-limited part of it last ran, to the minute.
 
 Dream tier and company name are not stored with a job: the name is looked up from
 `companies.yaml` and the tier from the profile's `dream` list when needed, so changing either
@@ -264,8 +271,14 @@ Instead:
   rather than a job count, and a failure counter capped at the alert threshold.
 - The workflow commits only if `git diff` is non-empty.
 
+- A poll timestamp is kept only for the sources that have a polling interval, never for the
+  every-run ones, and all the hourly sources polled in one run share the same minute.
+
 Result: one commit a day at minimum (which doubles as repo activity), plus one per run in
-which something actually changed.
+which something actually changed, plus **one an hour** for the hourly sources' timestamp.
+That last one is the cost of the polling interval being exact and surviving a missed or
+late run: the alternative (deciding by the clock which run of the hour polls them) needs no
+state but silently skips an hour whenever that one run is late or lost.
 
 ## 4. Config schema
 
@@ -278,6 +291,16 @@ http:
   retries: 2                 # on 429 / 5xx / timeouts, with backoff; honours Retry-After
   per_host_delay_seconds: 1.0
   max_workers: 8             # hosts run in parallel; requests to one host are serial
+polling:
+  every_minutes:             # minimum minutes between polls of a source; 0 = every run
+    greenhouse: 0
+    lever: 0
+    ashby: 0
+    talnet: 0
+    jpmorgan: 0
+    workday: 0               # Workday sites small enough to read in full
+    workday_search: 60       # the searches run on Workday sites too large for that
+    google: 60
 notify:
   batch_threshold: 5         # more than this many new jobs in one run → one summary
   priority: {dream: 5, normal: 3}
@@ -502,7 +525,8 @@ of them every 15 minutes is rude and slow. A site with up to 200 postings is rea
 (31 of the 64 tenants today). A larger one is searched instead: its first page, then one
 `searchText` query per term (`spring`, `insight`, `discovery`, `first year`, `explore`,
 `intern`, `placement`, `graduate`), two pages each, merged by posting id. That is about 15
-requests per large site per run.
+requests per large site, so the searches run at most once an hour (polling intervals,
+below).
 
 - The terms are a fixed list in `workday.py`, not derived from a profile's filters as first
   planned: a board is fetched once and shared by every profile, so the fetch cannot depend
@@ -568,8 +592,25 @@ and Palantir (Lever) were already covered.
 - **Crawl-delay is always honoured, per host.** The gap between requests to a host is the
   configured delay or the host's `Crawl-delay`, whichever is longer. A host asking for more
   than 60 seconds is not fetched at all, because a 12-minute run could not honour it.
-- (Stage 4.) Per-source `poll_every_minutes` lets boards and scrapers be polled hourly rather than every
-  run.
+- **Polling intervals.** `settings.yaml` gives each kind of source a minimum number of
+  minutes between polls (`polling.every_minutes`, keyed by ATS name or custom module name;
+  0 or absent means every run). Today the ATS APIs, tal.net, JPMorgan and small Workday
+  sites are polled every run, and two things are held to once an hour:
+  - **Google** (whole source): each request is a 1.3 MB page. When it is not due it gets a
+    `not_due` result and no request at all.
+  - **Workday searches** (`workday_search`): a tenant is still polled every run, so its
+    small sites (usually the campus ones) keep their 15-minute latency, but a large site's
+    searches run once an hour. In between, a large site costs one request, its first
+    page, which is its 20 newest postings; the fetch is then marked **partial**.
+  - A source never polled before is due at once, so a new company is baselined on its
+    first run. A source that fails is retried on the next run: only a successful poll
+    starts the interval. An interval counts as elapsed two minutes early, so a run that
+    starts a few seconds ahead of the hour does not push the source back by a whole run.
+  - **Not looking is not the same as not finding.** A `not_due` source is not a failure
+    (no health record is touched) and closes nothing. A partial fetch alerts whatever it
+    does find, but nothing is counted as missing, and a baseline that is due (new board,
+    changed filters) waits for the next complete fetch, so half a board is never
+    baselined and the other half alerted.
 - LinkedIn, Indeed and Glassdoor are refused by hostname in `http.py`, as a hard guard.
 
 ## 6. Filtering
@@ -639,6 +680,8 @@ For jobs in state that were **not** returned:
   anything.
 - `missing_runs` is incremented; the job closes when it reaches 2. This absorbs pagination
   hiccups and brief unpublish/republish edits.
+- A source skipped by its polling interval, or fetched only in part (section 5), counts as
+  not fetched here: nothing is marked missing because of it.
 - If the source returned zero jobs after previously returning some, nothing is closed and a
   health alert is raised instead (section 9). If it stays empty for `accept_empty_after_runs`
   runs (about two hours) it is accepted as genuinely empty and its jobs close normally.
@@ -707,7 +750,8 @@ normal usage far below that.
 **Isolation.** Each source runs inside `try/except` in the pipeline and returns a
 `SourceResult(status, jobs, error, duration)`. Statuses: `ok`, `error` (HTTP error, bad JSON,
 schema change), `timeout`, `empty_regression` (0 jobs after previously returning some),
-`blocked` (robots.txt disallow). The process exits 0 whenever the pipeline itself completed,
+`blocked` (robots.txt disallow, or a robots.txt that could not be read), `not_due` (skipped
+by its polling interval, which is not a failure). The process exits 0 whenever the pipeline itself completed,
 even if every source failed.
 
 **Health alerts** go to `NTFY_HEALTH_TOPIC` only, which belongs to whoever runs the tracker.
@@ -793,7 +837,7 @@ something matched or closed, one per profile, and one for the run:
 {"event":"source_summary","source":"greenhouse","company":"jane-street","status":"ok","fetched":41,"duration_ms":412}
 {"event":"profile_source_summary","profile":"abhinav","source":"greenhouse:jane-street","matched":3,"new":1,"baselined":0,"reposts":0,"closed":0}
 {"event":"profile_summary","profile":"abhinav","status":"ok","companies":269,"matched":57,"new":1,"closed":0,"job_alerts_sent":1}
-{"event":"run_summary","sources_ok":267,"sources_failed":2,"fetched":18344,"profiles_ok":1,"profiles_not_run":0,"matched":57,"new":1,"closed":0}
+{"event":"run_summary","sources_ok":336,"sources_failed":2,"sources_not_due":2,"fetched":33900,"profiles_ok":1,"profiles_not_run":0,"matched":57,"new":1,"closed":0}
 ```
 
 The same summary is written to the GitHub Actions job summary as two tables (profiles,
@@ -828,6 +872,12 @@ them; which one (the owner's, most likely) is settled when the table is built in
   reopen, failed source closes nothing, empty regression, baseline, filter-change baseline.
 - **Notify:** batching threshold, dream tier always individual, failed send is retried.
 - **Pipeline:** one end-to-end test with fake sources where one raises, proving isolation.
+- **Polling intervals** (`test_polling.py`): an hourly source is polled once in four runs
+  and makes no request in the other three; a skipped source is never a failure and never
+  closes a job, even one that really has gone; a failing source is retried every run; a
+  partial Workday poll alerts a new campus role in the same run and closes nothing; a job
+  closes after two *complete* polls; a baseline waits for a complete poll; every-run
+  sources add no timestamp to the state file.
 - **Profiles** (`test_profiles.py`): the same eight-run story is played on two separate fake
   installations, once with one profile alone and once with others alongside it, and that
   profile's notifications and state file must be identical byte for byte. The "others" cover
@@ -857,8 +907,11 @@ As you specified, stopping after each for review:
      340 companies are polled, up from 269.
    - **Investigated and unsupported:** Goldman Sachs, Citadel, Citadel Securities, Revolut
      (section 5).
-   - **Still to do:** SmartRecruiters and Workable (6 companies each); Amazon, Apple,
-     Microsoft, Meta, Tesla and AMD.
+   - **Measured** (2026-11-15, 340 companies): a run in which everything is due takes 3 min
+     47 s and makes 1,037 requests; the other three runs of each hour take 2 min 53 s and
+     582. The floor is Greenhouse: 150 boards on one host, one second apart.
+   - **Stage 3b, still to do:** SmartRecruiters and Workable (6 companies each); Amazon,
+     Apple, Microsoft, Meta, Tesla and AMD.
 4. Grad boards and community repos: terms and robots.txt report first, build only what is
    allowed.
 5. README table, keep-alive, full tests and CI, hardening.
@@ -905,3 +958,9 @@ As you specified, stopping after each for review:
     rather than worked around. This is why Goldman Sachs, Citadel, Citadel Securities and
     Revolut are not polled although all four are on the dream list, and why Google is
     limited to the first page of each search.
+11. **Polling intervals** (2026-11-15). Per-source, in `settings.yaml`. ATS APIs, tal.net and
+    JPMorgan every run; Google and the Workday large-site searches at most every 60
+    minutes. A skipped or partial poll is never a failure and never closes a job.
+12. **No workarounds for unsupported sites** (2026-11-15). Goldman Sachs, Citadel, Citadel
+    Securities and Revolut stay unsupported: no headless browser, and no reading the same
+    data from another host that robots.txt happens not to cover. JPMorgan stays polled.

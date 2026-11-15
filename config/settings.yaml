@@ -12,6 +12,23 @@ http:
   per_host_delay_seconds: 1.0   # minimum gap between two requests to the same host
   max_workers: 8                # hosts fetched in parallel (one request per host at a time)
 
+polling:
+  # Minimum minutes between polls of a source. 0 = every run (every 15 minutes).
+  # A key is an ATS name, or the module name of a custom adapter. A source that is not
+  # due is skipped: that is not a failure, and nothing is closed because of it.
+  every_minutes:
+    greenhouse: 0
+    lever: 0
+    ashby: 0
+    talnet: 0
+    jpmorgan: 0
+    workday: 0            # Workday sites small enough to be read in full: must stay 0,
+                          # the Workday interval is the next line
+    workday_search: 60    # Workday sites too large for that, which are searched instead
+                          # (about 15 requests each). Between searches only their first
+                          # page, the newest 20 postings, is read
+    google: 60            # each request is a 1.3 MB page
+
 notify:
   server: "https://ntfy.sh"
   batch_threshold: 5            # more than this many new jobs in one run -> one summary
