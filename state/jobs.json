@@ -1,0 +1,26 @@
+{
+  "jobs": {
+    "greenhouse:point72:8845395002": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "point72",
+      "fields": [],
+      "fingerprint": "point72|2027 point72 academy spring insight programme uk|london uk",
+      "first_seen": "2026-11-15T01:46:12+00:00",
+      "last_seen": "2026-11-15",
+      "locations": [
+        "London, UK"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": "2026-09-29",
+      "region": "uk",
+      "role_type": "spring_week",
+      "source": "greenhouse",
+      "status": "open",
+      "title": "2027 Point72 Academy Spring Insight Programme – UK",
+      "url": "https://boards.greenhouse.io/point72/jobs/8845395002?gh_jid=8845395002"
+    }
+  },
+  "version": 1
+}

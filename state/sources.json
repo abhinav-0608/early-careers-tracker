@@ -1,0 +1,59 @@
+{
+  "sources": {
+    "ashby:openai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:anthropic": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:jane-street": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:optiver": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:point72": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:palantir": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    }
+  },
+  "version": 1
+}
