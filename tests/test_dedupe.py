@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from conftest import MATCHED, NOW, make_job
 from jobtracker.dedupe import BASELINED, KNOWN, NEW, REPOST, Reconciler, fingerprint
-from jobtracker.state import CLOSED, OPEN, State
+from jobtracker.state import CLOSED, OPEN, ProfileState
 
 SOURCE = "greenhouse:acme"
 DAY = timedelta(days=1)
@@ -37,7 +37,7 @@ def open_then_close(state, settings, job, start=NOW):
 
 
 def test_first_sighting_is_new_and_awaits_an_alert(settings):
-    state = State()
+    state = ProfileState()
     outcomes, _ = run(state, settings, NOW, [make_job("1")])
 
     assert outcomes == [NEW]
@@ -49,7 +49,7 @@ def test_first_sighting_is_new_and_awaits_an_alert(settings):
 
 
 def test_same_id_again_is_known_and_updates_last_seen_only(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     outcomes, _ = run(state, settings, NOW + 3 * DAY, [make_job("1")])
 
@@ -60,7 +60,7 @@ def test_same_id_again_is_known_and_updates_last_seen_only(settings):
 
 
 def test_edited_listing_keeps_its_identity(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1", title="Spring Week 2027")])
     edited = make_job("1", title="Spring Week 2027 - Technology", locations=("London", "Leeds"))
     outcomes, _ = run(state, settings, NOW + DAY, [edited])
@@ -74,7 +74,7 @@ def test_edited_listing_keeps_its_identity(settings):
 
 
 def test_baseline_records_jobs_as_already_notified(settings):
-    state = State()
+    state = ProfileState()
     outcomes, _ = run(state, settings, NOW, [make_job("1")], baseline=True)
 
     assert outcomes == [BASELINED]
@@ -97,7 +97,7 @@ def test_fingerprint_keeps_the_year_and_the_company():
 
 
 def test_repost_under_a_new_id_while_still_open_is_not_alerted(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     outcomes, _ = run(state, settings, NOW + DAY, [make_job("2")])
 
@@ -110,7 +110,7 @@ def test_repost_under_a_new_id_while_still_open_is_not_alerted(settings):
 
 
 def test_old_and_new_ids_listed_together_stay_one_job(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     run(state, settings, NOW + DAY, [make_job("1"), make_job("2")])
     outcomes, closed = run(state, settings, NOW + 2 * DAY, [make_job("1"), make_job("2")])
@@ -121,7 +121,7 @@ def test_old_and_new_ids_listed_together_stay_one_job(settings):
 
 
 def test_old_id_alone_keeps_a_reposted_job_open(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     run(state, settings, NOW + DAY, [make_job("2")])
     for day in range(2, 6):
@@ -131,7 +131,7 @@ def test_old_id_alone_keeps_a_reposted_job_open(settings):
 
 
 def test_repost_of_a_job_closed_within_the_window_reopens_it_without_an_alert(settings):
-    state = State()
+    state = ProfileState()
     closed_at = open_then_close(state, settings, make_job("1"))
     state.jobs["greenhouse:acme:1"].notified = True
 
@@ -149,7 +149,7 @@ def test_fingerprint_match_older_than_the_window_is_a_new_job(settings):
     """Spring weeks reuse the same title every year: last year's closed record must not
     swallow this year's alert."""
     assert settings.repost_window_days == 30
-    state = State()
+    state = ProfileState()
     closed_at = open_then_close(state, settings, make_job("1", title="Spring Week"))
     state.jobs["greenhouse:acme:1"].notified = True
 
@@ -168,7 +168,7 @@ def test_fingerprint_match_older_than_the_window_is_a_new_job(settings):
 
 def test_repost_window_is_configurable(settings):
     short_window = replace(settings, repost_window_days=7)
-    state = State()
+    state = ProfileState()
     closed_at = open_then_close(state, short_window, make_job("1"))
 
     outcomes, _ = run(state, short_window, closed_at + 8 * DAY, [make_job("2")])
@@ -176,7 +176,7 @@ def test_repost_window_is_configurable(settings):
 
 
 def test_same_id_reopened_within_the_window_is_not_alerted(settings):
-    state = State()
+    state = ProfileState()
     closed_at = open_then_close(state, settings, make_job("1"))
     outcomes, _ = run(state, settings, closed_at + 5 * DAY, [make_job("1")])
 
@@ -186,7 +186,7 @@ def test_same_id_reopened_within_the_window_is_not_alerted(settings):
 
 def test_same_id_reappearing_after_the_window_is_a_new_job(settings):
     # Some companies reopen last year's requisition instead of creating a new one.
-    state = State()
+    state = ProfileState()
     closed_at = open_then_close(state, settings, make_job("1"))
     state.jobs["greenhouse:acme:1"].notified = True
 
@@ -200,7 +200,7 @@ def test_same_id_reappearing_after_the_window_is_a_new_job(settings):
 
 
 def test_two_identical_new_postings_in_one_run_alert_once(settings):
-    state = State()
+    state = ProfileState()
     outcomes, _ = run(state, settings, NOW, [make_job("1"), make_job("2")])
 
     assert outcomes == [NEW, REPOST]
@@ -211,7 +211,7 @@ def test_two_identical_new_postings_in_one_run_alert_once(settings):
 
 
 def test_job_closes_only_after_being_missing_for_two_successful_runs(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
 
     _, closed = run(state, settings, NOW + DAY, [])
@@ -226,7 +226,7 @@ def test_job_closes_only_after_being_missing_for_two_successful_runs(settings):
 
 
 def test_reappearing_after_one_missed_run_resets_the_count(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     run(state, settings, NOW + DAY, [])
     run(state, settings, NOW + 2 * DAY, [make_job("1")])
@@ -237,7 +237,7 @@ def test_reappearing_after_one_missed_run_resets_the_count(settings):
 
 
 def test_failed_source_never_closes_anything(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     for day in range(1, 10):
         _, closed = run(state, settings, NOW + day * DAY, [], fetched=False)
@@ -246,7 +246,7 @@ def test_failed_source_never_closes_anything(settings):
 
 
 def test_jobs_of_a_company_removed_from_config_close_immediately(settings):
-    state = State()
+    state = ProfileState()
     run(state, settings, NOW, [make_job("1")])
     _, closed = run(state, settings, NOW + DAY, [], fetched=False, configured=False)
 
@@ -254,7 +254,7 @@ def test_jobs_of_a_company_removed_from_config_close_immediately(settings):
 
 
 def test_closed_jobs_are_pruned_after_the_retention_period(settings):
-    state = State()
+    state = ProfileState()
     closed_at = open_then_close(state, settings, make_job("1"))
 
     run(state, settings, closed_at + settings.prune_closed_after_days * DAY, [])

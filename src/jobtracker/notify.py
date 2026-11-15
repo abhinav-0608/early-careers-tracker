@@ -1,9 +1,12 @@
 """Build and send ntfy notifications.
 
 Messages are published as JSON to the server root with the topic in the request body
-(https://docs.ntfy.sh/publish/#publish-as-json). The topic is the only secret in this
-project, and keeping it out of the URL means it cannot leak through an error message or
-a request log.
+(https://docs.ntfy.sh/publish/#publish-as-json). The topics are the only secrets in this
+project, and keeping them out of the URL means they cannot leak through an error message
+or a request log.
+
+Every profile has its own topic. A job notification is always sent on behalf of one
+profile and can only go to that profile's topic; health alerts go to the health topic.
 """
 
 from __future__ import annotations
@@ -14,7 +17,7 @@ from datetime import date, datetime
 import httpx
 
 from jobtracker import log
-from jobtracker.config import Config
+from jobtracker.config import Config, Profile
 from jobtracker.filters import UNCLEAR
 from jobtracker.http import HttpClient
 from jobtracker.state import StoredJob
@@ -34,7 +37,7 @@ class Notification:
 
 
 class Notifier:
-    """Sends notifications to the job topic or the health topic.
+    """Sends notifications to a profile's job topic or to the health topic.
 
     In dry-run mode nothing is sent; each notification is logged instead.
     """
@@ -43,22 +46,28 @@ class Notifier:
         self,
         http: HttpClient,
         server: str,
-        job_topic: str | None,
+        job_topics: dict[str, str | None],  # profile key -> that profile's topic
         health_topic: str | None,
         dry_run: bool = False,
     ):
         self._http = http
         self._server = server
-        self._topics = {"jobs": job_topic, "health": health_topic}
+        self._job_topics = dict(job_topics)
+        self._health_topic = health_topic
         self._dry_run = dry_run
 
-    def send_job(self, notification: Notification) -> bool:
-        return self._send("jobs", notification)
+    def can_reach(self, profile_key: str) -> bool:
+        """Is there a topic to send this profile's alerts to?"""
+        return self._dry_run or bool(self._job_topics.get(profile_key))
+
+    def send_job(self, profile_key: str, notification: Notification) -> bool:
+        topic = self._job_topics.get(profile_key)
+        return self._send(f"jobs:{profile_key}", topic, notification)
 
     def send_health(self, notification: Notification) -> bool:
-        return self._send("health", notification)
+        return self._send("health", self._health_topic, notification)
 
-    def _send(self, channel: str, notification: Notification) -> bool:
+    def _send(self, channel: str, topic: str | None, notification: Notification) -> bool:
         """Return True if the notification was delivered (or logged, in a dry run)."""
         if self._dry_run:
             log.event(
@@ -72,7 +81,6 @@ class Notifier:
             )
             return True
 
-        topic = self._topics[channel]
         if not topic:
             log.warning("notification_failed", channel=channel, error="topic is not configured")
             return False
@@ -106,29 +114,32 @@ def _describe(exc: httpx.HTTPError) -> str:
 # --- building notifications (pure functions) -------------------------------------------
 
 
-def plan_job_notifications(pending: list[StoredJob], config: Config) -> list[Notification]:
-    """Decide how to announce the jobs awaiting an alert.
+def plan_job_notifications(
+    pending: list[StoredJob], profile: Profile, config: Config
+) -> list[Notification]:
+    """Decide how to announce one profile's jobs that are awaiting an alert.
 
-    Up to `batch_threshold` jobs get one alert each. Beyond that, dream-tier jobs still
-    get their own alert and the rest are rolled into a single summary.
+    Up to `batch_threshold` jobs get one alert each. Beyond that, the profile's
+    dream-tier jobs still get their own alert and the rest are rolled into a single
+    summary.
     """
     pending = sorted(pending, key=lambda job: (job.company, job.title, job.key))
     if len(pending) <= config.settings.batch_threshold:
-        return [job_notification(job, config) for job in pending]
+        return [job_notification(job, profile, config) for job in pending]
 
-    dream = [job for job in pending if _tier(job, config) == "dream"]
-    normal = [job for job in pending if _tier(job, config) != "dream"]
-    notifications = [job_notification(job, config) for job in dream]
+    dream = [job for job in pending if profile.is_dream(job.company)]
+    normal = [job for job in pending if not profile.is_dream(job.company)]
+    notifications = [job_notification(job, profile, config) for job in dream]
     if len(normal) == 1:
-        notifications.append(job_notification(normal[0], config))
+        notifications.append(job_notification(normal[0], profile, config))
     elif normal:
         notifications.append(summary_notification(normal, config))
     return notifications
 
 
-def job_notification(job: StoredJob, config: Config) -> Notification:
-    role = config.filters.role_type(job.role_type)
-    is_dream = _tier(job, config) == "dream"
+def job_notification(job: StoredJob, profile: Profile, config: Config) -> Notification:
+    role = profile.filters.role_type(job.role_type)
+    is_dream = profile.is_dream(job.company)
     settings = config.settings
 
     if job.posted_at:
@@ -193,11 +204,6 @@ def baseline_notification(
 def _company_name(job: StoredJob, config: Config) -> str:
     company = config.company(job.company)
     return company.name if company else job.company
-
-
-def _tier(job: StoredJob, config: Config) -> str:
-    company = config.company(job.company)
-    return company.tier if company else "normal"
 
 
 def _location_text(job: StoredJob) -> str:

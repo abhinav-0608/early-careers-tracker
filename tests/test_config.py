@@ -2,20 +2,22 @@ import shutil
 
 import pytest
 
-from conftest import ROOT
+from conftest import OWNER, ROOT, make_company, make_profile
 from jobtracker.config import KNOWN_ATS, ConfigError, load_config
 from jobtracker.sources import ADAPTERS
 
 
 def test_shipped_config_is_valid(config):
     assert config.companies
+    assert config.profile_errors == {}  # every profile in the repo must load
+    assert [profile.key for profile in config.profiles] == [OWNER]
     assert len({company.key for company in config.companies}) == len(config.companies)
     assert set(ADAPTERS) <= KNOWN_ATS
     for company in config.companies:
         assert company.ats in KNOWN_ATS
 
 
-def test_confirmed_dream_tier_companies_are_marked_dream(config):
+def test_confirmed_dream_tier_companies_are_on_the_owners_dream_list(profile):
     confirmed = {
         "apple", "nvidia", "microsoft", "google", "amazon", "meta", "tesla", "amd", "palantir",
         "anthropic", "openai", "google-deepmind",
@@ -23,8 +25,18 @@ def test_confirmed_dream_tier_companies_are_marked_dream(config):
         "citadel-securities",
         "goldman-sachs", "jpmorgan-chase", "morgan-stanley", "stripe", "revolut",
     }  # fmt: skip
-    dream = {company.key for company in config.companies if company.tier == "dream"}
-    assert dream == confirmed
+    assert profile.dream == confirmed
+
+
+def test_owner_scope_is_the_seven_industries_the_list_was_built_from(config, profile):
+    # Written out as industries rather than "everything", so that a company added for
+    # somebody else (in a new industry, or marked opt_in) does not reach the owner.
+    assert profile.industries == {
+        "big_tech", "ai_lab", "quant", "finance", "fintech", "cybersecurity", "startup",
+    }  # fmt: skip
+    assert profile.companies == frozenset()
+    watched = [company for company in config.companies if profile.watches(company)]
+    assert len(watched) >= 421  # everything the single-user tracker was polling
 
 
 def test_excluded_companies_are_not_in_the_list(config):
@@ -46,14 +58,20 @@ def test_role_types_requested_now_are_enabled_and_later_ones_are_defined_but_off
 def test_filters_hash_ignores_comments_but_not_rule_changes(tmp_path):
     for attempt in ("original", "comment", "changed"):
         shutil.copytree(ROOT / "config", tmp_path / attempt)
-    comment = tmp_path / "comment" / "filters.yaml"
+    comment = tmp_path / "comment" / OWNER_FILTERS
     comment.write_text("# a new comment\n" + comment.read_text())
-    changed = tmp_path / "changed" / "filters.yaml"
+    changed = tmp_path / "changed" / OWNER_FILTERS
     changed.write_text(changed.read_text().replace("enabled: false", "enabled: true", 1))
 
-    original_hash = load_config(tmp_path / "original").filters.hash
-    assert load_config(tmp_path / "comment").filters.hash == original_hash
-    assert load_config(tmp_path / "changed").filters.hash != original_hash
+    def filters_hash(name):
+        return load_config(tmp_path / name).profile(OWNER).filters.hash
+
+    assert filters_hash("comment") == filters_hash("original")
+    assert filters_hash("changed") != filters_hash("original")
+
+
+OWNER_FILTERS = f"profiles/{OWNER}/filters.yaml"
+OWNER_PROFILE = f"profiles/{OWNER}/profile.yaml"
 
 
 def _config_with(tmp_path, filename, old, new):
@@ -65,9 +83,12 @@ def _config_with(tmp_path, filename, old, new):
     return tmp_path / "config"
 
 
-def test_unknown_tier_is_rejected(tmp_path):
-    config_dir = _config_with(tmp_path, "companies.yaml", "tier: dream", "tier: legendary")
-    with pytest.raises(ConfigError, match="tier must be one of"):
+def test_tier_in_the_shared_company_list_is_rejected(tmp_path):
+    # It would otherwise be ignored, and a "tier: dream" that does nothing is a trap.
+    config_dir = _config_with(
+        tmp_path, "companies.yaml", "- key: anthropic\n", "- key: anthropic\n  tier: dream\n"
+    )
+    with pytest.raises(ConfigError, match="anthropic: 'tier' is not set here any more"):
         load_config(config_dir)
 
 
@@ -78,8 +99,10 @@ def test_missing_board_is_rejected(tmp_path):
 
 
 def _companies_file(tmp_path, entry: str):
+    """A config with a one-company list and a profile that watches just that company."""
     shutil.copytree(ROOT / "config", tmp_path / "config")
     (tmp_path / "config" / "companies.yaml").write_text(entry)
+    (tmp_path / "config" / OWNER_PROFILE).write_text("name: Test\nscope: {companies: [acme]}\n")
     return tmp_path / "config"
 
 
@@ -132,3 +155,151 @@ def test_prune_window_shorter_than_repost_window_is_rejected(tmp_path):
 def test_missing_file_is_reported(tmp_path):
     with pytest.raises(ConfigError, match="file not found"):
         load_config(tmp_path)
+
+
+# --- profiles --------------------------------------------------------------------------
+
+
+def test_topic_variable_is_derived_from_the_profile_key(profile):
+    assert profile.topic_env == "NTFY_TOPIC_ABHINAV"
+    assert make_profile(profile, "a-friend-2").topic_env == "NTFY_TOPIC_A_FRIEND_2"
+
+
+def test_scope_is_industries_plus_named_companies(profile):
+    watcher = make_profile(profile, "watcher", industries=("quant",), companies=("stripe",))
+
+    assert watcher.watches(make_company("jane-street", industry="quant"))
+    assert watcher.watches(make_company("stripe", industry="fintech"))  # named
+    assert not watcher.watches(make_company("revolut", industry="fintech"))
+
+
+def test_opt_in_company_is_only_watched_by_profiles_that_name_it(profile):
+    private = make_company("private", industry="quant", opt_in=True)
+    by_industry = make_profile(profile, "by-industry", industries=("quant",))
+    by_name = make_profile(profile, "by-name", companies=("private",))
+
+    assert not by_industry.watches(private)
+    assert by_name.watches(private)
+
+
+def _add_profile(config_dir, key, profile_yaml, filters_from=OWNER):
+    folder = config_dir / "profiles" / key
+    folder.mkdir()
+    (folder / "profile.yaml").write_text(profile_yaml)
+    if filters_from:
+        shutil.copy(config_dir / "profiles" / filters_from / "filters.yaml", folder)
+    return config_dir
+
+
+def _summary(profile):
+    """Everything about a loaded profile that decides what it receives."""
+    return (
+        profile.key,
+        profile.name,
+        profile.filters.hash,
+        profile.industries,
+        profile.companies,
+        profile.dream,
+        profile.topic_env,
+    )
+
+
+def test_second_profile_loads_alongside_the_first(tmp_path, config, profile):
+    shutil.copytree(ROOT / "config", tmp_path / "config")
+    _add_profile(
+        tmp_path / "config",
+        "friend",
+        "name: Friend\nscope: {industries: [quant], companies: [stripe]}\ndream: [stripe]\n",
+    )
+    loaded = load_config(tmp_path / "config")
+
+    assert [p.key for p in loaded.profiles] == [OWNER, "friend"]
+    assert loaded.profile_errors == {}
+    friend = loaded.profile("friend")
+    assert friend.dream == {"stripe"}
+    assert friend.topic_env == "NTFY_TOPIC_FRIEND"
+    watched = {company.key for company in loaded.companies if friend.watches(company)}
+    quant = {company.key for company in loaded.companies if company.industry == "quant"}
+    assert watched == quant | {"stripe"}
+    # The first profile is exactly what it was without the second.
+    assert _summary(loaded.profile(OWNER)) == _summary(profile)
+    assert loaded.companies == config.companies
+
+
+BROKEN_PROFILES = {
+    "not YAML": ("name: [unclosed", "invalid YAML"),
+    "no scope": ("name: Friend\n", "missing required key 'scope'"),
+    "empty scope": ("name: Friend\nscope: {}\n", "scope does not include any company"),
+    "misspelt industry": (
+        "name: Friend\nscope: {industries: [quants]}\n",
+        "no company has industry 'quants'",
+    ),
+    "unknown company": (
+        "name: Friend\nscope: {companies: [no-such-co]}\n",
+        "scope.companies: no company with key 'no-such-co'",
+    ),
+    "unknown dream company": (
+        "name: Friend\nscope: {industries: [quant]}\ndream: [no-such-co]\n",
+        "dream: no company with key 'no-such-co'",
+    ),
+    "dream outside scope": (
+        "name: Friend\nscope: {industries: [quant]}\ndream: [stripe]\n",
+        "dream: 'stripe' is outside this profile's scope",
+    ),
+    "misspelt key": (
+        "name: Friend\nscope: {industries: [quant]}\ndreams: [optiver]\n",
+        "unknown key 'dreams'",
+    ),
+    "tier left over": (
+        "name: Friend\nscope: {industries: [quant], tier: dream}\n",
+        "scope: unknown key 'tier'",
+    ),
+}
+
+
+@pytest.mark.parametrize("case", BROKEN_PROFILES)
+def test_broken_profile_is_reported_and_the_others_load_unchanged(tmp_path, profile, case):
+    profile_yaml, message = BROKEN_PROFILES[case]
+    shutil.copytree(ROOT / "config", tmp_path / "config")
+    _add_profile(tmp_path / "config", "friend", profile_yaml)
+
+    loaded = load_config(tmp_path / "config")
+
+    assert [p.key for p in loaded.profiles] == [OWNER]
+    assert _summary(loaded.profile(OWNER)) == _summary(profile)
+    assert list(loaded.profile_errors) == ["friend"]
+    assert message in loaded.profile_errors["friend"]
+    assert "profiles/friend/" in loaded.profile_errors["friend"]  # says which file
+
+
+def test_profile_with_broken_filters_is_reported_and_the_others_load(tmp_path, profile):
+    shutil.copytree(ROOT / "config", tmp_path / "config")
+    config_dir = _add_profile(
+        tmp_path / "config", "friend", "name: Friend\nscope: {industries: [quant]}\n"
+    )
+    filters = config_dir / "profiles" / "friend" / "filters.yaml"
+    filters.write_text(filters.read_text().replace("field_match: lenient", "field_match: loose"))
+
+    loaded = load_config(config_dir)
+    assert _summary(loaded.profile(OWNER)) == _summary(profile)
+    assert "field_match must be one of" in loaded.profile_errors["friend"]
+
+    filters.unlink()
+    assert "filters.yaml: file not found" in load_config(config_dir).profile_errors["friend"]
+
+
+def test_profile_folder_name_must_be_a_plain_key(tmp_path):
+    shutil.copytree(ROOT / "config", tmp_path / "config")
+    _add_profile(tmp_path / "config", "My_Friend", "name: Friend\nscope: {industries: [quant]}\n")
+    errors = load_config(tmp_path / "config").profile_errors
+    assert "lowercase letters, digits and hyphens" in errors["My_Friend"]
+
+
+def test_config_with_no_usable_profile_is_an_error(tmp_path):
+    config_dir = _config_with(tmp_path, OWNER_PROFILE, "name: Abhinav", "nom: Abhinav")
+    with pytest.raises(ConfigError, match="unknown key 'nom'"):
+        load_config(config_dir)
+
+    shutil.rmtree(config_dir / "profiles" / OWNER)
+    with pytest.raises(ConfigError, match="no profiles found"):
+        load_config(config_dir)

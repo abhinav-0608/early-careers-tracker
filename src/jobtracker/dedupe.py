@@ -10,6 +10,10 @@ A posting whose primary key is unknown but whose fingerprint matches a recent re
 a repost: no alert. "Recent" means the record is still open, or closed within
 `repost_window_days`. An older match is a new job, because programmes such as spring
 weeks reuse the same title every year and each year's opening deserves an alert.
+
+All of this is per profile. A Reconciler is given one profile's state and only ever sees
+the jobs that matched that profile's filters, so what one person has been told about has
+no bearing on what another is told.
 """
 
 from __future__ import annotations
@@ -19,7 +23,7 @@ from datetime import date, datetime
 from jobtracker.config import Settings
 from jobtracker.filters import Decision
 from jobtracker.models import Job
-from jobtracker.state import CLOSED, OPEN, State, StoredJob
+from jobtracker.state import CLOSED, OPEN, ProfileState, StoredJob
 from jobtracker.text import normalise
 
 # What observe() concluded about a posting.
@@ -36,13 +40,13 @@ def fingerprint(job: Job) -> str:
 
 
 class Reconciler:
-    """Compares one run's matching jobs with the stored state, updating it in place.
+    """Compares one run's matching jobs with one profile's state, updating it in place.
 
     Usage: call observe() for every matching job from every successful fetch, then
     close_missing() once to close whatever was not observed.
     """
 
-    def __init__(self, state: State, now: datetime, settings: Settings):
+    def __init__(self, state: ProfileState, now: datetime, settings: Settings):
         self._jobs = state.jobs
         self._now = now
         self._today = now.date()
@@ -83,7 +87,8 @@ class Reconciler:
 
         A job is only counted as missing when its board was fetched successfully this
         run, so a failed or suspiciously empty source never closes anything. Jobs
-        belonging to a company no longer in the config are closed straight away.
+        belonging to a company that is no longer configured (removed from the company
+        list, or from this profile's scope) are closed straight away.
         """
         closed = []
         for record in self._jobs.values():

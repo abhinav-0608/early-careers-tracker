@@ -1,4 +1,4 @@
-from conftest import ROOT
+from conftest import OWNER, ROOT
 from jobtracker.__main__ import main
 
 CONFIG = ["--config-dir", str(ROOT / "config")]
@@ -25,11 +25,28 @@ def test_explain_needs_a_company_or_a_title(capsys):
     assert main([*CONFIG, "explain"]) == 2
 
 
+def test_explain_can_be_told_whose_filters_to_use(capsys):
+    assert main([*CONFIG, "explain", "--profile", OWNER, "--title", "Spring Week"]) == 0
+    assert capsys.readouterr().out.startswith("MATCH  Spring Week")
+
+    assert main([*CONFIG, "explain", "--profile", "nobody", "--title", "Spring Week"]) == 2
+    assert "No valid profile with key 'nobody'" in capsys.readouterr().err
+
+
 def test_run_refuses_to_start_without_topics(monkeypatch, capsys):
-    monkeypatch.delenv("NTFY_TOPIC", raising=False)
+    monkeypatch.delenv("NTFY_TOPIC_ABHINAV", raising=False)
     monkeypatch.delenv("NTFY_HEALTH_TOPIC", raising=False)
     assert main([*CONFIG, "run"]) == 2
-    assert "NTFY_TOPIC and NTFY_HEALTH_TOPIC must be set" in capsys.readouterr().err
+    assert "NTFY_HEALTH_TOPIC must be set" in capsys.readouterr().err
+
+    monkeypatch.setenv("NTFY_HEALTH_TOPIC", "health")
+    assert main([*CONFIG, "run"]) == 2
+    assert "No profile has a topic: set NTFY_TOPIC_ABHINAV" in capsys.readouterr().err
+
+
+def test_run_rejects_an_unknown_profile(capsys):
+    assert main([*CONFIG, "run", "--dry-run", "--profile", "nobody"]) == 2
+    assert "No valid profile with key 'nobody'" in capsys.readouterr().err
 
 
 def test_bad_config_is_reported_cleanly(tmp_path, capsys):

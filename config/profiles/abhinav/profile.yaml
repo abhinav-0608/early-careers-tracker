@@ -1,0 +1,59 @@
+# One person's view of the tracker. The folder name ("abhinav") is the profile key: it
+# names this profile's state file (state/profiles/abhinav.json) and the environment
+# variable its ntfy topic is read from (NTFY_TOPIC_ABHINAV).
+#
+# Everything a person can tune lives in this folder and nowhere else:
+#   profile.yaml   which companies are watched, and which of them are dream tier
+#   filters.yaml   role types, fields and locations
+# Editing either file changes this profile's alerts only.
+
+name: Abhinav
+
+# Which companies from config/companies.yaml this profile is evaluated against.
+#   industries   every company in these industries (except ones marked opt_in there)
+#   companies    plus these specific company keys, whatever their industry. This is also
+#                how a profile opts in to a company that was added for somebody else.
+# A company that enters the scope is baselined (one summary, no alert per open role); one
+# that leaves it has its tracked jobs closed.
+scope:
+  industries:
+    - big_tech
+    - ai_lab
+    - quant
+    - finance
+    - fintech
+    - cybersecurity
+    - startup
+  companies: []
+
+# Dream tier: priority 5 alerts with a star, and never rolled into a batch summary.
+# Every company not listed here is normal tier. Takes effect on the next run.
+dream:
+  # Big tech
+  - apple
+  - nvidia
+  - microsoft
+  - google
+  - amazon
+  - meta
+  - tesla
+  - amd
+  - palantir
+  # AI labs
+  - anthropic
+  - openai
+  - google-deepmind
+  # Quant
+  - jane-street
+  - hudson-river-trading
+  - optiver
+  - g-research
+  - citadel
+  - citadel-securities
+  # Banks
+  - goldman-sachs
+  - jpmorgan-chase
+  - morgan-stanley
+  # Fintech
+  - stripe
+  - revolut

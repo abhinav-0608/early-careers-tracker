@@ -1,13 +1,21 @@
 # Companies to poll, grouped by industry. Built and verified in stage 2 (2026-11-15).
 #
+# This is the one list shared by every profile. Each company is fetched once per run;
+# a profile (config/profiles/<key>/profile.yaml) then sees only the companies in its own
+# scope. Nothing personal lives here: which companies are "dream tier" is set per profile.
+#
 #   key          stable id used in state and job keys (never rename once in use)
 #   industry     big_tech | ai_lab | quant | finance | fintech | cybersecurity | startup
+#                A profile watches whole industries, so a company added to one of these
+#                reaches every profile watching that industry, unless it is opt_in.
+#   opt_in       true = never included through its industry. Only profiles that name this
+#                company under scope.companies watch it. Use it when adding a company for
+#                one person, so that nobody else starts getting its alerts.
 #   tags         the India location rule only passes companies carrying one of these:
 #                  big_tech   large public tech company (or a subsidiary of one)
 #                  vc_backed  venture-funded and still private, or listed within about two years
 #                  yc         went through Y Combinator (kept after an IPO)
 #   regions      where the company hires, of uk / us / india (informational)
-#   tier         dream (priority 5 alerts, never batched) | normal
 #   ats          greenhouse | lever | ashby            polled now
 #                smartrecruiters | workable | workday  verified; polled once stage 3 adds the adapter
 #                custom                                own careers site; one module each in stage 3
@@ -31,7 +39,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: apple
   careers_url: https://jobs.apple.com
@@ -42,7 +49,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: workday
   tenant: nvidia
   host: wd5
@@ -55,7 +61,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: microsoft
   careers_url: https://careers.microsoft.com
@@ -66,7 +71,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: google
   careers_url: https://www.google.com/about/careers/applications/
@@ -77,7 +81,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: amazon
   careers_url: https://www.amazon.jobs
@@ -88,7 +91,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: meta
   careers_url: https://www.metacareers.com
@@ -99,7 +101,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: tesla
   careers_url: https://www.tesla.com/careers
@@ -110,7 +111,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: amd
   careers_url: https://careers.amd.com
@@ -121,7 +121,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: lever
   board: palantir
   careers_url: https://www.palantir.com/careers
@@ -132,7 +131,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://explore.jobs.netflix.net/careers
   note: "Eightfold careers site (netflix.eightfold.ai); its Workday site is disallowed by robots.txt"
@@ -142,7 +140,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: adobe
   host: wd5
@@ -155,7 +152,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: salesforce
   host: wd12
@@ -168,7 +164,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.oracle.com
   note: "Oracle Cloud HCM (eeho.fa.us2.oraclecloud.com)"
@@ -178,7 +173,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.ibm.com/careers
   note: "Own careers site (careers.ibm.com)"
@@ -188,7 +182,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: intel
   host: wd1
@@ -201,7 +194,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: cisco
   host: wd5
@@ -214,7 +206,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.qualcomm.com
   note: "Eightfold careers site (qualcomm.eightfold.ai); its Workday site is empty"
@@ -224,7 +215,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.arm.com
   note: "iCIMS (experienced-arm.icims.com, earlycareers-arm.icims.com)"
@@ -234,7 +224,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: sec
   host: wd3
@@ -247,7 +236,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: sonyglobal
   host: wd1
@@ -260,7 +248,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: sonyinteractiveentertainmentglobal
   careers_url: https://www.playstation.com/en-gb/corporate/playstation-careers/
@@ -271,7 +258,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.uber.com/careers
   note: "Own careers site backed by Oracle Cloud HCM"
@@ -281,7 +267,6 @@
   industry: big_tech
   tags: [big_tech, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: airbnb
   careers_url: https://careers.airbnb.com
@@ -292,7 +277,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: lever
   board: spotify
   careers_url: https://www.lifeatspotify.com
@@ -303,7 +287,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: snapchat
   host: wd1
@@ -316,7 +299,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: pinterest
   careers_url: https://www.pinterestcareers.com
@@ -327,7 +309,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.linkedin.com
   note: "Hosted on linkedin.com, which this project never fetches"
@@ -337,7 +318,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://lifeattiktok.com
   note: "Own careers site (lifeattiktok.com)"
@@ -347,7 +327,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.shopify.com/careers
   note: "Own careers site (shopify.com/careers); no public job-board endpoint found (checked 2026-11-15)"
@@ -357,7 +336,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.atlassian.com/company/careers
   note: "iCIMS (careers-atlassian.icims.com)"
@@ -367,7 +345,6 @@
   industry: big_tech
   tags: [big_tech, yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: dropbox
   careers_url: https://jobs.dropbox.com
@@ -378,7 +355,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: twilio
   careers_url: https://www.twilio.com/en-us/company/jobs
@@ -389,7 +365,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: cloudflare
   careers_url: https://www.cloudflare.com/careers/
@@ -400,7 +375,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: datadog
   careers_url: https://careers.datadoghq.com
@@ -411,7 +385,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: snowflake
   careers_url: https://careers.snowflake.com
@@ -422,7 +395,6 @@
   industry: big_tech
   tags: [big_tech, vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: databricks
   careers_url: https://www.databricks.com/company/careers
@@ -433,7 +405,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: mongodb
   careers_url: https://www.mongodb.com/company/careers
@@ -444,7 +415,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: smartrecruiters
   board: ServiceNow
   careers_url: https://careers.servicenow.com
@@ -455,7 +425,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: workday
   host: wd5
@@ -468,7 +437,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.sap.com
   note: "SAP SuccessFactors"
@@ -478,7 +446,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: broadcom
   host: wd1
@@ -491,7 +458,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.dell.com
   note: "Own careers site (jobs.dell.com); no public job-board endpoint found (checked 2026-11-15)"
@@ -501,7 +467,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: hp
   host: wd5
@@ -514,7 +479,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.intuit.com
   note: "Own careers site"
@@ -524,7 +488,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.ebayinc.com
   note: "Workday site 'apply' is disallowed by the tenant's robots.txt"
@@ -534,7 +497,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.booking.com
   note: "iCIMS (external-workingatbooking.icims.com)"
@@ -544,7 +506,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.bloomberg.com/company/careers/
   note: "Avature (bloomberg.avature.net)"
@@ -554,7 +515,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.ea.com
   note: "Own careers site (jobs.ea.com)"
@@ -564,7 +524,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: roblox
   careers_url: https://careers.roblox.com
@@ -575,7 +534,6 @@
   industry: big_tech
   tags: [big_tech, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: doordashusa
   careers_url: https://careersatdoordash.com
@@ -586,7 +544,6 @@
   industry: big_tech
   tags: [big_tech, yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: reddit
   careers_url: https://www.redditinc.com/careers
@@ -597,7 +554,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: discord
   careers_url: https://discord.com/careers
@@ -608,7 +564,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.zoom.us
   note: "Workday site 'Zoom' is disallowed by the tenant's robots.txt"
@@ -618,7 +573,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.github.careers
   note: "iCIMS (careers-githubinc.icims.com)"
@@ -628,7 +582,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: expedia
   host: wd108
@@ -641,7 +594,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: elastic
   careers_url: https://www.elastic.co/careers
@@ -652,7 +604,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: hubspotjobs
   careers_url: https://www.hubspot.com/careers
@@ -663,7 +614,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: ocadogroup
   careers_url: https://careers.ocadogroup.com
@@ -674,7 +624,6 @@
   industry: big_tech
   tags: [big_tech, yc]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: instacart
   careers_url: https://boards.greenhouse.io/instacart
@@ -685,7 +634,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: asana
   careers_url: https://asana.com/jobs
@@ -696,7 +644,6 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: duolingo
   careers_url: https://careers.duolingo.com
@@ -711,7 +658,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: dream
   ats: greenhouse
   board: anthropic
   careers_url: https://www.anthropic.com/careers
@@ -722,7 +668,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: dream
   ats: ashby
   board: openai
   careers_url: https://openai.com/careers
@@ -733,7 +678,6 @@
   industry: ai_lab
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: dream
   ats: custom
   board: google
   careers_url: https://deepmind.google/careers/
@@ -744,7 +688,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: "mistral.ai"
   careers_url: https://mistral.ai/careers
@@ -755,7 +698,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: cohere
   careers_url: https://cohere.com/careers
@@ -766,7 +708,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: xai
   careers_url: https://x.ai/careers
@@ -778,7 +719,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: workable
   board: huggingface
   careers_url: https://huggingface.co/jobs
@@ -789,7 +729,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: stabilityai
   careers_url: https://stability.ai/careers
@@ -800,7 +739,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: perplexity
   careers_url: https://www.perplexity.ai/hub/careers
@@ -811,7 +749,6 @@
   industry: ai_lab
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: scaleai
   careers_url: https://scale.com/careers
@@ -822,7 +759,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: character
   careers_url: https://character.ai/careers
@@ -833,7 +769,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: runway-ml
   careers_url: https://runwayml.com/careers
@@ -844,7 +779,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: elevenlabs
   careers_url: https://elevenlabs.io/careers
@@ -855,7 +789,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: synthesia
   careers_url: https://www.synthesia.io/careers
@@ -866,7 +799,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: wayve
   careers_url: https://wayve.ai/careers/
@@ -877,7 +809,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: faculty
   careers_url: https://faculty.ai/careers
@@ -888,7 +819,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: polyai
   careers_url: https://poly.ai/careers
@@ -899,7 +829,6 @@
   industry: ai_lab
   tags: [big_tech]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: isomorphiclabs
   careers_url: https://www.isomorphiclabs.com/careers
@@ -910,7 +839,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: helsing
   careers_url: https://helsing.ai/careers
@@ -921,7 +849,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: togetherai
   careers_url: https://www.together.ai/careers
@@ -932,7 +859,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us, india]
-  tier: normal
   ats: ashby
   board: anyscale
   careers_url: https://www.anyscale.com/careers
@@ -943,7 +869,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: modal
   careers_url: https://modal.com/careers
@@ -954,7 +879,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: pinecone
   careers_url: https://www.pinecone.io/careers/
@@ -965,7 +889,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: langchain
   careers_url: https://www.langchain.com/careers
@@ -976,7 +899,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: cursor
   careers_url: https://cursor.com/careers
@@ -987,7 +909,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: cognition
   careers_url: https://cognition.ai/careers
@@ -998,7 +919,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: harvey
   careers_url: https://www.harvey.ai/careers
@@ -1009,7 +929,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: sierra
   careers_url: https://sierra.ai/careers
@@ -1020,7 +939,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: gleanwork
   careers_url: https://www.glean.com/careers
@@ -1031,7 +949,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: figureai
   careers_url: https://www.figure.ai/careers
@@ -1042,7 +959,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: physicalintelligence
   careers_url: https://www.physicalintelligence.company/join-us
@@ -1053,7 +969,6 @@
   industry: ai_lab
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: waymo
   careers_url: https://careers.withwaymo.com
@@ -1064,7 +979,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: nuro
   careers_url: https://www.nuro.ai/careers
@@ -1075,7 +989,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us, india]
-  tier: normal
   ats: ashby
   board: cerebras
   careers_url: https://www.cerebras.ai/careers
@@ -1086,7 +999,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: sambanovasystems
   careers_url: https://sambanova.ai/company/careers
@@ -1097,7 +1009,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://groq.com/careers
   note: "Gem ATS (jobs.gem.com), no adapter"
@@ -1107,7 +1018,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: lambda
   careers_url: https://lambda.ai/careers
@@ -1118,7 +1028,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: coreweave
   careers_url: https://www.coreweave.com/careers
@@ -1129,7 +1038,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: lumaai
   careers_url: https://lumalabs.ai/careers
@@ -1140,7 +1048,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: suno
   careers_url: https://suno.com/careers
@@ -1151,7 +1058,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: poolside
   careers_url: https://poolside.ai/careers
@@ -1162,7 +1068,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: black-forest-labs
   careers_url: https://bfl.ai/careers
@@ -1173,7 +1078,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: DeepL
   careers_url: https://www.deepl.com/careers
@@ -1184,7 +1088,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: snorkelai
   careers_url: https://snorkel.ai/careers/
@@ -1195,7 +1098,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: speechmatics
   careers_url: https://www.speechmatics.com/company/careers
@@ -1206,7 +1108,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: tractable
   careers_url: https://tractable.ai/careers
@@ -1217,7 +1118,6 @@
   industry: ai_lab
   tags: []
   regions: [uk]
-  tier: normal
   ats: lever
   board: apolloresearch
   careers_url: https://www.apolloresearch.ai/careers
@@ -1228,7 +1128,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: applied
   careers_url: https://www.appliedintuition.com/careers
@@ -1239,7 +1138,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: writer
   careers_url: https://writer.com/company/careers/
@@ -1250,7 +1148,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: oxa
   careers_url: https://oxa.tech/careers
@@ -1261,7 +1158,6 @@
   industry: ai_lab
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: greenhouse
   board: graphcore
   careers_url: https://www.graphcore.ai/jobs
@@ -1272,7 +1168,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: baseten
   careers_url: https://www.baseten.co/careers
@@ -1283,7 +1178,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: fireworks
   careers_url: https://fireworks.ai/careers
@@ -1294,7 +1188,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: worldlabs
   careers_url: https://www.worldlabs.ai/careers
@@ -1305,7 +1198,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: decagon
   careers_url: https://decagon.ai/careers
@@ -1316,7 +1208,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: reflectionai
   careers_url: https://reflection.ai/careers
@@ -1327,7 +1218,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: thinkingmachines
   careers_url: https://thinkingmachines.ai
@@ -1338,7 +1228,6 @@
   industry: ai_lab
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: physicsx
   careers_url: https://www.physicsx.ai/careers
@@ -1349,7 +1238,6 @@
   industry: ai_lab
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: encord
   careers_url: https://encord.com/careers
@@ -1364,7 +1252,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: dream
   ats: greenhouse
   board: janestreet
   careers_url: https://www.janestreet.com/join-jane-street
@@ -1375,7 +1262,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: unsupported
   careers_url: https://www.citadel.com/careers
   note: "Own careers site (citadel.com)"
@@ -1385,7 +1271,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: greenhouse
   board: wehrtyou
   careers_url: https://www.hudsonrivertrading.com/careers
@@ -1396,7 +1281,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: greenhouse
   board: optiverus
   careers_url: https://optiver.com/working-at-optiver/career-opportunities
@@ -1407,7 +1291,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: dream
   ats: workday
   tenant: gresearch
   host: wd103
@@ -1420,7 +1303,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: unsupported
   careers_url: https://www.citadelsecurities.com/careers
   note: "Own careers site (citadelsecurities.com)"
@@ -1430,7 +1312,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.twosigma.com
   note: "Avature (careers.twosigma.com)"
@@ -1440,7 +1321,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: jumptrading
   careers_url: https://www.jumptrading.com/careers
@@ -1451,7 +1331,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: drweng
   careers_url: https://www.drw.com/work-at-drw
@@ -1462,7 +1341,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: imc
   careers_url: https://www.imc.com/eu/careers
@@ -1473,7 +1351,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.sig.com
   note: "iCIMS (sig.icims.com) behind careers.sig.com"
@@ -1483,7 +1360,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: towerresearchcapital
   careers_url: https://www.tower-research.com/open-positions
@@ -1494,7 +1370,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: virtu
   careers_url: https://www.virtu.com/careers
@@ -1505,7 +1380,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: xtxmarketstechnologies
   careers_url: https://www.xtxmarkets.com/careers
@@ -1516,7 +1390,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: mangroup
   careers_url: https://www.man.com/careers
@@ -1527,7 +1400,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.deshaw.com/careers
   note: "Own careers site (deshaw.com)"
@@ -1537,7 +1409,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.mlp.com/careers
   note: "Eightfold careers site (mlp.eightfold.ai); its Workday sites are empty"
@@ -1547,7 +1418,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: point72
   careers_url: https://boards.greenhouse.io/point72
@@ -1558,7 +1428,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.bamfunds.com/careers
   note: "Own careers site (bamfunds.com); no public job-board endpoint found (checked 2026-11-15)"
@@ -1568,7 +1437,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: squarepointcapital
   careers_url: https://boards.greenhouse.io/squarepointcapital
@@ -1579,7 +1447,6 @@
   industry: quant
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: greenhouse
   board: quberesearchandtechnologies
   careers_url: https://boards.greenhouse.io/quberesearchandtechnologies
@@ -1590,7 +1457,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: mwinternshipprogram
   careers_url: https://boards.greenhouse.io/mwinternshipprogram
@@ -1602,7 +1468,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: gsacapital
   careers_url: https://www.gsacapital.com/careers
@@ -1613,7 +1478,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: mavensecuritiesholdingltd
   careers_url: https://www.mavensecurities.com/careers
@@ -1624,7 +1488,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: flowtraders
   careers_url: https://www.flowtraders.com/careers
@@ -1635,7 +1498,6 @@
   industry: quant
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: greenhouse
   board: davinciderivatives
   careers_url: https://boards.greenhouse.io/davinciderivatives
@@ -1646,7 +1508,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: akunacapital
   careers_url: https://akunacapital.com/careers
@@ -1657,7 +1518,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: old-mission-capital
   careers_url: https://www.oldmissioncapital.com/careers
@@ -1668,7 +1528,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: fiveringsllc
   careers_url: https://fiverings.com/careers
@@ -1679,7 +1538,6 @@
   industry: quant
   tags: []
   regions: [us]
-  tier: normal
   ats: lever
   board: belvederetrading
   careers_url: https://www.belvederetrading.com/careers
@@ -1690,7 +1548,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: chicagotradingcampus
   careers_url: https://www.chicagotrading.com/careers
@@ -1702,7 +1559,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: pdtpartners
   careers_url: https://pdtpartners.com/careers
@@ -1713,7 +1569,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: voleon
   careers_url: https://jobs.ashbyhq.com/voleon
@@ -1724,7 +1579,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: aqr
   careers_url: https://careers.aqr.com
@@ -1735,7 +1589,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: bridgewater89
   careers_url: https://www.bridgewater.com/careers
@@ -1746,7 +1599,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: worldquant
   careers_url: https://www.worldquant.com/career-listing/
@@ -1757,7 +1609,6 @@
   industry: quant
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: schonfeld
   careers_url: https://www.schonfeld.com/careers
@@ -1768,7 +1619,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: exoduspoint
   careers_url: https://boards.greenhouse.io/exoduspoint
@@ -1779,7 +1629,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: headlandstechnologiesllc
   careers_url: https://www.headlandstech.com/careers
@@ -1790,7 +1639,6 @@
   industry: quant
   tags: []
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: radixuniversity
   careers_url: https://boards.greenhouse.io/radixuniversity
@@ -1802,7 +1650,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: transmarketgroup
   careers_url: https://www.transmarketgroup.com/careers
@@ -1813,7 +1660,6 @@
   industry: quant
   tags: []
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: mako
   careers_url: https://boards.greenhouse.io/mako
@@ -1824,7 +1670,6 @@
   industry: quant
   tags: []
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: vaticlabs
   careers_url: https://www.vaticlabs.com/careers
@@ -1835,7 +1680,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: aquaticcapitalmanagement
   careers_url: https://www.aquatic.com/careers
@@ -1846,7 +1690,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: engineersgate
   careers_url: https://www.engineersgate.com/careers
@@ -1857,7 +1700,6 @@
   industry: quant
   tags: []
   regions: [uk]
-  tier: normal
   ats: lever
   board: wintermute-trading
   careers_url: https://www.wintermute.com/careers
@@ -1868,7 +1710,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: quadraturecapital
   careers_url: https://quadrature.ai/careers
@@ -1879,7 +1720,6 @@
   industry: quant
   tags: []
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: winton
   careers_url: https://boards.greenhouse.io/winton
@@ -1890,7 +1730,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.brevanhoward.com/careers
   note: "Phenom careers site, no adapter"
@@ -1900,7 +1739,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workable
   board: capula-investment-management-ltd
   careers_url: https://www.capulaglobal.com/careers
@@ -1911,7 +1749,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: jainglobal
   host: wd5
@@ -1925,7 +1762,6 @@
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: dvtrading
   careers_url: https://boards.greenhouse.io/dvtrading
@@ -1936,7 +1772,6 @@
   industry: quant
   tags: []
   regions: [us, india]
-  tier: normal
   ats: workable
   board: trexquant
   careers_url: https://trexquant.com/careers
@@ -1947,7 +1782,6 @@
   industry: quant
   tags: []
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: scm
   careers_url: https://www.scm-lp.com/careers
@@ -1958,7 +1792,6 @@
   industry: quant
   tags: []
   regions: [uk]
-  tier: normal
   ats: lever
   board: ansatzcapital
   careers_url: https://jobs.lever.co/ansatzcapital
@@ -1969,7 +1802,6 @@
   industry: quant
   tags: []
   regions: [us]
-  tier: normal
   ats: lever
   board: valkyrietrading
   careers_url: https://jobs.lever.co/valkyrietrading
@@ -1984,7 +1816,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: unsupported
   careers_url: https://higher.gs.com
   note: "Own careers site (higher.gs.com)"
@@ -1994,7 +1825,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: unsupported
   careers_url: https://careers.jpmorgan.com
   note: "Oracle Cloud HCM (jpmc.fa.oraclecloud.com)"
@@ -2004,7 +1834,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: dream
   ats: workday
   tenant: ms
   host: wd5
@@ -2018,7 +1847,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://campus.bankofamerica.com
   note: "Campus programmes are on bankcampuscareers.tal.net; its Workday sites carry experienced hires only"
@@ -2028,7 +1856,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.citi.com
   note: "Workday site '2' is disallowed by the tenant's robots.txt (also the early-careers events site)"
@@ -2038,7 +1865,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: barclays
   host: wd3
@@ -2052,7 +1878,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.hsbc.com/careers
   note: "Own careers site (mycareer.hsbc.com)"
@@ -2062,7 +1887,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.ubs.com/global/en/careers.html
   note: "Own careers site (jobs.ubs.com)"
@@ -2072,7 +1896,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: db
   host: wd3
@@ -2085,7 +1908,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://group.bnpparibas/en/careers
   note: "Own careers site"
@@ -2095,7 +1917,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.societegenerale.com
   note: "Oracle Taleo (socgen.taleo.net)"
@@ -2105,7 +1926,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.nomura.com/careers/
   note: "Own careers site; campus programmes on tal.net"
@@ -2115,7 +1935,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.rbc.com
   note: "Workday site 'RBCGLOBAL1' is disallowed by the tenant's robots.txt"
@@ -2125,7 +1944,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.jefferies.com/careers/
   note: "tal.net (jefferies.tal.net), no adapter"
@@ -2135,7 +1953,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: mq
   host: wd3
@@ -2148,7 +1965,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.sc.com/en/careers/
   note: "Oracle Taleo"
@@ -2158,7 +1974,6 @@
   industry: finance
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.natwestgroup.com
   note: "Own careers site (jobs.natwestgroup.com); no public job-board endpoint found (checked 2026-11-15)"
@@ -2168,7 +1983,6 @@
   industry: finance
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: workday
   tenant: lbg
   host: wd3
@@ -2181,7 +1995,6 @@
   industry: finance
   tags: []
   regions: [uk]
-  tier: normal
   ats: workday
   tenant: santander
   host: wd3
@@ -2195,7 +2008,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: mizuho
   host: wd1
@@ -2208,7 +2020,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: mufgub
   host: wd3
@@ -2222,7 +2033,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: wf
   host: wd1
@@ -2235,7 +2045,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: capitalone
   host: wd12
@@ -2248,7 +2057,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.bny.com/corporate/global/en/careers.html
   note: "Oracle Cloud HCM (eofe.fa.us2.oraclecloud.com)"
@@ -2258,7 +2066,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.lazard.com/careers/
   note: "Oracle Cloud HCM (icbpjb.fa.ocs.oraclecloud.com)"
@@ -2268,7 +2075,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.evercore.com/careers/
   note: "No public job-board endpoint found (checked 2026-11-15)"
@@ -2278,7 +2084,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: rothschildandco
   host: wd3
@@ -2291,7 +2096,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: hl
   host: wd1
@@ -2304,7 +2108,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: td
   host: wd3
@@ -2317,7 +2120,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: blackrock
   host: wd1
@@ -2331,7 +2133,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: vanguard
   host: wd5
@@ -2344,7 +2145,6 @@
   industry: finance
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: workday
   tenant: fil
   host: wd3
@@ -2357,7 +2157,6 @@
   industry: finance
   tags: []
   regions: [us, india]
-  tier: normal
   ats: workday
   tenant: fmr
   host: wd1
@@ -2370,7 +2169,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: statestreet
   host: wd1
@@ -2383,7 +2181,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.schroders.com/en/global/individual/careers/
   note: "Oracle Cloud HCM (ekbq.fa.em2.oraclecloud.com)"
@@ -2393,7 +2190,6 @@
   industry: finance
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: workday
   tenant: mgpru
   host: wd3
@@ -2406,7 +2202,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: invesco
   host: wd1
@@ -2419,7 +2214,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.pimco.com/careers
   note: "Workday site 'pimco-careers' is disallowed by the tenant's robots.txt"
@@ -2429,7 +2223,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: troweprice
   host: wd5
@@ -2442,7 +2235,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: wellington
   host: wd5
@@ -2455,7 +2247,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: capgroup
   host: wd1
@@ -2468,7 +2259,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: blackstone
   host: wd1
@@ -2481,7 +2271,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.kkr.com/careers
   note: "Workday tenant (kkr.wd5) exposes no public site name"
@@ -2491,7 +2280,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: lseg
   host: wd3
@@ -2504,7 +2292,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: nasdaq
   host: wd1
@@ -2517,7 +2304,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: cmegroup
   host: wd1
@@ -2530,7 +2316,6 @@
   industry: finance
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: cboe
   host: wd1
@@ -2543,7 +2328,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.moodys.com
   note: "SAP SuccessFactors"
@@ -2553,7 +2337,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: spgi
   host: wd5
@@ -2566,7 +2349,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.msci.com
   note: "iCIMS (globalcareers-msci.icims.com)"
@@ -2576,7 +2358,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: factset
   host: wd108
@@ -2589,7 +2370,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: ntrs
   host: wd1
@@ -2602,7 +2382,6 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.franklintempleton.com/about-us/careers
   note: "Workday site 'Primary-External-1' is disallowed by the tenant's robots.txt"
@@ -2612,7 +2391,6 @@
   industry: finance
   tags: []
   regions: [uk]
-  tier: normal
   ats: workday
   tenant: abrdn
   host: wd3
@@ -2625,7 +2403,6 @@
   industry: finance
   tags: []
   regions: [uk]
-  tier: normal
   ats: smartrecruiters
   board: legalandgeneral
   careers_url: https://jobs.smartrecruiters.com/legalandgeneral
@@ -2636,7 +2413,6 @@
   industry: finance
   tags: []
   regions: [uk]
-  tier: normal
   ats: workday
   tenant: bailliegifford
   host: wd3
@@ -2653,7 +2429,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: dream
   ats: greenhouse
   board: stripe
   careers_url: https://stripe.com/jobs
@@ -2664,7 +2439,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: dream
   ats: unsupported
   careers_url: https://www.revolut.com/careers/
   note: "Own careers site (revolut.com/careers)"
@@ -2674,7 +2448,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: monzo
   careers_url: https://monzo.com/careers
@@ -2685,7 +2458,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: smartrecruiters
   board: Wise
   careers_url: https://wise.jobs
@@ -2696,7 +2468,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: workable
   board: starling-bank
   careers_url: https://www.starlingbank.com/careers/
@@ -2707,7 +2478,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: "checkout.com"
   careers_url: https://www.checkout.com/careers
@@ -2718,7 +2488,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: gocardless
   careers_url: https://gocardless.com/about/careers/
@@ -2729,7 +2498,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.klarna.com/careers/
   note: "No public job-board endpoint found (checked 2026-11-15)"
@@ -2739,7 +2507,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: adyen
   careers_url: https://careers.adyen.com
@@ -2750,7 +2517,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: plaid
   careers_url: https://plaid.com/careers/
@@ -2761,7 +2527,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: brex
   careers_url: https://www.brex.com/careers
@@ -2772,7 +2537,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: ramp
   careers_url: https://ramp.com/careers
@@ -2783,7 +2547,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: mercury
   careers_url: https://mercury.com/jobs
@@ -2794,7 +2557,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: chime
   careers_url: https://careers.chime.com
@@ -2805,7 +2567,6 @@
   industry: fintech
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: robinhood
   careers_url: https://careers.robinhood.com
@@ -2816,7 +2577,6 @@
   industry: fintech
   tags: [yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: coinbase
   careers_url: https://www.coinbase.com/careers
@@ -2827,7 +2587,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: "kraken.com"
   careers_url: https://www.kraken.com/careers
@@ -2838,7 +2597,6 @@
   industry: fintech
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: block
   careers_url: https://block.xyz/careers
@@ -2849,7 +2607,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: paypal
   host: wd1
@@ -2862,7 +2619,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: visa
   host: wd5
@@ -2875,7 +2631,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: mastercard
   host: wd1
@@ -2888,7 +2643,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.americanexpress.com/en-us/careers/
   note: "Eightfold (aexp.eightfold.ai)"
@@ -2898,7 +2652,6 @@
   industry: fintech
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: affirm
   careers_url: https://www.affirm.com/careers
@@ -2909,7 +2662,6 @@
   industry: fintech
   tags: []
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: sofi
   careers_url: https://www.sofi.com/careers/
@@ -2920,7 +2672,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: airwallex
   careers_url: https://careers.airwallex.com
@@ -2931,7 +2682,6 @@
   industry: fintech
   tags: []
   regions: [us]
-  tier: normal
   ats: ashby
   board: nubank
   careers_url: https://international.nubank.com.br/careers/
@@ -2942,7 +2692,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: n26
   careers_url: https://n26.com/en/careers
@@ -2953,7 +2702,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: lever
   board: zopa
   careers_url: https://www.zopa.com/careers
@@ -2964,7 +2712,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, india]
-  tier: normal
   ats: ashby
   board: oaknorth
   careers_url: https://oaknorth.co.uk/careers/
@@ -2975,7 +2722,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: thought-machine
   careers_url: https://www.thoughtmachine.net/careers
@@ -2986,7 +2732,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: clearbank
   careers_url: https://jobs.ashbyhq.com/clearbank
@@ -2997,7 +2742,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, india]
-  tier: normal
   ats: greenhouse
   board: tide
   careers_url: https://www.tide.co/careers/
@@ -3008,7 +2752,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: marshmallow
   careers_url: https://jobs.ashbyhq.com/marshmallow
@@ -3019,7 +2762,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: cleo-2
   careers_url: https://web.meetcleo.com/careers
@@ -3030,7 +2772,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: lendable
   careers_url: https://jobs.ashbyhq.com/lendable
@@ -3041,7 +2782,6 @@
   industry: fintech
   tags: []
   regions: [uk]
-  tier: normal
   ats: ashby
   board: fundingcircle
   careers_url: https://www.fundingcircle.com/uk/careers/
@@ -3052,7 +2792,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: paddle
   careers_url: https://www.paddle.com/careers
@@ -3063,7 +2802,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: sumup
   careers_url: https://www.sumup.com/careers/
@@ -3074,7 +2812,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: pleo
   careers_url: https://www.pleo.io/en/careers
@@ -3085,7 +2822,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: truelayer
   careers_url: https://truelayer.com/careers/
@@ -3096,7 +2832,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: form3
   careers_url: https://www.form3.tech/careers
@@ -3107,7 +2842,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: "9fin"
   careers_url: https://9fin.com/careers
@@ -3118,7 +2852,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: moneybox
   careers_url: https://www.moneyboxapp.com/careers/
@@ -3129,7 +2862,6 @@
   industry: fintech
   tags: []
   regions: [uk]
-  tier: normal
   ats: ashby
   board: trading212
   careers_url: https://www.trading212.com/careers
@@ -3140,7 +2872,6 @@
   industry: fintech
   tags: []
   regions: [uk]
-  tier: normal
   ats: ashby
   board: freetrade
   careers_url: https://freetrade.io/careers
@@ -3151,7 +2882,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: zilch
   careers_url: https://www.zilch.com/careers
@@ -3162,7 +2892,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: capitalontap
   careers_url: https://www.capitalontap.com/en/careers/
@@ -3173,7 +2902,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: "iwoca.co.uk"
   careers_url: https://www.iwoca.co.uk/careers
@@ -3184,7 +2912,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: griffin
   careers_url: https://griffin.com/careers
@@ -3195,7 +2922,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: carta
   careers_url: https://carta.com/careers/
@@ -3206,7 +2932,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.rippling.com/careers
   note: "Own ATS (ats.rippling.com), no adapter"
@@ -3216,7 +2941,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.deel.com/careers
   note: "Ashby board 'deel' exists but lists no public postings"
@@ -3226,7 +2950,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: gusto
   careers_url: https://gusto.com/about/careers
@@ -3237,7 +2960,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: clearstreet
   careers_url: https://clearstreet.io/careers
@@ -3248,7 +2970,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: addepar1
   careers_url: https://addepar.com/careers
@@ -3259,7 +2980,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: chainalysis-careers
   careers_url: https://www.chainalysis.com/careers/
@@ -3270,7 +2990,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: ripple
   careers_url: https://ripple.com/careers/
@@ -3281,7 +3000,6 @@
   industry: fintech
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.circle.com/careers
   note: "Phenom careers site, no adapter"
@@ -3291,7 +3009,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: fireblocks
   careers_url: https://www.fireblocks.com/careers
@@ -3302,7 +3019,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: blockchain
   careers_url: https://www.blockchain.com/careers
@@ -3313,7 +3029,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: elliptic
   careers_url: https://www.elliptic.co/careers
@@ -3324,7 +3039,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: copperco
   careers_url: https://boards.greenhouse.io/copperco
@@ -3335,7 +3049,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: fiserv
   host: wd5
@@ -3348,7 +3061,6 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: fis
   host: wd5
@@ -3361,7 +3073,6 @@
   industry: fintech
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.sage.com/en-gb/company/careers/
   note: "No public job-board endpoint found (checked 2026-11-15)"
@@ -3371,7 +3082,6 @@
   industry: fintech
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: workday
   tenant: ig
   host: wd103
@@ -3384,7 +3094,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [india]
-  tier: normal
   ats: greenhouse
   board: razorpaysoftwareprivatelimited
   careers_url: https://razorpay.com/jobs/
@@ -3395,7 +3104,6 @@
   industry: fintech
   tags: [vc_backed]
   regions: [india]
-  tier: normal
   ats: lever
   board: cred
   careers_url: https://careers.cred.club
@@ -3406,7 +3114,6 @@
   industry: fintech
   tags: [vc_backed, yc]
   regions: [india]
-  tier: normal
   ats: greenhouse
   board: groww
   careers_url: https://groww.in/careers
@@ -3421,7 +3128,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: crowdstrike
   host: wd5
@@ -3434,7 +3140,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://jobs.paloaltonetworks.com
   note: "Workday site 'panwexternalcareers' is disallowed by the tenant's robots.txt"
@@ -3444,7 +3149,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.fortinet.com/corporate/careers
   note: "Oracle Cloud HCM"
@@ -3454,7 +3158,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: zscaler
   careers_url: https://www.zscaler.com/careers
@@ -3465,7 +3168,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: okta
   careers_url: https://www.okta.com/company/careers/
@@ -3476,7 +3178,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: sentinellabs
   careers_url: https://www.sentinelone.com/careers/
@@ -3487,7 +3188,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.darktrace.com/careers
   note: "Workday site 'DarktaceExternal' is disallowed by the tenant's robots.txt"
@@ -3497,7 +3197,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: sophos
   careers_url: https://www.sophos.com/en-us/careers
@@ -3508,7 +3207,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.nccgroupplc.com/careers/
   note: "Pinpoint (nccgroup.pinpointhq.com), no adapter"
@@ -3518,7 +3216,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk]
-  tier: normal
   ats: unsupported
   careers_url: https://www.baesystems.com/en/careers
   note: "Own careers site (jobs.baesystems.com)"
@@ -3528,7 +3225,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: snyk
   careers_url: https://snyk.io/careers/
@@ -3539,7 +3235,6 @@
   industry: cybersecurity
   tags: [big_tech]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: wizinc
   careers_url: https://www.wiz.io/careers
@@ -3550,7 +3245,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: tanium
   careers_url: https://www.tanium.com/careers/
@@ -3561,7 +3255,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://careers.rapid7.com
   note: "Own careers site (careers.rapid7.com)"
@@ -3571,7 +3264,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: tenableinc
   careers_url: https://careers.tenable.com
@@ -3582,7 +3274,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: qualys
   host: wd5
@@ -3595,7 +3286,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: smartrecruiters
   board: CheckPointSoftwareTechnologies2
   careers_url: https://careers.checkpoint.com
@@ -3606,7 +3296,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: proofpoint
   host: wd5
@@ -3619,7 +3308,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: workday
   tenant: mimecast
   host: wd5
@@ -3632,7 +3320,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: trellix
   host: wd1
@@ -3645,7 +3332,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: trendmicro
   host: wd3
@@ -3658,7 +3344,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: gen-digital
   careers_url: https://jobs.ashbyhq.com/gen-digital
@@ -3669,7 +3354,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: sailpoint
   host: wd1
@@ -3682,7 +3366,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: arcticwolf
   host: wd1
@@ -3695,7 +3378,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.akamai.com/careers
   note: "Own careers site (akamaicareers.inflightcloud.com)"
@@ -3705,7 +3387,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: ffive
   host: wd5
@@ -3718,7 +3399,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: pingidentity
   careers_url: https://www.pingidentity.com/en/company/careers.html
@@ -3729,7 +3409,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: "1password"
   careers_url: https://1password.com/careers
@@ -3740,7 +3419,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: bitwarden
   careers_url: https://bitwarden.com/careers/
@@ -3751,7 +3429,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk]
-  tier: normal
   ats: greenhouse
   board: proton
   careers_url: https://proton.me/careers
@@ -3762,7 +3439,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: tailscale
   careers_url: https://tailscale.com/careers
@@ -3773,7 +3449,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: goteleport
   careers_url: https://goteleport.com/careers/
@@ -3784,7 +3459,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: netskope
   careers_url: https://www.netskope.com/company/careers
@@ -3795,7 +3469,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: illumio
   careers_url: https://www.illumio.com/company/careers
@@ -3806,7 +3479,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: abnormalsecurity
   careers_url: https://abnormal.ai/careers
@@ -3817,7 +3489,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: huntress
   careers_url: https://www.huntress.com/company/careers
@@ -3828,7 +3499,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: expel
   careers_url: https://expel.com/about/careers/
@@ -3839,7 +3509,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: recordedfuture
   careers_url: https://www.recordedfuture.com/careers
@@ -3850,7 +3519,6 @@
   industry: cybersecurity
   tags: []
   regions: [us]
-  tier: normal
   ats: workable
   board: trailofbits
   careers_url: https://www.trailofbits.com/careers/
@@ -3861,7 +3529,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: bishopfox
   careers_url: https://bishopfox.com/careers
@@ -3872,7 +3539,6 @@
   industry: cybersecurity
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: hackerone
   careers_url: https://www.hackerone.com/careers
@@ -3883,7 +3549,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: bugcrowd
   careers_url: https://www.bugcrowd.com/about/careers/
@@ -3894,7 +3559,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: orcasecurity
   careers_url: https://orca.security/about/careers/
@@ -3905,7 +3569,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: lever
   board: sysdig
   careers_url: https://sysdig.com/careers/
@@ -3916,7 +3579,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: chainguard
   careers_url: https://www.chainguard.dev/careers
@@ -3927,7 +3589,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: semgrep
   careers_url: https://semgrep.dev/careers
@@ -3938,7 +3599,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: socket
   careers_url: https://socket.dev/careers
@@ -3949,7 +3609,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: vanta
   careers_url: https://www.vanta.com/company/careers
@@ -3960,7 +3619,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: drata
   careers_url: https://drata.com/careers
@@ -3971,7 +3629,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: tines
   careers_url: https://www.tines.com/careers
@@ -3982,7 +3639,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: island
   careers_url: https://www.island.io/careers
@@ -3993,7 +3649,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: catonetworks
   careers_url: https://www.catonetworks.com/careers/
@@ -4004,7 +3659,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: smartrecruiters
   board: armis
   careers_url: https://www.armis.com/careers/
@@ -4015,7 +3669,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: dragos
   careers_url: https://www.dragos.com/careers/
@@ -4026,7 +3679,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.exabeam.com/careers/
   note: "Jobvite, no adapter"
@@ -4036,7 +3688,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://www.cyera.com/careers
   note: "Comeet, no adapter"
@@ -4046,7 +3697,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: censys
   careers_url: https://censys.com/careers/
@@ -4057,7 +3707,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: horizon3ai
   careers_url: https://www.horizon3.ai/careers/
@@ -4068,7 +3717,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: rubrik
   careers_url: https://www.rubrik.com/company/careers
@@ -4079,7 +3727,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk]
-  tier: normal
   ats: workable
   board: portswigger
   careers_url: https://portswigger.net/careers
@@ -4090,7 +3737,6 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: immersivelabs
   careers_url: https://www.immersivelabs.com/careers
@@ -4101,7 +3747,6 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: knowbe4
   careers_url: https://www.knowbe4.com/careers
@@ -4116,7 +3761,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: notion
   careers_url: https://www.notion.com/careers
@@ -4127,7 +3771,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: figma
   careers_url: https://www.figma.com/careers/
@@ -4138,7 +3781,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: linear
   careers_url: https://linear.app/careers
@@ -4149,7 +3791,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: vercel
   careers_url: https://vercel.com/careers
@@ -4160,7 +3801,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: supabase
   careers_url: https://supabase.com/careers
@@ -4171,7 +3811,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: unsupported
   careers_url: https://retool.com/careers
   note: "Gem ATS (jobs.gem.com), no adapter"
@@ -4181,7 +3820,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: airtable
   careers_url: https://airtable.com/careers
@@ -4192,7 +3830,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: smartrecruiters
   board: Canva
   careers_url: https://www.lifeatcanva.com
@@ -4203,7 +3840,6 @@
   industry: startup
   tags: [yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: gitlab
   careers_url: https://about.gitlab.com/jobs/
@@ -4214,7 +3850,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: zapier
   careers_url: https://zapier.com/jobs
@@ -4225,7 +3860,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: posthog
   careers_url: https://posthog.com/careers
@@ -4236,7 +3870,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: sentry
   careers_url: https://sentry.io/careers/
@@ -4247,7 +3880,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: replit
   careers_url: https://replit.com/careers
@@ -4258,7 +3890,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: benchling
   careers_url: https://www.benchling.com/careers
@@ -4269,7 +3900,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: flexport
   careers_url: https://www.flexport.com/careers/
@@ -4280,7 +3910,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: faire
   careers_url: https://www.faire.com/careers
@@ -4291,7 +3920,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [us]
-  tier: normal
   ats: greenhouse
   board: checkr
   careers_url: https://checkr.com/company/careers
@@ -4302,7 +3930,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: fivetran
   careers_url: https://www.fivetran.com/careers
@@ -4313,7 +3940,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: webflow
   careers_url: https://webflow.com/careers
@@ -4324,7 +3950,6 @@
   industry: startup
   tags: [yc]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: amplitude
   careers_url: https://amplitude.com/careers
@@ -4335,7 +3960,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: mixpanel
   careers_url: https://mixpanel.com/jobs/
@@ -4346,7 +3970,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: algolia
   careers_url: https://www.algolia.com/careers
@@ -4357,7 +3980,6 @@
   industry: startup
   tags: [yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: pagerduty
   careers_url: https://careers.pagerduty.com
@@ -4368,7 +3990,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: lattice
   careers_url: https://lattice.com/careers
@@ -4379,7 +4000,6 @@
   industry: startup
   tags: [yc]
   regions: [india]
-  tier: normal
   ats: lever
   board: meesho
   careers_url: https://www.meesho.io/jobs
@@ -4390,7 +4010,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: workday
   tenant: postman
   host: wd108
@@ -4403,7 +4022,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [india]
-  tier: normal
   ats: workday
   tenant: browserstack
   host: wd3
@@ -4416,7 +4034,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: improbable
   careers_url: https://www.improbable.io/careers
@@ -4427,7 +4044,6 @@
   industry: startup
   tags: []
   regions: [uk, india]
-  tier: normal
   ats: unsupported
   careers_url: https://www.skyscanner.net/jobs/
   note: "No public job-board endpoint found (checked 2026-11-15)"
@@ -4437,7 +4053,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: multiverse
   careers_url: https://www.multiverse.io/en-GB/careers
@@ -4448,7 +4063,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: quantexa
   careers_url: https://www.quantexa.com/careers/
@@ -4459,7 +4073,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: complyadvantage
   careers_url: https://complyadvantage.com/careers/
@@ -4470,7 +4083,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: beamery
   careers_url: https://jobs.ashbyhq.com/beamery
@@ -4481,7 +4093,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: motorway
   careers_url: https://jobs.ashbyhq.com/motorway
@@ -4492,7 +4103,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: lovable
   careers_url: https://lovable.dev/careers
@@ -4503,7 +4113,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: cockroachlabs
   careers_url: https://www.cockroachlabs.com/careers/
@@ -4514,7 +4123,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: temporal
   careers_url: https://temporal.io/careers
@@ -4525,7 +4133,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: hex
   careers_url: https://hex.tech/careers/
@@ -4536,7 +4143,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: ashby
   board: clickhouse
   careers_url: https://clickhouse.com/company/careers
@@ -4547,7 +4153,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: grafanalabs
   careers_url: https://grafana.com/about/careers/
@@ -4558,7 +4163,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: render
   careers_url: https://render.com/careers
@@ -4569,7 +4173,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: railway
   careers_url: https://railway.com/careers
@@ -4580,7 +4183,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: sourcegraph91
   careers_url: https://sourcegraph.com/jobs
@@ -4591,7 +4193,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: miro
   careers_url: https://miro.com/careers/
@@ -4602,7 +4203,6 @@
   industry: startup
   tags: []
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: samsara
   careers_url: https://www.samsara.com/company/careers
@@ -4613,7 +4213,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: verkada
   careers_url: https://www.verkada.com/careers/
@@ -4624,7 +4223,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: flyzipline
   careers_url: https://www.zipline.com/careers
@@ -4635,7 +4233,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: andurilindustries
   careers_url: https://www.anduril.com/careers
@@ -4646,7 +4243,6 @@
   industry: startup
   tags: [vc_backed, yc]
   regions: [us]
-  tier: normal
   ats: ashby
   board: mintlify
   careers_url: https://www.mintlify.com/careers
@@ -4657,7 +4253,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [us]
-  tier: normal
   ats: ashby
   board: clerk
   careers_url: https://clerk.com/careers
@@ -4668,7 +4263,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us, india]
-  tier: normal
   ats: greenhouse
   board: gongio
   careers_url: https://www.gong.io/careers/
@@ -4679,7 +4273,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: greenhouse
   board: intercom
   careers_url: https://www.intercom.com/careers
@@ -4690,7 +4283,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: tesslcareers
   careers_url: https://tessl.io/careers
@@ -4701,7 +4293,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: incident
   careers_url: https://incident.io/careers
@@ -4712,7 +4303,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk]
-  tier: normal
   ats: ashby
   board: attio
   careers_url: https://attio.com/careers
@@ -4723,7 +4313,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: granola
   careers_url: https://www.granola.ai/jobs
@@ -4734,7 +4323,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: ashby
   board: krakentech
   careers_url: https://kraken.tech/careers
@@ -4745,7 +4333,6 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  tier: normal
   ats: lever
   board: octoenergy
   careers_url: https://octopus.energy/careers/

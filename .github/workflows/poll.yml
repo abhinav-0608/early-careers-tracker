@@ -33,7 +33,10 @@ jobs:
 
       - name: Poll sources and send alerts
         env:
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          # One topic per profile, read from NTFY_TOPIC_<PROFILE KEY>. A profile whose
+          # variable is empty is skipped; the others are unaffected. To add a profile,
+          # add its secret to the repo and one line here.
+          NTFY_TOPIC_ABHINAV: ${{ secrets.NTFY_TOPIC }}
           NTFY_HEALTH_TOPIC: ${{ secrets.NTFY_HEALTH_TOPIC }}
         run: python -m jobtracker run
 

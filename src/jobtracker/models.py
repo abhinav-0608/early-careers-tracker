@@ -8,12 +8,15 @@ from datetime import date
 
 @dataclass(frozen=True)
 class Company:
-    """One entry from config/companies.yaml."""
+    """One entry from config/companies.yaml, the list shared by every profile.
+
+    Nothing here is personal. Whether a company is "dream tier" is a property of a
+    profile, not of the company.
+    """
 
     key: str
     name: str
     industry: str
-    tier: str  # "dream" or "normal"
     ats: str  # which adapter fetches it, or "unsupported"
     board: str | None = None  # board id in the ATS's API (or module name, for custom)
     # Workday boards are addressed by three parts instead of one board id:
@@ -26,6 +29,9 @@ class Company:
     regions: tuple[str, ...] = ()
     careers_url: str | None = None
     note: str | None = None
+    # True = only profiles that name this company watch it; watching its industry is
+    # not enough. Lets a company be added for one person without alerting anyone else.
+    opt_in: bool = False
 
     @property
     def source_key(self) -> str:
@@ -66,16 +72,14 @@ EMPTY = "empty"  # returned 0 jobs after previously returning some
 
 @dataclass
 class SourceResult:
-    """What happened when one company's board was fetched."""
+    """What happened when one company's board was fetched.
+
+    A board is fetched once per run and the result is then read by every profile that
+    watches the company, so nothing profile-specific is recorded here.
+    """
 
     company: Company
     status: str = OK
     jobs: list[Job] = field(default_factory=list)
     error: str | None = None
     duration_ms: int = 0
-    # Filled in as the pipeline processes the result; used for the per-source log line.
-    matched: int = 0
-    new: int = 0
-    baselined: int = 0
-    reposts: int = 0
-    closed: int = 0

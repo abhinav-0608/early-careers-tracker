@@ -1,16 +1,27 @@
 """One run of the tracker, start to finish.
 
-    fetch every company  ->  classify each job  ->  reconcile with stored state
-        ->  send health alerts and job alerts  ->  save state
+    fetch every watched company once  ->  record board health, send health alerts
+        ->  then, for each profile separately:
+              classify the jobs of the companies in its scope with its own filters
+              ->  reconcile with its own state  ->  send its alerts  ->  save its state
 
-Each company is fetched inside its own error boundary, so a broken source produces a
-failed SourceResult and a health alert while every other source carries on.
+Two kinds of isolation hold the run together:
+
+  Sources.   Each company is fetched inside its own error boundary, so a broken source
+             produces a failed SourceResult and a health alert while every other source
+             carries on.
+  Profiles.  The fetched jobs are shared and read-only. Everything after that (filters,
+             scope, dream tier, dedupe state, notified flags, ntfy topic) belongs to one
+             profile and is handled inside that profile's own error boundary. A profile
+             that is misconfigured, has no topic, or crashes is reported and left out;
+             what the other profiles receive does not change.
 """
 
 from __future__ import annotations
 
 import os
 import time
+import traceback
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -19,27 +30,84 @@ from pathlib import Path
 import httpx
 
 from jobtracker import health, log
-from jobtracker.config import Config
+from jobtracker.config import Config, Profile
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
 from jobtracker.filters import classify
 from jobtracker.http import HttpClient
 from jobtracker.models import ERROR, OK, TIMEOUT, Company, SourceResult
 from jobtracker.notify import Notifier, baseline_notification, plan_job_notifications
 from jobtracker.sources import ADAPTERS
-from jobtracker.state import OPEN, SourceState, StoredJob, load_state, save_state
+from jobtracker.state import (
+    LEGACY_OWNER,
+    OPEN,
+    SourceState,
+    StoredJob,
+    load_profile_state,
+    load_sources,
+    migrate_legacy,
+    save_profile_state,
+    save_sources,
+)
+
+# Why a profile took no part in a run (ProfileReport.status), besides OK and ERROR.
+INVALID = "invalid"  # its config files failed validation
+SKIPPED = "skipped"  # no ntfy topic to send its alerts to
+
+
+@dataclass
+class SourceCounts:
+    """What one profile made of one board in this run."""
+
+    matched: int = 0
+    new: int = 0
+    baselined: int = 0
+    reposts: int = 0
+    closed: int = 0
+
+
+@dataclass
+class ProfileReport:
+    profile: str  # profile key
+    status: str = OK
+    error: str | None = None
+    companies: int = 0  # pollable companies in the profile's scope
+    sources: dict[str, SourceCounts] = field(default_factory=dict)  # by source key
+    job_alerts_sent: int = 0
+    job_alerts_failed: int = 0
+    baseline_sent: bool = False
+
+    def total(self, attribute: str) -> int:
+        return sum(getattr(counts, attribute) for counts in self.sources.values())
 
 
 @dataclass
 class RunReport:
-    results: list[SourceResult] = field(default_factory=list)
-    closed: int = 0
-    job_alerts_sent: int = 0
-    job_alerts_failed: int = 0
+    results: list[SourceResult] = field(default_factory=list)  # one per company fetched
+    profiles: list[ProfileReport] = field(default_factory=list)
     health_alert_sent: bool = False
-    baseline_sent: bool = False
+
+    def profile(self, key: str) -> ProfileReport:
+        return next(report for report in self.profiles if report.profile == key)
 
     def total(self, attribute: str) -> int:
-        return sum(getattr(result, attribute) for result in self.results)
+        """A count such as "new" or "closed", summed over every profile."""
+        return sum(report.total(attribute) for report in self.profiles)
+
+    @property
+    def closed(self) -> int:
+        return self.total("closed")
+
+    @property
+    def job_alerts_sent(self) -> int:
+        return sum(report.job_alerts_sent for report in self.profiles)
+
+    @property
+    def job_alerts_failed(self) -> int:
+        return sum(report.job_alerts_failed for report in self.profiles)
+
+    @property
+    def any_profile_ran(self) -> bool:
+        return any(report.status == OK for report in self.profiles)
 
 
 def run(
@@ -49,96 +117,163 @@ def run(
     notifier: Notifier,
     now: datetime,
     only: set[str] | None = None,
+    only_profiles: set[str] | None = None,
     save: bool = True,
 ) -> RunReport:
-    settings, filters = config.settings, config.filters
-    state = load_state(state_dir)
+    settings = config.settings
     report = RunReport()
+    if save and migrate_legacy(state_dir):
+        log.event("state_migrated", profile=LEGACY_OWNER)
 
+    # --- who takes part ----------------------------------------------------------------
+    for key, error in config.profile_errors.items():
+        report.profiles.append(ProfileReport(profile=key, status=INVALID, error=error))
+    active: list[Profile] = []
+    for profile in config.profiles:
+        if only_profiles and profile.key not in only_profiles:
+            continue
+        if notifier.can_reach(profile.key):
+            active.append(profile)
+        else:
+            # Its state is left untouched, so it starts with a baseline once it has a topic.
+            error = f"{profile.topic_env} is not set"
+            report.profiles.append(ProfileReport(profile=profile.key, status=SKIPPED, error=error))
+
+    # --- fetch, once per company -------------------------------------------------------
     # Companies with no adapter (ats: unsupported, or a source not built yet) are kept in
-    # the config for visibility but are not polled.
+    # the config for visibility but are not polled. Nor is one that nobody is watching.
     pollable = [company for company in config.companies if company.ats in ADAPTERS]
-    targets = [company for company in pollable if not only or company.key in only]
-    log.event("run_started", companies=len(targets), skipped=len(config.companies) - len(pollable))
-
+    watched = [c for c in pollable if any(profile.watches(c) for profile in active)]
+    targets = [company for company in watched if not only or company.key in only]
+    log.event(
+        "run_started",
+        profiles=[profile.key for profile in active],
+        companies=len(targets),
+        skipped=len(config.companies) - len(pollable),
+    )
     report.results = fetch_all(targets, http, settings.max_workers)
+
+    # --- board health (shared) ---------------------------------------------------------
+    sources = load_sources(state_dir)
+    health_report = health.HealthReport()
+    for result in report.results:
+        source = sources.setdefault(result.company.source_key, SourceState())
+        health.check_empty(source, result, settings)
+        health.record_outcome(source, result, now, settings, health_report)
+    configured = {company.source_key for company in pollable}
+    sources = {key: value for key, value in sources.items() if key in configured}
+
+    if health_report:
+        notification = health.health_notification(health_report, sources)
+        if notifier.send_health(notification):
+            health.mark_alerted(sources, health_report, now)
+            report.health_alert_sent = True
+
+    # --- each profile, on its own ------------------------------------------------------
+    for profile in active:
+        try:
+            profile_report = run_profile(
+                profile, config, report.results, pollable, state_dir, notifier, now, save
+            )
+        except Exception as exc:  # noqa: BLE001 - one profile must never stop another
+            # Its state file was not written, so nothing half-done is kept: the next run
+            # starts from the last saved state and may repeat an alert (at-least-once).
+            profile_report = ProfileReport(
+                profile=profile.key, status=ERROR, error=_describe_error(exc)
+            )
+            log.warning("profile_crashed", profile=profile.key, traceback=traceback.format_exc())
+        report.profiles.append(profile_report)
+
+    # --- persist and report ------------------------------------------------------------
+    if save:
+        save_sources(sources, state_dir)
+    log_report(report)
+    write_step_summary(report)
+    return report
+
+
+def run_profile(
+    profile: Profile,
+    config: Config,
+    results: list[SourceResult],
+    pollable: list[Company],
+    state_dir: Path | str,
+    notifier: Notifier,
+    now: datetime,
+    save: bool,
+) -> ProfileReport:
+    """Evaluate one profile against this run's fetched jobs, alert it, save its state.
+
+    Reads the shared results and writes only this profile's state, report and topic.
+    """
+    settings, filters = config.settings, profile.filters
+    state = load_profile_state(state_dir, profile.key)
+    in_scope = {company.source_key for company in pollable if profile.watches(company)}
+    report = ProfileReport(profile=profile.key, companies=len(in_scope))
 
     # --- classify and reconcile --------------------------------------------------------
     reconciler = Reconciler(state, now, settings)
     baselined_jobs: list[StoredJob] = []
     baseline_ran = False
     filters_changed = False
-    health_report = health.HealthReport()
+    fetched: set[str] = set()
 
-    for result in report.results:
+    for result in results:
         company = result.company
-        source = state.sources.setdefault(company.source_key, SourceState())
-        health.check_empty(source, result, settings)
-        health.record_outcome(source, result, now, settings, health_report)
-        if result.status != OK:
+        if result.status != OK or not profile.watches(company):
             continue
+        fetched.add(company.source_key)
+        counts = report.sources.setdefault(company.source_key, SourceCounts())
 
-        # A board is baselined (recorded without individual alerts) the first time it is
-        # fetched and again whenever the filter rules have changed since.
-        baseline = source.filters_hash != filters.hash
+        # A board is baselined (recorded without individual alerts) the first time this
+        # profile sees it and again whenever the profile's filter rules have changed since.
+        previous_hash = state.baselines.get(company.source_key)
+        baseline = previous_hash != filters.hash
         if baseline:
             baseline_ran = True
-            filters_changed = filters_changed or source.filters_hash is not None
-            source.filters_hash = filters.hash
+            filters_changed = filters_changed or previous_hash is not None
+            state.baselines[company.source_key] = filters.hash
 
         for job in result.jobs:
             decision = classify(job, company, filters)
             if not decision.matched:
                 continue
-            result.matched += 1
+            counts.matched += 1
             outcome = reconciler.observe(job, decision, baseline)
             if outcome == NEW:
-                result.new += 1
+                counts.new += 1
             elif outcome == REPOST:
-                result.reposts += 1
+                counts.reposts += 1
             elif outcome == BASELINED:
-                result.baselined += 1
+                counts.baselined += 1
                 baselined_jobs.append(state.jobs[job.key])
 
-    fetched = {result.company.source_key for result in report.results if result.status == OK}
-    configured = {company.source_key for company in pollable}
-    closed_jobs = reconciler.close_missing(fetched, configured)
+    for job in reconciler.close_missing(fetched, in_scope):
+        report.sources.setdefault(job.source_key, SourceCounts()).closed += 1
     reconciler.prune()
-    state.sources = {key: value for key, value in state.sources.items() if key in configured}
-
-    report.closed = len(closed_jobs)
-    for result in report.results:
-        result.closed = sum(job.source_key == result.company.source_key for job in closed_jobs)
+    # Forgetting a board that left the scope means it is baselined afresh if it returns.
+    state.baselines = {key: value for key, value in state.baselines.items() if key in in_scope}
 
     # --- notify ------------------------------------------------------------------------
-    if health_report:
-        notification = health.health_notification(health_report, state.sources)
-        if notifier.send_health(notification):
-            health.mark_alerted(state.sources, health_report, now)
-            report.health_alert_sent = True
-
     # A filter change that surfaces nothing new is not worth a notification; a newly
-    # added company is, even with zero matches, as confirmation that it is being watched.
+    # watched company is, even with zero matches, as confirmation that it is being watched.
     if baseline_ran and (baselined_jobs or not filters_changed):
         notification = baseline_notification(baselined_jobs, config, filters_changed)
-        report.baseline_sent = notifier.send_job(notification)
+        report.baseline_sent = notifier.send_job(profile.key, notification)
 
     # Everything not yet announced: this run's new jobs plus any whose alert failed to
     # send on an earlier run. A job is marked notified only once ntfy has accepted it.
     pending = [job for job in state.jobs.values() if job.status == OPEN and not job.notified]
-    for notification in plan_job_notifications(pending, config):
-        if notifier.send_job(notification):
+    for notification in plan_job_notifications(pending, profile, config):
+        if notifier.send_job(profile.key, notification):
             report.job_alerts_sent += 1
             for key in notification.job_keys:
                 state.jobs[key].notified = True
         else:
             report.job_alerts_failed += 1
 
-    # --- persist and report ------------------------------------------------------------
     if save:
-        save_state(state, state_dir)
-    log_report(report)
-    write_step_summary(report)
+        save_profile_state(state, state_dir, profile.key)
     return report
 
 
@@ -181,19 +316,49 @@ def log_report(report: RunReport) -> None:
             source=result.company.ats,
             status=result.status,
             fetched=len(result.jobs),
-            matched=result.matched,
-            new=result.new,
-            baselined=result.baselined,
-            reposts=result.reposts,
-            closed=result.closed,
             error=result.error,
             duration_ms=result.duration_ms,
         )
+    for profile in report.profiles:
+        # One line per board where this profile had something happen, then its totals.
+        for source_key, counts in profile.sources.items():
+            if counts != SourceCounts():
+                log.event(
+                    "profile_source_summary",
+                    profile=profile.profile,
+                    source=source_key,
+                    matched=counts.matched,
+                    new=counts.new,
+                    baselined=counts.baselined,
+                    reposts=counts.reposts,
+                    closed=counts.closed,
+                )
+        (log.event if profile.status == OK else log.warning)(
+            "profile_summary",
+            profile=profile.profile,
+            status=profile.status,
+            error=profile.error,
+            companies=profile.companies,
+            matched=profile.total("matched"),
+            new=profile.total("new"),
+            baselined=profile.total("baselined"),
+            reposts=profile.total("reposts"),
+            closed=profile.total("closed"),
+            job_alerts_sent=profile.job_alerts_sent,
+            job_alerts_failed=profile.job_alerts_failed,
+            baseline_sent=profile.baseline_sent,
+        )
+        if profile.status != OK and os.environ.get("GITHUB_ACTIONS"):
+            # Shows as a warning banner on the run page; the run itself still succeeds.
+            reason = " ".join((profile.error or "unknown error").split())
+            print(f"::warning title=Profile '{profile.profile}' did not run::{reason}")
     log.event(
         "run_summary",
         sources_ok=sum(result.status == OK for result in report.results),
         sources_failed=sum(result.status != OK for result in report.results),
         fetched=sum(len(result.jobs) for result in report.results),
+        profiles_ok=sum(profile.status == OK for profile in report.profiles),
+        profiles_not_run=sum(profile.status != OK for profile in report.profiles),
         matched=report.total("matched"),
         new=report.total("new"),
         baselined=report.total("baselined"),
@@ -206,19 +371,37 @@ def log_report(report: RunReport) -> None:
 
 
 def write_step_summary(report: RunReport) -> None:
-    """Show the per-source table on the GitHub Actions run page."""
+    """Show the per-profile and per-source tables on the GitHub Actions run page."""
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if not path:
         return
     lines = [
-        "| Company | Source | Status | Fetched | Matched | New | Closed | ms |",
-        "|---|---|---|---:|---:|---:|---:|---:|",
+        "| Profile | Status | Companies | Matched | New | Baselined | Closed | Alerts sent |",
+        "|---|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for profile in report.profiles:
+        status = profile.status if profile.status == OK else f"{profile.status}: {profile.error}"
+        lines.append(
+            f"| {profile.profile} | {status} | {profile.companies} "
+            f"| {profile.total('matched')} | {profile.total('new')} "
+            f"| {profile.total('baselined')} | {profile.total('closed')} "
+            f"| {profile.job_alerts_sent} |"
+        )
+    lines += [
+        "",
+        "| Company | Source | Status | Fetched | ms | Matched (per profile) |",
+        "|---|---|---|---:|---:|---|",
     ]
     for result in report.results:
+        matched = ", ".join(
+            f"{profile.profile} {profile.sources[result.company.source_key].matched}"
+            for profile in report.profiles
+            if result.company.source_key in profile.sources
+            and profile.sources[result.company.source_key].matched
+        )
         lines.append(
             f"| {result.company.name} | {result.company.ats} | {result.status} "
-            f"| {len(result.jobs)} | {result.matched} | {result.new} | {result.closed} "
-            f"| {result.duration_ms} |"
+            f"| {len(result.jobs)} | {result.duration_ms} | {matched} |"
         )
     with open(path, "a", encoding="utf-8") as handle:
         handle.write("\n".join(lines) + "\n")

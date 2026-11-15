@@ -1,11 +1,14 @@
 # Job Alert Tracker — Design
 
-Status: **approved 2026-11-15**. Stages 1 and 2 are built; sections below are kept in step with the code.
+Status: **approved 2026-11-15**. Stages 1 and 2 are built, and the tracker is profile-ready
+(section 2a); sections below are kept in step with the code.
 
 ## 1. Goals and constraints
 
 Poll company career pages and job boards every 15 minutes, detect new postings that match
-config-driven filters, and push each one to a phone through ntfy.
+config-driven filters, and push each one to a phone through ntfy. The tracker serves one or
+more **profiles** (people), each with its own filters, companies and ntfy topic; today there
+is one, and friends can be added later without affecting it (section 2a).
 
 | Constraint | Consequence for the design |
 |---|---|
@@ -27,34 +30,41 @@ One run is a straight pipeline. Each step is a pure function where possible, so 
 tested without the network.
 
 ```
-config/*.yaml ──► load + validate
+config/*.yaml ──► load + validate (a broken profile is left out, the rest load)
                       │
                       ▼
-            ┌─ for each company/source (isolated, throttled per host) ─┐
-            │   adapter.fetch()  ──►  list[Job]  or  SourceError       │
-            └───────────────────────────────────────────────────────────┘
+            ┌─ for each watched company, ONCE (isolated, throttled per host) ─┐
+            │   adapter.fetch()  ──►  list[Job]  or  SourceError             │
+            └─────────────────────────────────────────────────────────────────┘
+                      │
+                      ├──► board health ──► health alerts (one shared health topic)
+                      │
+                      ▼   shared, read-only from here on
+            ┌─ for each profile (isolated) ──────────────────────────────────┐
+            │  keep only the companies in the profile's scope                 │
+            │  filters.classify(job)    the profile's role types, fields,     │
+            │                           regions → match / no match            │
+            │  dedupe.reconcile         against the profile's own state:      │
+            │                           new / open / reposted / closed        │
+            │  notify                   to the profile's own ntfy topic       │
+            │  save                     state/profiles/<key>.json             │
+            └─────────────────────────────────────────────────────────────────┘
                       │
                       ▼
-              filters.classify(job)      role type, fields, region, remote → match / no match
-                      │
-                      ▼
-              state.reconcile(matches)   new / still open / reposted / missing → closed
-                      │
-              ┌───────┼────────────────┐
-              ▼       ▼                ▼
-       notify jobs   health alerts   render README.md
-              └───────┼────────────────┘
-                      ▼
-          write state/*.json  →  git commit + push (only if something changed)
+          write state/sources.json, render README.md
+                      →  git commit + push (only if something changed)
 ```
 
 ### Repository layout
 
 ```
 config/
-  settings.yaml        run-level knobs (timeouts, batch threshold, delays)
-  filters.yaml         role types, fields, locations: keyword rules
-  companies.yaml       company list: ATS type, board id, tags, tier
+  settings.yaml        run-level knobs (timeouts, batch threshold, delays), shared
+  companies.yaml       the one company list, shared: ATS type, board id, industry, tags
+  profiles/
+    <key>/             one folder per person; the folder name is the profile key
+      profile.yaml     company scope and dream-tier list
+      filters.yaml     role types, fields, locations: keyword rules
 src/jobtracker/
   __main__.py          entry point: python -m jobtracker
   pipeline.py          orchestrates one run (the diagram above)
@@ -63,9 +73,9 @@ src/jobtracker/
   http.py              shared HTTP client: User-Agent, timeouts, retries, per-host delay
   text.py              text normalisation shared by filters and dedupe
   filters.py           classification and matching
-  state.py             StoredJob, SourceState; load/save the JSON state files
-  dedupe.py            reconcile a run with state: new, repost, closed
-  notify.py            ntfy job alerts, batching
+  state.py             StoredJob, ProfileState, SourceState; load/save the JSON state files
+  dedupe.py            reconcile a run with one profile's state: new, repost, closed
+  notify.py            ntfy job alerts (per profile topic), batching
   health.py            source health tracking + health alerts
   readme.py            README table generation
   log.py               structured (JSON lines) logging
@@ -77,8 +87,9 @@ src/jobtracker/
     custom/            one module per dream-tier company with its own careers site
     boards/            grad boards / community repos (stage 4, only if permitted)
 state/
-  jobs.json            every matching posting seen, open or recently closed
-  sources.json         per-source health and baseline flags
+  sources.json         per-board health, shared
+  profiles/<key>.json  one profile's memory: its matching postings (open or recently
+                       closed, with notified flags) and its per-board baselines
 tests/
   fixtures/<source>/   recorded responses
   test_<module>.py
@@ -95,6 +106,54 @@ scraper has to parse HTML. Config validation is hand-written in `config.py` rath
 pydantic: it is about 100 lines, gives clearer error messages, and is one less thing to
 explain. No headless browser is planned; if a dream-tier site cannot be read without one, it
 is marked `unsupported` and reported to you rather than adding Playwright quietly.
+
+## 2a. Profiles
+
+A profile is one person's view of the tracker. Profiles **share** the company list and the
+jobs fetched from it, and nothing else:
+
+| Shared (one copy) | Per profile |
+|---|---|
+| `companies.yaml`, `settings.yaml` | `filters.yaml`: role types, fields, locations |
+| Fetching: each company once per run | Company scope: industries and/or named companies |
+| Board health and health alerts | Dream-tier list |
+| | ntfy topic (its own secret) |
+| | Dedupe and notified-state (its own state file) |
+
+**The rule everything else follows from:** adding, changing, removing or breaking a profile
+never changes what any other profile receives. It is enforced by structure rather than by
+care:
+
+- **Fetched jobs are read-only.** `Job` is a frozen dataclass and `SourceResult` holds only
+  facts about the fetch. A profile has nowhere to write that another profile reads.
+- **One state file per profile.** A profile's run loads and saves `state/profiles/<key>.json`
+  and never opens another's.
+- **One error boundary per profile**, twice: when its config is loaded and when it is
+  evaluated. A profile whose YAML is invalid, whose topic secret is missing, whose state file
+  is corrupt, or whose evaluation raises is reported and left out of that run; the others
+  run exactly as if it were not there. (This is the same idea as "one broken source must
+  never fail the run", applied to people.)
+- **One topic per profile**, read from an environment variable whose name is derived from
+  the key (`NTFY_TOPIC_<KEY>`), so two profiles cannot be pointed at the same variable.
+
+**Scope and opting in.** A profile watches whole industries plus any companies it names.
+A company added to the shared list for one person is marked `opt_in: true` (or given an
+industry nobody else watches): it is then outside every industry rule, and only profiles
+that name it under `scope.companies` see it. That is what "opting in" means. A company that
+enters a profile's scope is baselined for that profile (section 7); one that leaves has its
+jobs closed for that profile.
+
+**What is not isolated**, because it is shared by nature: the 12-minute run budget, the
+per-host politeness delay (alerts to ntfy.sh queue behind each other), ntfy's per-IP rate
+limit, and board health (a board is up or down for everyone). A profile watching many extra
+companies makes the run longer for all. Also by nature: the repo is public, so every
+profile's filters, scope and matched jobs are readable by anyone. Only topics are secret.
+
+**A profile that cannot run** shows as a warning on the Actions run page and in the logs,
+and the run still succeeds so that the other profiles' state is committed. The run fails
+(exit 1, which triggers the existing failure alert) only when no profile got through. A
+proper health alert for a skipped profile is part of stage 6; until then there is only one
+profile, for which "skipped" and "no profile got through" are the same thing.
 
 ## 3. Data model
 
@@ -117,14 +176,19 @@ class Job:
 Adapters do no filtering and no interpretation. They translate one source's shape into `Job`
 and nothing else, which keeps them short and makes fixture tests exact.
 
-### state/jobs.json
+### state/profiles/<key>.json
 
-Only **matching** jobs are stored. Keyed by primary key, sorted, indented, so diffs are
-readable and stable.
+One file per profile. Only jobs **matching that profile's filters** are stored, keyed by
+primary key, sorted, indented, so diffs are readable and stable. `baselines` records, per
+board, the hash of the profile's filter rules it was last baselined against (see Baselines
+in section 7).
 
 ```json
 {
-  "version": 1,
+  "version": 2,
+  "baselines": {
+    "greenhouse:jane-street": "9f2c41d0a7b3e685"
+  },
   "jobs": {
     "greenhouse:jane-street:7654321": {
       "company": "jane-street",
@@ -150,12 +214,14 @@ readable and stable.
 
 ### state/sources.json
 
+Board health, shared by every profile: a board is fetched once and is up or down for
+everyone.
+
 ```json
 {
-  "version": 1,
+  "version": 2,
   "sources": {
     "greenhouse:jane-street": {
-      "filters_hash": "9f2c41d0a7b3e685",
       "has_returned_jobs": true,
       "empty_runs": 0,
       "consecutive_failures": 0,
@@ -167,10 +233,17 @@ readable and stable.
 }
 ```
 
-`filters_hash` is the hash of the filter rules this board was last baselined against; it
-replaces a plain `baselined` flag (see Baselines in section 7). Tier and company name are not
-stored with a job: they are looked up from `companies.yaml` when needed, so changing a
-company's tier takes effect immediately.
+Dream tier and company name are not stored with a job: the name is looked up from
+`companies.yaml` and the tier from the profile's `dream` list when needed, so changing either
+takes effect immediately.
+
+**Migration from version 1.** Before profiles there was a single `state/jobs.json`, and each
+board's baseline hash sat in `sources.json` as `filters_hash`. The first run of the profile
+code turns those into `state/profiles/abhinav.json` and a hash-free `sources.json`, and
+deletes `jobs.json`. Every job keeps its notified flag and every board its baseline hash, and
+the filter rules moved without changing (so their hash is the same), which means the first
+run after the change alerts exactly what a run before it would have: no re-baseline, no
+repeats. A dry run reads the old files the same way without writing anything.
 
 ### Keeping commit volume sane
 
@@ -210,9 +283,31 @@ health:
   accept_empty_after_runs: 8 # a board that stays empty this long is accepted as empty
 ```
 
-### config/filters.yaml
+### config/profiles/<key>/profile.yaml
 
-Three independent dimensions. A job matches when it gets an enabled role type **and** passes
+```yaml
+name: Abhinav
+
+scope:
+  industries: [big_tech, ai_lab, quant, finance, fintech, cybersecurity, startup]
+  companies: []            # plus these company keys, whatever their industry;
+                           # also how a profile opts in to an opt_in company
+
+dream:                     # dream tier for this person; everyone else is normal tier
+  - jane-street
+  - anthropic
+```
+
+The folder name is the profile key (lowercase letters, digits, hyphens). It names the state
+file and the topic variable (`abhinav` → `NTFY_TOPIC_ABHINAV`). Validation rejects an unknown
+industry or company key, a dream company outside the scope, a scope that matches nothing, and
+any unknown key (so `dreams:` cannot be silently ignored). A rejected profile is skipped; the
+others still run.
+
+### config/profiles/<key>/filters.yaml
+
+Each profile has a complete copy of its own rules, so editing one person's keywords cannot
+change another's matches. Three independent dimensions. A job matches when it gets an enabled role type **and** passes
 the field rule **and** passes the location rule.
 
 ```yaml
@@ -286,7 +381,7 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: dream            # dream | normal
+  opt_in: false          # true = only profiles naming this company watch it (section 2a)
   ats: greenhouse        # greenhouse | lever | ashby | smartrecruiters | workable |
                          # workday | custom | unsupported
   board: janestreet      # board id in the ATS's API (module name for custom)
@@ -309,6 +404,10 @@ Workday entries carry `tenant`, `host` (e.g. `wd5`) and a list of `sites` instea
 One tenant often runs separate sites for experienced hires, campus and graduates, and the
 early-careers programmes this tracker exists for live on the campus ones, so a company lists
 every site worth polling.
+
+The list is shared by every profile and holds nothing personal. Dream tier used to be a
+`tier:` field here; it now lives in each profile, and validation rejects a leftover `tier:`
+rather than ignoring it.
 
 `unsupported` companies stay in the file with a `note` giving the reason (validation rejects
 an unsupported entry without one) and are listed in the README, so nothing is dropped
@@ -464,7 +563,8 @@ For jobs in state that were **not** returned:
 - If the source returned zero jobs after previously returning some, nothing is closed and a
   health alert is raised instead (section 9). If it stays empty for `accept_empty_after_runs`
   runs (about two hours) it is accepted as genuinely empty and its jobs close normally.
-- Jobs belonging to a company removed from `companies.yaml` are closed straight away.
+- Jobs belonging to a company removed from `companies.yaml`, or from the profile's scope,
+  are closed straight away (for that profile).
 
 Closed jobs leave the README immediately and are pruned from state after
 `prune_closed_after_days` (90). Config validation requires that to be at least
@@ -475,13 +575,17 @@ location are treated as one. The alternative is repost spam, which is worse.
 
 ### Baselines
 
-Each source stores the hash of the filter rules it was last baselined against. A source is
-baselined whenever that differs from the current rules, which covers every case with one
-mechanism:
+All of the above is per profile: each has its own records, so the same posting is new,
+reposted or closed for each profile independently.
 
-- **First run or newly added company** (no stored hash): every matching job is recorded as
-  already notified, and one summary is sent: "Baseline: N matching roles currently open" with
-  a per-company breakdown.
+Each profile stores, per board, the hash of its filter rules that board was last baselined
+against. A board is baselined for a profile whenever that differs from the profile's current
+rules, which covers every case with one mechanism:
+
+- **First run, newly added company, new profile, or a company entering the profile's scope**
+  (no stored hash): every matching job is recorded as already notified, and one summary is
+  sent: "Baseline: N matching roles currently open" with a per-company breakdown. A friend
+  who joins therefore gets one summary, not an alert for everything already open.
 - **Filter changes** (stored hash differs, for example you enable summer internships): jobs
   that newly match are baselined the same way, with one summary. Without this, flipping one
   flag would fire hundreds of alerts. The open roles are still visible in the README table.
@@ -490,12 +594,13 @@ mechanism:
   flooding you.
 
 The hash is taken over the parsed rules, so editing comments or formatting in `filters.yaml`
-does not trigger a baseline.
+does not trigger a baseline. Scope and dream list are not part of it: a scope change is
+handled board by board as above, and the dream list only changes priority.
 
 ## 8. Notifications
 
-Sent with ntfy's JSON publishing: `POST https://ntfy.sh/` with the topic in the request
-**body**. The topic therefore never appears in a URL, so it cannot leak through an exception
+Each profile's alerts go to that profile's own topic and nowhere else. Sent with ntfy's JSON
+publishing: `POST https://ntfy.sh/` with the topic in the request **body**. The topic therefore never appears in a URL, so it cannot leak through an exception
 message or request log. It also avoids header-encoding problems with "–" in titles.
 
 | Field | Value |
@@ -503,15 +608,15 @@ message or request log. It also avoids header-encoding problems with "–" in ti
 | Title | `Company – Role` |
 | Body | location · role type · posted date (or "first seen today" if the source gives none) |
 | Click | apply URL |
-| Tags | from the role type's `ntfy_tags`, plus `star` for dream tier |
+| Tags | from the role type's `ntfy_tags`, plus `star` if the company is on the profile's dream list |
 | Priority | dream 5, normal 3 |
 
 **Batching.** If a run has more than 5 new jobs: every dream-tier job still gets its own
 alert, and the remaining normal-tier jobs are sent as one summary (count, first few titles,
 Click → README table). At 5 or fewer, everything is individual.
 
-**Delivery guarantee: at-least-once.** A job is flagged `notified: true` only after ntfy
-returns 2xx. If a send fails, the job stays `notified: false` and is retried on the next run.
+**Delivery guarantee: at-least-once, per profile.** A job is flagged `notified: true` in a
+profile's state only after ntfy returns 2xx for that profile's topic. If a send fails, the job stays `notified: false` and is retried on the next run.
 If the final git push fails after alerts were sent, the next run may alert again. A duplicate
 is preferable to a missed spring week.
 
@@ -526,7 +631,9 @@ schema change), `timeout`, `empty_regression` (0 jobs after previously returning
 `blocked` (robots.txt disallow). The process exits 0 whenever the pipeline itself completed,
 even if every source failed.
 
-**Health alerts** go to `NTFY_HEALTH_TOPIC` only:
+**Health alerts** go to `NTFY_HEALTH_TOPIC` only, which belongs to whoever runs the tracker.
+Profiles never receive them, and a board watched by several profiles still produces one
+alert:
 
 - Raised on a **state change**, not every run: a source alerts after 2 consecutive failures,
   then at most once every 24 hours while it stays broken, then once more on recovery. A
@@ -558,8 +665,10 @@ even if every source failed.
    `poll.yml`, so a run that crashes or cannot push state does not ping either. Check
    settings: period 15 minutes, grace 45 minutes.
 
-**Secrets.** `NTFY_TOPIC` and `NTFY_HEALTH_TOPIC` are read from the environment only, never
-written to state, logs or README. Because the repo is public: workflow permissions are
+**Secrets.** Each profile's topic (`NTFY_TOPIC_<KEY>`) and `NTFY_HEALTH_TOPIC` are read from
+the environment only, never written to state, logs or README. `poll.yml` maps one repo secret
+to each variable (the original `NTFY_TOPIC` secret feeds `NTFY_TOPIC_ABHINAV`), so adding a
+profile means adding one secret and one line there. Because the repo is public: workflow permissions are
 limited to `contents: write` (plus `actions: write` for keep-alive), third-party actions are
 pinned to commit SHAs, and no workflow uses `pull_request_target`, so a fork's PR can never
 read the secrets. Since anyone who knows an ntfy topic can read and post to it, the topics
@@ -571,14 +680,18 @@ so the state commits do not start CI. `ci.yml` also ignores `state/**` and `READ
 ## 10. Logging
 
 JSON lines to stdout, one event per line (`event`, `source`, `company`, counts, `duration_ms`).
-Each run ends with one summary line per source and one for the run:
+Each run ends with one line per source (the fetch), one per profile and board where
+something matched or closed, one per profile, and one for the run:
 
 ```json
-{"event":"source_summary","source":"greenhouse","company":"jane-street","status":"ok","fetched":41,"matched":3,"new":1,"closed":0,"duration_ms":412}
-{"event":"run_summary","sources_ok":212,"sources_failed":2,"fetched":18344,"matched":57,"new":1,"closed":0,"alerts_sent":1}
+{"event":"source_summary","source":"greenhouse","company":"jane-street","status":"ok","fetched":41,"duration_ms":412}
+{"event":"profile_source_summary","profile":"abhinav","source":"greenhouse:jane-street","matched":3,"new":1,"baselined":0,"reposts":0,"closed":0}
+{"event":"profile_summary","profile":"abhinav","status":"ok","companies":269,"matched":57,"new":1,"closed":0,"job_alerts_sent":1}
+{"event":"run_summary","sources_ok":267,"sources_failed":2,"fetched":18344,"profiles_ok":1,"profiles_not_run":0,"matched":57,"new":1,"closed":0}
 ```
 
-The same summary is written to the GitHub Actions job summary as a table.
+The same summary is written to the GitHub Actions job summary as two tables (profiles,
+sources). Profile keys appear in these public logs; topics never do.
 
 ## 11. README generation
 
@@ -586,7 +699,8 @@ Regenerated each run between marker comments, so the hand-written description at
 never touched. Open matching roles grouped by region, then role type; columns: company, role,
 location, first seen, apply link. Dream-tier rows are marked with ⭐ and bold company names.
 A footer lists unsupported companies and the last successful run time (date granularity, to
-avoid a commit every run).
+avoid a commit every run). With several profiles the table still has to come from one of
+them; which one (the owner's, most likely) is settled when the table is built in stage 5.
 
 ## 12. Testing
 
@@ -600,6 +714,14 @@ avoid a commit every run).
   reopen, failed source closes nothing, empty regression, baseline, filter-change baseline.
 - **Notify:** batching threshold, dream tier always individual, failed send is retried.
 - **Pipeline:** one end-to-end test with fake sources where one raises, proving isolation.
+- **Profiles** (`test_profiles.py`): the same eight-run story is played on two separate fake
+  installations, once with one profile alone and once with others alongside it, and that
+  profile's notifications and state file must be identical byte for byte. The "others" cover
+  an identical twin, different filters/scope/dream list, profiles sorting before and after,
+  a profile added, removed and edited between runs, and every way of being broken (invalid
+  config, no topic, a topic that rejects messages, a crash at three different points, a
+  corrupt state file). Plus: each company fetched once, opt-in companies, per-profile
+  dedupe, retries and dream priority, and the version 1 state migration.
 
 No live network anywhere in the test suite. `ci.yml` runs pytest and ruff on push and PR.
 
@@ -620,6 +742,18 @@ As you specified, stopping after each for review:
 4. Grad boards and community repos: terms and robots.txt report first, build only what is
    allowed.
 5. README table, keep-alive, full tests and CI, hardening.
+6. Profiles for friends + setup guide. The system is already profile-ready (section 2a);
+   this stage is the onboarding around it:
+   - a setup guide: copy a profile folder, pick a topic, add the secret and the one line in
+     `poll.yml`, dry-run just that profile (`run --dry-run --profile <key>`);
+   - a starting-point `filters.yaml` to copy, and a decision on how friends submit changes
+     (pull request, or sending the file);
+   - a health alert, throttled like source alerts, when a profile is skipped (invalid config,
+     missing topic, crash), so that it is not only a warning on the run page;
+   - whether friends get any health or "your profile is broken" messages on their own topic;
+   - a check that two profiles have not been given the same topic value;
+   - a note for friends that the repo is public: their filters, scope and matched jobs are
+     visible to anyone, and the profile key should be a name they are happy to publish.
 
 (Your stage list did not place SmartRecruiters and Workable; I have put them in stage 3.)
 
@@ -632,7 +766,8 @@ As you specified, stopping after each for review:
 4. **Enabling a role type later** baselines the existing matches with one summary.
 5. **Repo:** public, named `early-careers-tracker`. Nothing is created or pushed without
    asking first.
-6. **Dream tier** (confirmed after stage 2). Big tech: Apple, NVIDIA, Microsoft, Google,
+6. **Dream tier** (confirmed after stage 2; held in `config/profiles/abhinav/profile.yaml`
+   since profiles were introduced). Big tech: Apple, NVIDIA, Microsoft, Google,
    Amazon, Meta, Tesla, AMD, Palantir. AI labs: Anthropic, OpenAI, Google DeepMind. Quant:
    Jane Street, Hudson River Trading, Optiver, G-Research, Citadel, Citadel Securities. Banks:
    Goldman Sachs, JPMorgan, Morgan Stanley. Fintech: Stripe, Revolut. Everything else is normal tier.
@@ -640,3 +775,7 @@ As you specified, stopping after each for review:
    Templeton, eBay, Zoom, Palo Alto Networks, Darktrace, and BlackRock's early-careers site).
 8. **xAI is included** as a normal-tier AI lab, although its board is now named "SpaceXSI"
    and SpaceX itself stays excluded.
+9. **Profiles** (2026-11-15, before stage 3). One shared company list fetched once per run;
+   filters, scope, dream list, topic and state per profile; a profile can never change what
+   another receives (section 2a). The existing configuration became the first profile,
+   `abhinav`. Friend onboarding is stage 6.

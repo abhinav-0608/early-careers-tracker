@@ -1,10 +1,14 @@
 """Command line entry point.
 
-python -m jobtracker run                 poll everything, alert, save state
+python -m jobtracker run                 poll everything, alert every profile, save state
 python -m jobtracker run --dry-run       log notifications instead of sending; save nothing
+python -m jobtracker run --profile KEY   evaluate just this profile (repeatable)
 python -m jobtracker explain <company>   show why each live job did or did not match
 python -m jobtracker explain --title "Spring Week - Technology"
                                          test the filters on a title, without fetching
+
+explain uses one profile's filters: the only profile if there is just one, otherwise
+the one named with --profile.
 """
 
 from __future__ import annotations
@@ -15,7 +19,7 @@ import sys
 from datetime import UTC, datetime
 
 from jobtracker import log
-from jobtracker.config import Config, ConfigError, load_config
+from jobtracker.config import Config, ConfigError, Profile, load_config
 from jobtracker.filters import classify, match_role_type
 from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
@@ -40,6 +44,9 @@ def main(argv: list[str] | None = None) -> int:
     run_parser.add_argument(
         "--only", action="append", metavar="COMPANY", help="poll just this company key (repeatable)"
     )
+    run_parser.add_argument(
+        "--profile", action="append", metavar="KEY", help="run just this profile (repeatable)"
+    )
 
     explain_parser = commands.add_parser("explain", help="show how jobs classify, and why")
     explain_parser.add_argument("company", nargs="?", help="company key from companies.yaml")
@@ -55,6 +62,7 @@ def main(argv: list[str] | None = None) -> int:
     explain_parser.add_argument(
         "--location", default="London, UK", help="location to use with --title"
     )
+    explain_parser.add_argument("--profile", metavar="KEY", help="whose filters to use")
 
     args = parser.parse_args(argv)
     log.setup_logging()
@@ -64,49 +72,87 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Config error: {exc}", file=sys.stderr)
         return 2
 
+    # A profile whose files are invalid is left out; the rest carry on without it.
+    for key, error in config.profile_errors.items():
+        print(f"Profile '{key}' is invalid and will be skipped: {error}", file=sys.stderr)
+
     if args.command == "run":
         return command_run(config, args)
     return command_explain(config, args)
 
 
 def command_run(config: Config, args: argparse.Namespace) -> int:
-    job_topic = os.environ.get("NTFY_TOPIC")
+    wanted = set(args.profile) if args.profile else None
+    for key in sorted(wanted or ()):
+        if config.profile(key) is None:
+            print(f"No valid profile with key '{key}'.", file=sys.stderr)
+            return 2
+    profiles = [profile for profile in config.profiles if not wanted or profile.key in wanted]
+
+    # Each profile's topic comes from its own environment variable (NTFY_TOPIC_<KEY>).
+    job_topics = {profile.key: os.environ.get(profile.topic_env) for profile in profiles}
     health_topic = os.environ.get("NTFY_HEALTH_TOPIC")
-    if not args.dry_run and not (job_topic and health_topic):
-        print("NTFY_TOPIC and NTFY_HEALTH_TOPIC must be set (or pass --dry-run).", file=sys.stderr)
-        return 2
+    if not args.dry_run:
+        if not health_topic:
+            print("NTFY_HEALTH_TOPIC must be set (or pass --dry-run).", file=sys.stderr)
+            return 2
+        if not any(job_topics.values()):
+            # A profile without a topic is skipped, but with none at all there is no run.
+            names = ", ".join(profile.topic_env for profile in profiles)
+            print(f"No profile has a topic: set {names} (or pass --dry-run).", file=sys.stderr)
+            return 2
 
     http = HttpClient(config.settings)
     notifier = Notifier(
-        http, config.settings.ntfy_server, job_topic, health_topic, dry_run=args.dry_run
+        http, config.settings.ntfy_server, job_topics, health_topic, dry_run=args.dry_run
     )
     try:
-        run(
+        report = run(
             config,
             state_dir=args.state_dir,
             http=http,
             notifier=notifier,
             now=datetime.now(UTC),
             only=set(args.only) if args.only else None,
+            only_profiles=wanted,
             save=not args.dry_run,
         )
     finally:
         http.close()
     # Source failures are reported through health alerts, not the exit code: a broken
-    # careers page should not mark the whole run as failed.
-    return 0
+    # careers page should not mark the whole run as failed. Nor does one profile failing
+    # while others ran, because their state still has to be committed. Only a run in
+    # which no profile got through at all is a failed run.
+    return 0 if report.any_profile_ran else 1
+
+
+def pick_profile(config: Config, key: str | None) -> Profile | None:
+    """The profile whose filters `explain` should use; prints why if there is none."""
+    if key is None and len(config.profiles) == 1:
+        return config.profiles[0]
+    if key is None:
+        keys = ", ".join(profile.key for profile in config.profiles)
+        print(f"Several profiles exist; choose one with --profile ({keys}).", file=sys.stderr)
+        return None
+    profile = config.profile(key)
+    if profile is None:
+        print(f"No valid profile with key '{key}'.", file=sys.stderr)
+    return profile
 
 
 def command_explain(config: Config, args: argparse.Namespace) -> int:
-    if args.title:
-        return explain_titles(config, args)
-    if not args.company:
+    if not args.title and not args.company:
         print("Give a company key, or one or more --title options.", file=sys.stderr)
         return 2
-    return explain_company(config, args)
+    profile = pick_profile(config, args.profile)
+    if profile is None:
+        return 2
+    if args.title:
+        return explain_titles(config, profile, args)
+    return explain_company(config, profile, args)
 
 
-def explain_titles(config: Config, args: argparse.Namespace) -> int:
+def explain_titles(config: Config, profile: Profile, args: argparse.Namespace) -> int:
     """Classify hand-typed titles. Nothing is fetched."""
     if args.company:
         company = config.company(args.company)
@@ -114,7 +160,7 @@ def explain_titles(config: Config, args: argparse.Namespace) -> int:
             print(f"No company with key '{args.company}'.", file=sys.stderr)
             return 2
     else:  # a stand-in with no tags, so the India rule behaves as for an untagged company
-        company = Company(key="example", name="Example", industry="", tier="normal", ats="")
+        company = Company(key="example", name="Example", industry="", ats="")
 
     for title in args.title:
         job = Job(
@@ -125,16 +171,18 @@ def explain_titles(config: Config, args: argparse.Namespace) -> int:
             url="",
             locations=(args.location,) if args.location else (),
         )
-        print_decision(job, company, config)
+        print_decision(job, company, profile)
     return 0
 
 
-def explain_company(config: Config, args: argparse.Namespace) -> int:
+def explain_company(config: Config, profile: Profile, args: argparse.Namespace) -> int:
     """Fetch one company's live jobs and show how each one classifies."""
     company = config.company(args.company)
     if company is None or company.ats not in ADAPTERS:
         print(f"No pollable company with key '{args.company}'.", file=sys.stderr)
         return 2
+    if not profile.watches(company):
+        print(f"Note: '{company.key}' is outside the scope of profile '{profile.key}'.")
 
     http = HttpClient(config.settings)
     try:
@@ -147,17 +195,17 @@ def explain_company(config: Config, args: argparse.Namespace) -> int:
 
     shown = 0
     for job in result.jobs:
-        decision = classify(job, company, config.filters)
-        near_miss = match_role_type(normalise(job.title), config.filters) is not None
+        decision = classify(job, company, profile.filters)
+        near_miss = match_role_type(normalise(job.title), profile.filters) is not None
         if decision.matched or near_miss or args.all:
             shown += 1
-            print_decision(job, company, config)
+            print_decision(job, company, profile)
     print(f"\n{len(result.jobs)} jobs fetched, {shown} shown. Use --all to list every job.")
     return 0
 
 
-def print_decision(job: Job, company: Company, config: Config) -> None:
-    decision = classify(job, company, config.filters)
+def print_decision(job: Job, company: Company, profile: Profile) -> None:
+    decision = classify(job, company, profile.filters)
     mark = "MATCH" if decision.matched else "skip "
     print(f"{mark}  {job.title}  [{'; '.join(job.locations) or 'no location'}]")
     if decision.matched:

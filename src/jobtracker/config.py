@@ -1,14 +1,24 @@
-"""Load and validate the three YAML config files.
+"""Load and validate the YAML config files.
+
+    config/settings.yaml                 run-level knobs, shared
+    config/companies.yaml                the company list, shared
+    config/profiles/<key>/profile.yaml   one person's company scope and dream tier
+    config/profiles/<key>/filters.yaml   that person's role types, fields and locations
 
 Validation is hand-written so that a mistake in a config file produces a message naming
 the file and the exact entry, rather than a stack trace from deep inside the pipeline.
+
+A mistake in one profile's files disables that profile only. The others load and run as
+if it were not there, which is what lets a profile be added or edited without any risk
+to anyone else's alerts.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -17,7 +27,6 @@ import yaml
 from jobtracker.models import Company
 from jobtracker.text import KeywordSet
 
-TIERS = {"dream", "normal"}
 LOCATION_MODES = {"onsite", "remote"}
 FIELD_MATCH_MODES = {"lenient", "strict"}
 COMPANY_TAGS = {"big_tech", "vc_backed", "yc"}
@@ -28,6 +37,10 @@ WORKDAY = "workday"
 UNSUPPORTED = "unsupported"
 BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom"}
 KNOWN_ATS = BOARD_ATS | {WORKDAY, UNSUPPORTED}
+
+# A profile's key is its folder name. It ends up in a file name and in the name of an
+# environment variable, hence the narrow alphabet.
+PROFILE_KEY = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
 
 
 class ConfigError(Exception):
@@ -105,22 +118,69 @@ class Filters:
 
 
 @dataclass(frozen=True)
+class Profile:
+    """One person's view of the tracker: what they watch and how it is filtered.
+
+    Profiles share the company list and the fetched jobs, and nothing else. Each has
+    its own filters, scope, dream tier, ntfy topic and state file.
+    """
+
+    key: str  # the folder name under config/profiles
+    name: str
+    filters: Filters
+    industries: frozenset[str]  # scope: every company in these industries ...
+    companies: frozenset[str]  # ... plus these company keys
+    dream: frozenset[str]  # company keys that are dream tier for this person
+
+    @property
+    def topic_env(self) -> str:
+        """The environment variable holding this profile's ntfy topic.
+
+        Derived from the key rather than configured, so two profiles can never be
+        pointed at the same variable by mistake.
+        """
+        return "NTFY_TOPIC_" + self.key.upper().replace("-", "_")
+
+    def watches(self, company: Company) -> bool:
+        """Is this company in the profile's scope?
+
+        Named companies always are. An industry brings in its companies except those
+        marked opt_in, which exist for the profiles that name them and nobody else.
+        """
+        if company.key in self.companies:
+            return True
+        return company.industry in self.industries and not company.opt_in
+
+    def is_dream(self, company_key: str) -> bool:
+        return company_key in self.dream
+
+
+@dataclass(frozen=True)
 class Config:
     settings: Settings
-    filters: Filters
     companies: tuple[Company, ...]
+    profiles: tuple[Profile, ...]  # the valid ones, in key order
+    # Profiles whose files failed validation, as key -> message. They are skipped and
+    # reported; every other profile runs normally.
+    profile_errors: dict[str, str] = field(default_factory=dict)
 
     def company(self, key: str) -> Company | None:
         return next((company for company in self.companies if company.key == key), None)
 
+    def profile(self, key: str) -> Profile | None:
+        return next((profile for profile in self.profiles if profile.key == key), None)
+
 
 def load_config(config_dir: Path | str = "config") -> Config:
     config_dir = Path(config_dir)
-    return Config(
-        settings=load_settings(config_dir / "settings.yaml"),
-        filters=load_filters(config_dir / "filters.yaml"),
-        companies=load_companies(config_dir / "companies.yaml"),
-    )
+    settings = load_settings(config_dir / "settings.yaml")
+    companies = load_companies(config_dir / "companies.yaml")
+    profiles, errors = load_profiles(config_dir / "profiles", companies)
+    if not profiles:
+        # With nobody to alert there is nothing useful a run could do.
+        problems = "; ".join(errors.values()) or f"{config_dir / 'profiles'}: no profiles found"
+        raise ConfigError(problems)
+    return Config(settings=settings, companies=companies, profiles=profiles, profile_errors=errors)
 
 
 # --- settings.yaml ---------------------------------------------------------------------
@@ -173,7 +233,71 @@ def load_settings(path: Path) -> Settings:
     return settings
 
 
-# --- filters.yaml ----------------------------------------------------------------------
+# --- profiles/<key>/ -------------------------------------------------------------------
+
+
+def load_profiles(
+    profiles_dir: Path, companies: tuple[Company, ...]
+) -> tuple[tuple[Profile, ...], dict[str, str]]:
+    """Load every profile folder. Returns (valid profiles, {key: error} for the rest).
+
+    Each folder is loaded inside its own error boundary: a broken profile is reported
+    and left out, and can never stop another profile from loading.
+    """
+    if not profiles_dir.is_dir():
+        raise ConfigError(f"{profiles_dir}: folder not found")
+    profiles: list[Profile] = []
+    errors: dict[str, str] = {}
+    for path in sorted(profiles_dir.iterdir()):
+        if not path.is_dir() or path.name.startswith("."):
+            continue
+        try:
+            profiles.append(load_profile(path, companies))
+        except ConfigError as exc:
+            errors[path.name] = str(exc)
+    return tuple(profiles), errors
+
+
+def load_profile(path: Path, companies: tuple[Company, ...]) -> Profile:
+    """Load one profile folder, checking its scope and dream list against the companies."""
+    if not PROFILE_KEY.fullmatch(path.name):
+        raise ConfigError(
+            f"{path}: a profile folder name may only use lowercase letters, digits and hyphens"
+        )
+    file = path / "profile.yaml"
+    data = _read_yaml(file, dict)
+    _only_keys(data, {"name", "scope", "dream"}, file)
+    scope = _get(data, "scope", dict, file)
+    _only_keys(scope, {"industries", "companies"}, f"{file}: scope")
+
+    profile = Profile(
+        key=path.name,
+        name=_get(data, "name", str, file),
+        filters=load_filters(path / "filters.yaml"),
+        industries=frozenset(_strings(scope, "industries", f"{file}: scope")),
+        companies=frozenset(_strings(scope, "companies", f"{file}: scope")),
+        dream=frozenset(_strings(data, "dream", file)),
+    )
+
+    # A misspelt industry or company key would otherwise just quietly watch nothing.
+    by_key = {company.key: company for company in companies}
+    unknown = sorted(profile.industries - {company.industry for company in companies})
+    if unknown:
+        raise ConfigError(f"{file}: scope.industries: no company has industry '{unknown[0]}'")
+    unknown = sorted(profile.companies - set(by_key))
+    if unknown:
+        raise ConfigError(f"{file}: scope.companies: no company with key '{unknown[0]}'")
+    if not any(profile.watches(company) for company in companies):
+        raise ConfigError(f"{file}: scope does not include any company")
+    for key in sorted(profile.dream):
+        if key not in by_key:
+            raise ConfigError(f"{file}: dream: no company with key '{key}'")
+        if not profile.watches(by_key[key]):
+            raise ConfigError(f"{file}: dream: '{key}' is outside this profile's scope")
+    return profile
+
+
+# --- profiles/<key>/filters.yaml -------------------------------------------------------
 
 
 def load_filters(path: Path) -> Filters:
@@ -275,9 +399,14 @@ def load_companies(path: Path) -> tuple[Company, ...]:
             raise ConfigError(f"{where}: key must not contain ':' or '|'")
         seen_keys.add(key)
 
-        tier = _get(raw, "tier", str, where, default="normal")
-        if tier not in TIERS:
-            raise ConfigError(f"{where}: tier must be one of {sorted(TIERS)}")
+        if "tier" in raw:
+            # Dream tier is personal, so it moved out of the shared list. Rejected
+            # rather than ignored: a "tier: dream" that silently did nothing would be
+            # a missed priority alert.
+            raise ConfigError(
+                f"{where}: 'tier' is not set here any more; "
+                "list the company under 'dream' in a profile.yaml instead"
+            )
 
         ats = _get(raw, "ats", str, where)
         if ats not in KNOWN_ATS:
@@ -305,7 +434,6 @@ def load_companies(path: Path) -> tuple[Company, ...]:
                 key=key,
                 name=_get(raw, "name", str, where),
                 industry=_get(raw, "industry", str, where, default="unknown"),
-                tier=tier,
                 ats=ats,
                 board=str(board) if board else None,
                 tenant=raw.get("tenant"),
@@ -315,6 +443,7 @@ def load_companies(path: Path) -> tuple[Company, ...]:
                 regions=tuple(_get(raw, "regions", list, where, default=[])),
                 careers_url=raw.get("careers_url"),
                 note=raw.get("note"),
+                opt_in=_get(raw, "opt_in", bool, where, default=False),
             )
         )
     return tuple(companies)
@@ -345,6 +474,21 @@ def _get(mapping: dict, key: str, expected_type: Any, where: Any, default: Any =
     value = mapping[key]
     _expect(value, expected_type, f"{where}: {key}")
     return value
+
+
+def _strings(mapping: dict, key: str, where: Any) -> list[str]:
+    """Read an optional list of strings."""
+    values = _get(mapping, key, list, where, default=[])
+    for value in values:
+        _expect(value, str, f"{where}: {key}")
+    return values
+
+
+def _only_keys(mapping: dict, allowed: set[str], where: Any) -> None:
+    """Reject unknown keys, so a typo ("dreams:") cannot be silently ignored."""
+    unknown = sorted(str(key) for key in set(mapping) - allowed)
+    if unknown:
+        raise ConfigError(f"{where}: unknown key '{unknown[0]}' (expected {sorted(allowed)})")
 
 
 def _expect(value: Any, expected_type: Any, where: Any) -> None:

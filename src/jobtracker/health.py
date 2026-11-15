@@ -4,6 +4,10 @@ Alerts follow state changes rather than runs. A source alerts once it has failed
 `fail_after_consecutive` runs in a row, again every `reminder_hours` while it stays
 broken, and once more when it recovers. A source that is down for a week therefore
 sends about eight messages, not one every fifteen minutes.
+
+Health is shared, not per profile: a board is fetched once per run and is either working
+or not, whoever watches it. Health alerts go to the one health topic (the person running
+the tracker), never to a profile's job topic.
 """
 
 from __future__ import annotations

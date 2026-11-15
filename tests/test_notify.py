@@ -2,8 +2,9 @@ import json
 from dataclasses import replace
 
 import httpx
+import pytest
 
-from conftest import make_company
+from conftest import make_company, make_profile
 from jobtracker.http import HttpClient
 from jobtracker.notify import (
     Notification,
@@ -40,16 +41,22 @@ def stored_job(number: int, company: str = "normalco", **overrides) -> StoredJob
 def with_companies(config):
     companies = (
         make_company("normalco", name="Normal Co"),
-        make_company("dreamco", name="Dream Co", tier="dream"),
+        make_company("dreamco", name="Dream Co"),
     )
     return replace(config, companies=companies)
+
+
+@pytest.fixture
+def me(profile):
+    """A profile watching both test companies, for whom Dream Co is dream tier."""
+    return make_profile(profile, "me", industries=("quant",), dream=("dreamco",))
 
 
 # --- what gets sent --------------------------------------------------------------------
 
 
-def test_job_notification_has_the_requested_shape(config):
-    notification = job_notification(stored_job(1), with_companies(config))
+def test_job_notification_has_the_requested_shape(config, me):
+    notification = job_notification(stored_job(1), me, with_companies(config))
 
     assert notification.title == "Normal Co – Spring Week 1"
     assert notification.message == "London, UK\nSpring week · Posted 14 Nov 2026"
@@ -59,41 +66,53 @@ def test_job_notification_has_the_requested_shape(config):
     assert notification.job_keys == ("greenhouse:normalco:1",)
 
 
-def test_dream_tier_is_high_priority_and_starred(config):
-    notification = job_notification(stored_job(1, company="dreamco"), with_companies(config))
+def test_dream_tier_is_high_priority_and_starred(config, me):
+    notification = job_notification(stored_job(1, company="dreamco"), me, with_companies(config))
     assert notification.priority == 5
     assert notification.tags == ("cherry_blossom", "star")
 
 
-def test_message_falls_back_to_first_seen_and_flags_unclear_locations(config):
+def test_message_falls_back_to_first_seen_and_flags_unclear_locations(config, me):
     job = stored_job(1, posted_at=None, region="unclear", locations=["Multiple Locations"])
-    notification = job_notification(job, with_companies(config))
+    notification = job_notification(job, me, with_companies(config))
     assert notification.message == (
         "Multiple Locations (unclear)\nSpring week · First seen 15 Nov 2026"
     )
 
 
-def test_long_location_lists_are_shortened(config):
+def test_dream_tier_belongs_to_the_profile_not_the_company(config, me, profile):
+    # The same posting, for someone who has not put Dream Co on their dream list.
+    someone_else = make_profile(profile, "someone-else", industries=("quant",))
+    job = stored_job(1, company="dreamco")
+
+    mine = job_notification(job, me, with_companies(config))
+    theirs = job_notification(job, someone_else, with_companies(config))
+
+    assert (mine.priority, mine.tags) == (5, ("cherry_blossom", "star"))
+    assert (theirs.priority, theirs.tags) == (3, ("cherry_blossom",))
+
+
+def test_long_location_lists_are_shortened(config, me):
     job = stored_job(1, locations=["London", "Leeds", "Bristol", "Glasgow", "Cardiff"])
-    notification = job_notification(job, with_companies(config))
+    notification = job_notification(job, me, with_companies(config))
     assert notification.message.startswith("London; Leeds; Bristol +2 more\n")
 
 
 # --- batching --------------------------------------------------------------------------
 
 
-def test_five_new_jobs_are_sent_individually(config):
+def test_five_new_jobs_are_sent_individually(config, me):
     pending = [stored_job(number) for number in range(5)]
-    notifications = plan_job_notifications(pending, with_companies(config))
+    notifications = plan_job_notifications(pending, me, with_companies(config))
 
     assert len(notifications) == 5
     assert all(len(notification.job_keys) == 1 for notification in notifications)
 
 
-def test_six_new_jobs_become_one_summary(config):
+def test_six_new_jobs_become_one_summary(config, me):
     config = with_companies(config)
     pending = [stored_job(number) for number in range(6)]
-    (summary,) = plan_job_notifications(pending, config)
+    (summary,) = plan_job_notifications(pending, me, config)
 
     assert summary.title == "6 new roles"
     assert summary.click == config.settings.repo_url
@@ -101,10 +120,10 @@ def test_six_new_jobs_become_one_summary(config):
     assert "Normal Co – Spring Week 0 (London, UK)" in summary.message
 
 
-def test_dream_jobs_get_their_own_alert_even_within_a_batch(config):
+def test_dream_jobs_get_their_own_alert_even_within_a_batch(config, me):
     pending = [stored_job(number) for number in range(6)]
     pending += [stored_job(number, company="dreamco") for number in (100, 101)]
-    notifications = plan_job_notifications(pending, with_companies(config))
+    notifications = plan_job_notifications(pending, me, with_companies(config))
 
     individual = [n for n in notifications if len(n.job_keys) == 1]
     summaries = [n for n in notifications if len(n.job_keys) > 1]
@@ -120,9 +139,9 @@ def test_dream_jobs_get_their_own_alert_even_within_a_batch(config):
     assert sorted(covered) == sorted(job.key for job in pending)
 
 
-def test_summary_lists_at_most_ten_jobs(config):
+def test_summary_lists_at_most_ten_jobs(config, me):
     pending = [stored_job(number) for number in range(14)]
-    (summary,) = plan_job_notifications(pending, with_companies(config))
+    (summary,) = plan_job_notifications(pending, me, with_companies(config))
     assert summary.message.count("\n") == 10
     assert summary.message.endswith("...and 4 more")
 
@@ -139,9 +158,13 @@ def test_baseline_summary_counts_roles_per_company(config):
 # --- sending ---------------------------------------------------------------------------
 
 
+OTHER_TOPIC = "secret-topic-of-someone-else"
+
+
 def make_notifier(settings, handler, **kwargs):
     http = HttpClient(settings, transport=httpx.MockTransport(handler))
-    return Notifier(http, settings.ntfy_server, JOB_TOPIC, HEALTH_TOPIC, **kwargs)
+    topics = {"me": JOB_TOPIC, "other": OTHER_TOPIC, "no-topic": None}
+    return Notifier(http, settings.ntfy_server, topics, HEALTH_TOPIC, **kwargs)
 
 
 NOTIFICATION = Notification(
@@ -156,7 +179,7 @@ def test_publishes_json_with_the_topic_in_the_body_not_the_url(settings):
         requests.append(request)
         return httpx.Response(200, json={})
 
-    assert make_notifier(settings, handler).send_job(NOTIFICATION) is True
+    assert make_notifier(settings, handler).send_job("me", NOTIFICATION) is True
 
     (request,) = requests
     assert request.method == "POST"
@@ -183,11 +206,36 @@ def test_health_alerts_go_to_the_health_topic_only(settings):
     assert topics == [HEALTH_TOPIC]
 
 
+def test_each_profiles_alerts_go_to_its_own_topic_only(settings):
+    topics = []
+
+    def handler(request):
+        topics.append(json.loads(request.content)["topic"])
+        return httpx.Response(200, json={})
+
+    notifier = make_notifier(settings, handler)
+    notifier.send_job("me", NOTIFICATION)
+    notifier.send_job("other", NOTIFICATION)
+    assert topics == [JOB_TOPIC, OTHER_TOPIC]
+
+
+def test_profile_without_a_topic_cannot_be_reached_and_nothing_is_sent(settings):
+    def handler(request):
+        raise AssertionError("nothing may be sent for a profile with no topic")
+
+    notifier = make_notifier(settings, handler)
+    assert notifier.can_reach("me") is True
+    assert notifier.can_reach("no-topic") is False
+    assert notifier.can_reach("never-heard-of") is False
+    assert notifier.send_job("no-topic", NOTIFICATION) is False
+    assert notifier.send_job("never-heard-of", NOTIFICATION) is False
+
+
 def test_failed_send_returns_false_and_never_logs_the_topic(settings, caplog):
     caplog.set_level("INFO")
     notifier = make_notifier(settings, lambda request: httpx.Response(500))
 
-    assert notifier.send_job(NOTIFICATION) is False
+    assert notifier.send_job("me", NOTIFICATION) is False
     assert "notification_failed" in caplog.text
     assert JOB_TOPIC not in caplog.text
 
@@ -196,11 +244,11 @@ def test_network_failure_returns_false(settings):
     def handler(request):
         raise httpx.ConnectError("no route", request=request)
 
-    assert make_notifier(settings, handler).send_job(NOTIFICATION) is False
+    assert make_notifier(settings, handler).send_job("me", NOTIFICATION) is False
 
 
 def test_dry_run_sends_nothing(settings):
     def handler(request):
         raise AssertionError("dry run must not make requests")
 
-    assert make_notifier(settings, handler, dry_run=True).send_job(NOTIFICATION) is True
+    assert make_notifier(settings, handler, dry_run=True).send_job("me", NOTIFICATION) is True
