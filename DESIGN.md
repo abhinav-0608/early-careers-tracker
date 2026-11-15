@@ -634,8 +634,8 @@ As you specified, stopping after each for review:
    asking first.
 6. **Dream tier** (confirmed after stage 2). Big tech: Apple, NVIDIA, Microsoft, Google,
    Amazon, Meta, Tesla, AMD, Palantir. AI labs: Anthropic, OpenAI, Google DeepMind. Quant:
-   Jane Street, Hudson River Trading, Optiver, G-Research, Citadel. Banks: Goldman Sachs,
-   JPMorgan, Morgan Stanley. Fintech: Stripe, Revolut. Everything else is normal tier.
+   Jane Street, Hudson River Trading, Optiver, G-Research, Citadel, Citadel Securities. Banks:
+   Goldman Sachs, JPMorgan, Morgan Stanley. Fintech: Stripe, Revolut. Everything else is normal tier.
 7. **Workday sites disallowed by robots.txt stay unsupported** (Citi, RBC, PIMCO, Franklin
    Templeton, eBay, Zoom, Palo Alto Networks, Darktrace, and BlackRock's early-careers site).
 8. **xAI is included** as a normal-tier AI lab, although its board is now named "SpaceXSI"

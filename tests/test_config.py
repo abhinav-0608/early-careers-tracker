@@ -20,6 +20,7 @@ def test_confirmed_dream_tier_companies_are_marked_dream(config):
         "apple", "nvidia", "microsoft", "google", "amazon", "meta", "tesla", "amd", "palantir",
         "anthropic", "openai", "google-deepmind",
         "jane-street", "hudson-river-trading", "optiver", "g-research", "citadel",
+        "citadel-securities",
         "goldman-sachs", "jpmorgan-chase", "morgan-stanley", "stripe", "revolut",
     }  # fmt: skip
     dream = {company.key for company in config.companies if company.tier == "dream"}
