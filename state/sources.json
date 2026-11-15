@@ -1,6 +1,1041 @@
 {
   "sources": {
+    "ashby:1password": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:9fin": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:airwallex": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:amplitude": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:anyscale": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:applied-intuition": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:attio": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:baseten": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:beamery": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:benchling": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:black-forest-labs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:cerebras": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:chainalysis": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:character-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:checkout-com": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:clearbank": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:cleo": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:clerk": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:clickhouse": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:cognition": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:cohere": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:cursor": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:decagon": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:deepl": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:drata": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:elevenlabs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:elliptic": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:encord": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:faculty": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:fireworks-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:freetrade": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:funding-circle": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:gen-digital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:granola": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:griffin": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:hackerone": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:harvey": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:hex": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:horizon3-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:illumio": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:immersive": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:improbable": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:incident-io": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:iwoca": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:kraken": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:kraken-technologies": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:lambda": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:langchain": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:lendable": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:linear": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:lovable": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:luma-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:marshmallow": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:mintlify": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:miro": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:mistral-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:modal": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:moneybox": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:motorway": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:multiverse": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:notion": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:nubank": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:oaknorth": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:old-mission-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
     "ashby:openai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:oxa": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:paddle": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:perplexity": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:physical-intelligence": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:pinecone": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:plaid": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:pleo": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:poolside": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:posthog": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:quantexa": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:railway": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:ramp": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:reflection-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:render": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:replit": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:runway": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:semgrep": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:sentry": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:sierra": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:snowflake": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:snyk": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:socket": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:sophos": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:suno": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:supabase": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:synthesia": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:teleport": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:temporal": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:tessl": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:thinking-machines-lab": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:thought-machine": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:tractable": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:trading-212": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:truelayer": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:vanta": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:voleon": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:wayve": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:webflow": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:world-labs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:writer": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:zapier": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "ashby:zilch": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:abnormal-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:addepar": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:adyen": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:affirm": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:airbnb": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:airtable": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:akuna-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:algolia": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:anduril": {
       "alerted": false,
       "consecutive_failures": 0,
       "empty_runs": 0,
@@ -18,7 +1053,754 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "greenhouse:aqr": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:aquatic": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:asana": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:bishop-fox": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:bitwarden": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:block": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:blockchain-com": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:brex": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:bridgewater-associates": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:bugcrowd": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:capital-on-tap": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:carta": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:cato-networks": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:censys": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:chainguard": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:checkr": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:chicago-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:chime": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:clear-street": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:cloudflare": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:cockroach-labs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:coinbase": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:complyadvantage": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:copper": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:coreweave": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:da-vinci": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:databricks": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:datadog": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:discord": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:doordash": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:dragos": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:dropbox": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:drw": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:duolingo": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:dv-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:elastic": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:engineers-gate": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:exoduspoint": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:expel": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:faire": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:figma": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:figure-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:fireblocks": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:five-rings": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:fivetran": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:flexport": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:flow-traders": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:form3": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:gitlab": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:glean": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:gocardless": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:gong": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:grafana-labs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:graphcore": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:groww": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:gsa-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:gusto": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:headlands-technologies": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:helsing": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:hubspot": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:hudson-river-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:huntress": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:imc-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:instacart": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:intercom": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:island": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:isomorphic-labs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
     "greenhouse:jane-street": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:jump-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:knowbe4": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:lattice": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:mako-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:man-group": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:marshall-wace": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:maven-securities": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:mercury": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:mixpanel": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:mongodb": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:monzo": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:n26": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:netskope": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:nuro": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:ocado": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:okta": {
       "alerted": false,
       "consecutive_failures": 0,
       "empty_runs": 0,
@@ -36,6 +1818,69 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "greenhouse:orca-security": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:pagerduty": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:pdt-partners": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:physicsx": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:ping-identity": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:pinterest": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:playstation": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
     "greenhouse:point72": {
       "alerted": false,
       "consecutive_failures": 0,
@@ -45,7 +1890,529 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "greenhouse:polyai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:proton": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:quadrature-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:qube-rt": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:radix-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:razorpay": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:recorded-future": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:reddit": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:ripple": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:robinhood": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:roblox": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:rubrik": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:sambanova": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:samsara": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:scale-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:schonfeld": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:sentinelone": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:snorkel-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:sofi": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:sourcegraph": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:speechmatics": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:squarepoint-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:stability-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:stevens-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:stripe": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:sumup": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:tailscale": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:tanium": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:tenable": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:tide": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:tines": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:together-ai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:tower-research-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:transmarket-group": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:twilio": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:vatic-labs": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:vercel": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:verkada": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:virtu-financial": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:waymo": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:winton": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:wiz": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:worldquant": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:xai": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:xtx-markets": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:zipline": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "greenhouse:zscaler": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:ansatz-capital": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:apollo-research": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:belvedere-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:cred": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:meesho": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:octopus-energy": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
     "lever:palantir": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:spotify": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:sysdig": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:valkyrie-trading": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:wintermute": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "filters_hash": "e574528ec087c1a7",
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "lever:zopa": {
       "alerted": false,
       "consecutive_failures": 0,
       "empty_runs": 0,
