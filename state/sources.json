@@ -856,6 +856,32 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "custom:google": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "custom:google-deepmind": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": false,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "custom:jpmorgan-chase": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
     "greenhouse:abnormal-ai": {
       "alerted": false,
       "consecutive_failures": 0,
@@ -2150,6 +2176,583 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "talnet:bank-of-america": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "talnet:jefferies": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "talnet:morgan-stanley": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "talnet:nomura": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:abrdn": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:adobe": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:arctic-wolf": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:baillie-gifford": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:barclays": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:blackrock": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:blackstone": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:broadcom": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:browserstack": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:capital-group": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:capital-one": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:cboe-global-markets": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:cisco": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:cme-group": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:crowdstrike": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:deutsche-bank": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:expedia": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:f5": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:factset": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:fidelity-international": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:fidelity-investments": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:fis": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:fiserv": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:g-research": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:houlihan-lokey": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:hp": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:ig-group": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:intel": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:invesco": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:jain-global": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:lloyds-banking-group": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:lseg": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:macquarie": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:mandg": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:mastercard": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:mimecast": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:mizuho": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:morgan-stanley-experienced": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:mufg": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:nasdaq": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:northern-trust": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:nvidia": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:paypal": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:postman": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:proofpoint": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:qualys": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:rothschild-and-co": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:sailpoint": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:salesforce": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:samsung": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:santander-uk": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:snap": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:sony": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:sp-global": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:state-street": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:t-rowe-price": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:td": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:trellix": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:trend-micro": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:vanguard": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:visa": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:wellington-management": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "workday:wells-fargo": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
+      "last_alert_at": null
+    },
+    "workday:workday": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-15T19:15:00+00:00",
       "last_alert_at": null
     }
   },
