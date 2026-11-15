@@ -79,10 +79,10 @@ def test_does_not_retry_a_client_error(settings):
     assert len(calls) == 1
 
 
-def test_honours_retry_after_with_a_cap(settings):
+def test_honours_retry_after(settings):
     responses = [
         httpx.Response(429, headers={"Retry-After": "7"}),
-        httpx.Response(429, headers={"Retry-After": "9999"}),
+        httpx.Response(429, headers={"Retry-After": "30"}),
         httpx.Response(200, json={}),
     ]
     sleeps = []
@@ -90,6 +90,21 @@ def test_honours_retry_after_with_a_cap(settings):
 
     client.get_json("https://example.com/jobs")
     assert sleeps == [7.0, 30.0]
+
+
+def test_does_not_retry_when_asked_to_stay_away_longer_than_a_run_can_wait(settings):
+    """Retrying after 30 seconds a host that said "come back in an hour" would ignore it."""
+    calls, sleeps = [], []
+
+    def handler(request):
+        calls.append(request.url.path)
+        return httpx.Response(429, headers={"Retry-After": "3600"})
+
+    client = client_with(settings, handler, sleeps, retries=2)
+    with pytest.raises(httpx.HTTPStatusError):
+        client.get_json("https://example.com/jobs")
+    assert calls == ["/jobs"]
+    assert sleeps == []
 
 
 def test_retries_a_timeout_then_raises_it(settings):
@@ -148,6 +163,22 @@ def test_reads_robots_txt_once_per_host_before_fetching(settings):
     client.get_text("https://example.com/jobs")
     client.get_text("https://example.com/more")
     assert requested == ["/robots.txt", "/jobs", "/more"]
+
+
+def test_asks_for_robots_txt_as_text_not_as_json(settings):
+    """Workday answers 406 to "Accept: application/json", which would read as "no rules"."""
+
+    def handler(request):
+        if request.url.path != "/robots.txt":
+            return httpx.Response(200, json={})
+        if "text/plain" not in request.headers["Accept"]:
+            return httpx.Response(406, json={"errorCode": "HTTP_406"})
+        return httpx.Response(200, text="User-agent: *\nDisallow: /Careers/\n")
+
+    client = HttpClient(settings, transport=httpx.MockTransport(handler))
+    with pytest.raises(RobotsDisallowedError, match="Disallow: /Careers/"):
+        client.require_allowed("https://acme.wd1.myworkdayjobs.com/Careers/")
+    client.require_allowed("https://acme.wd1.myworkdayjobs.com/Campus/")
 
 
 def test_never_requests_a_path_robots_txt_disallows(settings):
@@ -360,6 +391,135 @@ def test_does_not_follow_a_robots_txt_redirect_to_any_other_page(settings):
     with pytest.raises(RobotsDisallowedError, match="could not be read"):
         client.get_text("https://bank.tal.net/vx/candidate/jobboard/vacancy/1/adv/")
     assert requested == ["/robots.txt"]
+
+
+def _site_whose_robots_txt_redirects_to(target: str, other_robots: str, status: int, requested):
+    """jobs.example.com sends /robots.txt to a page on www.example.com."""
+
+    def handler(request):
+        url = str(request.url)
+        requested.append(url)
+        if url == "https://jobs.example.com/robots.txt":
+            return httpx.Response(301, headers={"Location": target})
+        if url == "https://www.example.com/robots.txt":
+            return httpx.Response(200, text=other_robots)
+        if request.url.host == "www.example.com":
+            return httpx.Response(status, text="a page")
+        return httpx.Response(200, text="jobs")
+
+    return handler
+
+
+def test_a_robots_txt_redirect_to_another_hosts_not_found_page_means_no_rules(settings):
+    """RFC 9309: follow the redirect; a 404 where it ends means there is no robots.txt.
+
+    The hop is an ordinary checked request, so the other host's rules are read first.
+    """
+    requested = []
+    handler = _site_whose_robots_txt_redirects_to(
+        "https://www.example.com/pagenotfound",
+        "User-agent: *\nDisallow: /private/\n",
+        404,
+        requested,
+    )
+    client = HttpClient(settings, transport=httpx.MockTransport(handler))
+
+    assert client.get_text("https://jobs.example.com/search") == "jobs"
+    assert client.get_text("https://jobs.example.com/search?page=2") == "jobs"
+    assert requested == [
+        "https://jobs.example.com/robots.txt",
+        "https://www.example.com/robots.txt",
+        "https://www.example.com/pagenotfound",
+        "https://jobs.example.com/search",
+        "https://jobs.example.com/search?page=2",
+    ]
+
+
+def test_a_robots_txt_redirect_into_a_path_the_other_host_disallows_is_not_followed(settings):
+    requested = []
+    handler = _site_whose_robots_txt_redirects_to(
+        "https://www.example.com/private/login",
+        "User-agent: *\nDisallow: /private/\n",
+        404,
+        requested,
+    )
+    client = HttpClient(settings, transport=httpx.MockTransport(handler))
+
+    with pytest.raises(RobotsDisallowedError, match="could not be read"):
+        client.get_text("https://jobs.example.com/search")
+    assert requested == [
+        "https://jobs.example.com/robots.txt",
+        "https://www.example.com/robots.txt",
+    ]
+
+
+@pytest.mark.parametrize("status", [200, 500])
+def test_a_robots_txt_redirect_that_ends_on_a_real_page_leaves_the_rules_unread(settings, status):
+    """Only "not found" means "no robots.txt". A home page or an error says nothing."""
+    requested = []
+    handler = _site_whose_robots_txt_redirects_to(
+        "https://www.example.com/welcome", "", status, requested
+    )
+    client = HttpClient(settings, transport=httpx.MockTransport(handler))
+
+    with pytest.raises(RobotsDisallowedError, match="could not be read"):
+        client.get_text("https://jobs.example.com/search")
+    assert "https://jobs.example.com/search" not in requested
+
+
+def test_a_robots_txt_redirect_that_loops_back_is_given_up_on(settings):
+    requested = []
+
+    def handler(request):
+        requested.append(str(request.url))
+        if request.url.path == "/robots.txt" and request.url.host == "www.example.com":
+            return httpx.Response(404)
+        if request.url.host == "www.example.com":  # ... and straight back again
+            return httpx.Response(302, headers={"Location": "https://jobs.example.com/home"})
+        return httpx.Response(301, headers={"Location": "https://www.example.com/moved"})
+
+    client = HttpClient(settings, transport=httpx.MockTransport(handler))
+    with pytest.raises(RobotsDisallowedError, match="could not be read"):
+        client.get_text("https://jobs.example.com/search")
+    assert requested == [
+        "https://jobs.example.com/robots.txt",
+        "https://www.example.com/robots.txt",
+        "https://www.example.com/moved",
+    ]
+
+
+def test_an_unreadable_robots_txt_is_not_retried_when_the_host_asks_for_hours(settings):
+    requested = []
+
+    def handler(request):
+        requested.append(request.url.path)
+        return httpx.Response(429, headers={"Retry-After": "25028"})
+
+    client = HttpClient(
+        replace(settings, retries=2), transport=httpx.MockTransport(handler), sleep=lambda s: None
+    )
+    for _ in range(2):
+        with pytest.raises(RobotsDisallowedError, match="HTTP 429"):
+            client.get_json("https://example.com/api/jobs")
+    assert requested == ["/robots.txt"]
+
+
+def test_a_host_can_be_given_a_longer_gap_than_the_rest(settings):
+    sleeps = []
+    client = client_with(
+        settings,
+        lambda request: httpx.Response(200, text="page"),
+        sleeps,
+        clock=lambda: 100.0,  # a frozen clock: no time passes between requests
+        per_host_delay_seconds=1.0,
+        host_delay_seconds={"slow.example.com": 5.0},
+    )
+    client.get_text("https://slow.example.com/a")
+    client.get_text("https://slow.example.com/b")
+    client.get_text("https://example.com/a")
+    client.get_text("https://example.com/b")
+    # Each host: robots.txt, then two pages, so two waits each.
+    assert sleeps == [5.0, 5.0, 1.0, 1.0]
 
 
 def test_a_robots_txt_that_times_out_means_nothing_is_fetched(settings):

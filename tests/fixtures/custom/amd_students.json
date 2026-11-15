@@ -1,0 +1,210 @@
+{
+  "jobs": [
+    {
+      "data": {
+        "slug": "88848",
+        "language": "en-us",
+        "languages": [
+          "en-us"
+        ],
+        "client_code": "amd",
+        "req_id": "88848",
+        "title": "2027 Analog & Mixed-Signal Design Intern",
+        "description": "(trimmed for the fixture)",
+        "location_name": "IE,Cork",
+        "street_address": "Unit 6, Eastgate Ave, Little Island",
+        "city": "Cork",
+        "state": "Cork",
+        "country": "Ireland",
+        "country_code": "IE",
+        "postal_code": "T45 YW71",
+        "location_type": "LAT_LNG",
+        "latitude": 51.89797,
+        "longitude": -8.47061,
+        "categories": [
+          {
+            "name": "Student / Intern / Temp"
+          }
+        ],
+        "tags1": [
+          "No"
+        ],
+        "tags2": [
+          "EUR €0.00/Yr."
+        ],
+        "tags3": [
+          "EUR €0.00/Yr."
+        ],
+        "tags4": [
+          "Campus Global"
+        ],
+        "department": "",
+        "salary_value": 0,
+        "salary_min_value": 0,
+        "salary_max_value": 0,
+        "qualifications": "(trimmed for the fixture)",
+        "hiring_organization": "Advanced Micro Devices, Inc",
+        "hiring_organization_logo": "https://www.amd.com/content/dam/code/images/header/amd-header-logo.svg",
+        "responsibilities": "(trimmed for the fixture)",
+        "posted_date": "2026-11-06T09:58:00+0000",
+        "apply_url": "https://globalcampus-amd.icims.com/jobs/88848/login",
+        "internal": false,
+        "external": false,
+        "searchable": true,
+        "applyable": true,
+        "li_easy_applyable": true,
+        "ats_code": "icims",
+        "hiring_flow_name": "iCIMS ATS Hiring Flow",
+        "isFrontLineAIJob": false,
+        "isApplyFlowJob": false,
+        "meta_data": {
+          "canonical_url": "https://careers.amd.com/jobs/88848?lang=en-us"
+        },
+        "update_date": "2026-11-07T12:02:14+0000",
+        "create_date": "2026-11-06T09:59:40+0000",
+        "category": [
+          " Student / Intern / Temp"
+        ],
+        "full_location": "Cork, Ireland",
+        "short_location": "Cork, Ireland",
+        "multipleLocations": false
+      }
+    },
+    {
+      "data": {
+        "slug": "93338",
+        "language": "en-us",
+        "languages": [
+          "en-us"
+        ],
+        "req_id": "93338",
+        "title": "Engineering Placement Intern - 2027/2028",
+        "description": "(trimmed for the fixture)",
+        "location_name": "GB,Belfast",
+        "street_address": "City Quays 2, Belfast Harbour Fourth Floor Offices Belfast, Ireland",
+        "city": "Belfast",
+        "country": "United Kingdom",
+        "country_code": "GB",
+        "postal_code": "BT1 3BG",
+        "location_type": "LAT_LNG",
+        "latitude": 54.60505209999999,
+        "longitude": -5.9197033,
+        "categories": [
+          {
+            "name": "Engineering"
+          }
+        ],
+        "tags1": [
+          "No"
+        ],
+        "tags2": [
+          "GBP £0.00/Yr."
+        ],
+        "tags3": [
+          "GBP £0.00/Yr."
+        ],
+        "tags4": [
+          "Campus Global"
+        ],
+        "promotion_value": 0,
+        "qualifications": "(trimmed for the fixture)",
+        "hiring_organization": "Advanced Micro Devices, Inc",
+        "hiring_organization_logo": "https://www.amd.com/content/dam/code/images/header/amd-header-logo.svg",
+        "responsibilities": "(trimmed for the fixture)",
+        "posted_date": "2026-10-05T15:47:00+0000",
+        "apply_url": "https://globalcampus-amd.icims.com/jobs/93338/login",
+        "internal": false,
+        "external": false,
+        "searchable": true,
+        "applyable": true,
+        "li_easy_applyable": true,
+        "ats_code": "icims",
+        "isFrontLineAIJob": false,
+        "isApplyFlowJob": false,
+        "meta_data": {
+          "canonical_url": "https://careers.amd.com/jobs/93338?lang=en-us"
+        },
+        "update_date": "2026-10-09T11:40:03+0000",
+        "create_date": "2026-10-05T15:49:05+0000",
+        "category": [
+          " Engineering"
+        ],
+        "full_location": "Belfast, United Kingdom",
+        "short_location": "Belfast, United Kingdom",
+        "multipleLocations": false
+      }
+    },
+    {
+      "data": {
+        "slug": "92029",
+        "language": "en-us",
+        "languages": [
+          "en-us"
+        ],
+        "client_code": "amd",
+        "req_id": "92029",
+        "title": "2027 Term 1 Internship – Advanced Packaging Optical Characterization Intern",
+        "description": "(trimmed for the fixture)",
+        "location_name": "SG,Singapore-Design Ctr",
+        "street_address": "508 Chai Chee Lane",
+        "city": "Singapore",
+        "country": "Singapore",
+        "country_code": "SG",
+        "postal_code": "469032",
+        "location_type": "LAT_LNG",
+        "latitude": 1.28967,
+        "longitude": 103.85007,
+        "categories": [
+          {
+            "name": "Student / Intern / Temp"
+          }
+        ],
+        "tags1": [
+          "No"
+        ],
+        "tags2": [
+          "SGD $0.00/Yr."
+        ],
+        "tags3": [
+          "SGD $0.00/Yr."
+        ],
+        "tags4": [
+          "Campus Global"
+        ],
+        "department": "",
+        "salary_value": 0,
+        "salary_min_value": 0,
+        "salary_max_value": 0,
+        "qualifications": "(trimmed for the fixture)",
+        "hiring_organization": "Advanced Micro Devices, Inc",
+        "hiring_organization_logo": "https://www.amd.com/content/dam/code/images/header/amd-header-logo.svg",
+        "responsibilities": "(trimmed for the fixture)",
+        "posted_date": "2026-09-03T14:02:00+0000",
+        "posting_expiry_date": "2026-12-30T16:00:00+0000",
+        "apply_url": "https://globalcampus-amd.icims.com/jobs/92029/login",
+        "internal": false,
+        "external": false,
+        "searchable": true,
+        "applyable": true,
+        "li_easy_applyable": true,
+        "ats_code": "icims",
+        "hiring_flow_name": "iCIMS ATS Hiring Flow",
+        "isFrontLineAIJob": false,
+        "isApplyFlowJob": false,
+        "meta_data": {
+          "canonical_url": "https://careers.amd.com/jobs/92029?lang=en-us"
+        },
+        "update_date": "2026-10-06T11:38:27+0000",
+        "create_date": "2026-09-03T14:04:11+0000",
+        "category": [
+          " Student / Intern / Temp"
+        ],
+        "full_location": "Singapore, Singapore",
+        "short_location": "Singapore, Singapore",
+        "multipleLocations": false
+      }
+    }
+  ],
+  "totalCount": 3,
+  "count": 3
+}

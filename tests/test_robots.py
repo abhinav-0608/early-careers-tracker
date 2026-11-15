@@ -137,6 +137,23 @@ def test_goldman_sachs_allows_only_single_role_pages():
     assert not parsed.allows("/")
 
 
+def test_smartrecruiters_api_disallows_every_crawler_but_one():
+    """Why the SmartRecruiters companies (Wise, Canva ...) are unsupported."""
+    text = load_text("robots/smartrecruiters-api.txt")
+    assert not rules(text).allows("/v1/companies/Wise/postings")
+    assert not rules(text).allows("/v1/companies/Canva/postings?offset=100&limit=100")
+    assert robots.parse(text, "linkedinbot").allows("/v1/companies/Wise/postings")
+
+
+def test_amazon_jobs_allows_its_search_and_amd_asks_for_five_seconds():
+    amazon = rules(load_text("robots/amazon-jobs.txt"))
+    assert amazon.allows("/en/search.json?business_category[]=studentprograms&offset=100")
+    assert not amazon.allows("/en/internal/jobs/1")
+    amd = rules(load_text("robots/amd.txt"))
+    assert amd.allows("/api/jobs?page=1&limit=100&keywords=intern")
+    assert amd.crawl_delay == 5.0
+
+
 @pytest.mark.parametrize(
     ("site", "allowed"),
     [("/Undergraduate_careers/", True), ("/Graduate_careers/", True), ("/refreshFacet/", False)],

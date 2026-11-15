@@ -1,0 +1,96 @@
+{
+  "status": 200,
+  "error": {
+    "message": "",
+    "body": ""
+  },
+  "data": {
+    "positions": [
+      {
+        "id": 1970393557070382,
+        "displayJobId": "200066641",
+        "name": "Cambridge Internship Program: MSRC AI Security Research",
+        "locations": [
+          "United Kingdom, Cambridgeshire, Cambridge"
+        ],
+        "standardizedLocations": [
+          "Cambridge, England, GB"
+        ],
+        "postedTs": 1794413388,
+        "solrScore": null,
+        "stars": 0,
+        "department": "Research Sciences",
+        "creationTs": 1794307956,
+        "isHot": 0,
+        "workLocationOption": "onsite",
+        "locationFlexibility": null,
+        "atsJobId": "200066641",
+        "positionUrl": "/careers/job/1970393557070382"
+      },
+      {
+        "id": 1970393556986148,
+        "displayJobId": "200053353",
+        "name": "Electrical Engineering INTERN (PhD)",
+        "locations": [
+          "United States, Washington, Redmond"
+        ],
+        "standardizedLocations": [
+          "Redmond, WA, US"
+        ],
+        "postedTs": 1794596340,
+        "solrScore": null,
+        "stars": 0,
+        "department": "Electrical Engineering",
+        "creationTs": 1788373286,
+        "isHot": 0,
+        "workLocationOption": "onsite",
+        "locationFlexibility": null,
+        "atsJobId": "200053353",
+        "positionUrl": "/careers/job/1970393556986148"
+      },
+      {
+        "id": 1970393556986140,
+        "displayJobId": "200053343",
+        "name": "Applied Science: PhD Internship Opportunities - Multiple Locations",
+        "locations": [
+          "United States, Washington, Redmond",
+          "United States, California, Mountain View"
+        ],
+        "standardizedLocations": [
+          "Redmond, WA, US",
+          "Mountain View, CA, US"
+        ],
+        "postedTs": 1794422289,
+        "solrScore": null,
+        "stars": 0,
+        "department": "Applied Sciences",
+        "creationTs": 1788372268,
+        "isHot": 0,
+        "workLocationOption": "onsite",
+        "locationFlexibility": null,
+        "atsJobId": "200053343",
+        "positionUrl": "/careers/job/1970393556986140"
+      }
+    ],
+    "filterDef": {
+      "facets": {},
+      "smartFilters": []
+    },
+    "count": 3,
+    "sortBy": "timestamp",
+    "appliedFilters": {
+      "seniority": [
+        "Intern"
+      ]
+    },
+    "debug": {},
+    "savedSearchMetadata": {
+      "savedSearchParamsHash": null,
+      "isSavedSearchActive": false
+    },
+    "resultsMetaData": {
+      "usedFuzzSearch": false
+    }
+  },
+  "metadata": null
+}

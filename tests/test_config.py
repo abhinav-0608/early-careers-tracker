@@ -171,7 +171,7 @@ def test_every_polled_company_has_what_its_adapter_needs(config):
     """The shipped list: nothing an adapter reads from a company may be missing."""
     polled = [company for company in config.companies if adapter_for(company)]
     assert {company.ats for company in polled} == {
-        "greenhouse", "lever", "ashby", "workday", "talnet", "custom",
+        "greenhouse", "lever", "ashby", "workable", "workday", "talnet", "custom",
     }  # fmt: skip
     for company in polled:
         if company.ats in ("workday", "talnet"):
@@ -186,6 +186,15 @@ def test_every_polled_company_has_what_its_adapter_needs(config):
         assert adapter_for(by_key[key]) is not None, key
     for key in ("goldman-sachs", "citadel", "citadel-securities", "revolut"):
         assert by_key[key].ats == "unsupported" and by_key[key].note, key
+    # Stage 3b: four more big-tech sites polled, two that cannot be, and the six
+    # SmartRecruiters boards, whose API robots.txt disallows.
+    for key in ("amazon", "apple", "microsoft", "amd"):
+        assert adapter_for(by_key[key]) is not None, key
+    for key in ("meta", "tesla", "wise", "canva", "servicenow", "legal-and-general",
+                "check-point", "armis"):  # fmt: skip
+        assert by_key[key].ats == "unsupported" and by_key[key].note, key
+    assert sum(company.ats == "workable" for company in polled) == 6
+    assert not any(company.ats == "smartrecruiters" for company in config.companies)
 
 
 def test_unsupported_company_needs_a_note(tmp_path):

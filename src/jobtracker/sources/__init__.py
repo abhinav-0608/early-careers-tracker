@@ -15,7 +15,7 @@ from collections.abc import Callable
 
 from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
-from jobtracker.sources import ashby, custom, greenhouse, lever, talnet, workday
+from jobtracker.sources import ashby, custom, greenhouse, lever, talnet, workable, workday
 
 Adapter = Callable[[Company, HttpClient], list[Job]]
 
@@ -25,6 +25,7 @@ ADAPTERS: dict[str, Adapter] = {
     ashby.NAME: ashby.fetch,
     workday.NAME: workday.fetch,
     talnet.NAME: talnet.fetch,
+    workable.NAME: workable.fetch,
 }
 
 

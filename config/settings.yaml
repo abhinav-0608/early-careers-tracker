@@ -11,6 +11,11 @@ http:
   retries: 2                    # extra attempts on 429 / 5xx / network errors
   per_host_delay_seconds: 1.0   # minimum gap between two requests to the same host
   max_workers: 8                # hosts fetched in parallel (one request per host at a time)
+  # A longer gap for particular hosts. (A host's own Crawl-delay is honoured without
+  # being listed here.)
+  host_delay_seconds:
+    apply.workable.com: 5.0     # rate-limits by IP address: it blocked this tracker's
+                                # probing for hours during stage 2
 
 polling:
   # Minimum minutes between polls of a source. 0 = every run (every 15 minutes).
@@ -28,6 +33,11 @@ polling:
                           # (about 15 requests each). Between searches only their first
                           # page, the newest 20 postings, is read
     google: 60            # each request is a 1.3 MB page
+    workable: 60          # six boards behind one strict rate limit (see host_delay_seconds)
+    amazon: 60            # about 1 MB per page of 100 roles
+    apple: 60             # about 7 pages of 320 KB
+    amd: 60               # four requests, five seconds apart (the site's Crawl-delay)
+    microsoft: 0          # five small requests (10 roles each); raise it if that grows
 
 notify:
   server: "https://ntfy.sh"

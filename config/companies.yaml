@@ -16,11 +16,11 @@
 #                  vc_backed  venture-funded and still private, or listed within about two years
 #                  yc         went through Y Combinator (kept after an IPO)
 #   regions      where the company hires, of uk / us / india (informational)
-#   ats          greenhouse | lever | ashby | workday | talnet   polled now
-#                smartrecruiters | workable            verified; polled once the adapter is built
+#   ats          greenhouse | lever | ashby | workable | workday | talnet
+#                                                      polled through the adapter of that name
 #                custom                                own careers site, one module each under
-#                                                      sources/custom/; polled once that module
-#                                                      exists (today: google, jpmorgan)
+#                                                      sources/custom/ (amazon, amd, apple,
+#                                                      google, jpmorgan, microsoft)
 #                unsupported                           cannot be polled; the note says why
 #   board        the board identifier in the ATS's public API (module name for custom)
 #   tenant, host, sites
@@ -47,7 +47,8 @@
   ats: custom
   board: apple
   careers_url: https://jobs.apple.com
-  note: "Own careers site (jobs.apple.com); adapter planned for stage 3"
+  note: "Students: Internships team only, worldwide (the search page of jobs.apple.com, which embeds its results as JSON)"
+  verified: 2026-11-15
 
 - key: nvidia
   name: NVIDIA
@@ -69,7 +70,8 @@
   ats: custom
   board: microsoft
   careers_url: https://careers.microsoft.com
-  note: "Own careers site; adapter planned for stage 3"
+  note: "Intern experience level only, worldwide (the search API of apply.careers.microsoft.com, which its robots.txt allows)"
+  verified: 2026-11-15
 
 - key: google
   name: Google
@@ -90,27 +92,26 @@
   ats: custom
   board: amazon
   careers_url: https://www.amazon.jobs
-  note: "Own careers site (amazon.jobs search.json); adapter planned for stage 3"
+  note: "Student Programs category in the UK, India and the US only (amazon.jobs search.json); the site is too large to read in full"
+  verified: 2026-11-15
 
 - key: meta
   name: Meta
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  ats: custom
-  board: meta
+  ats: unsupported
   careers_url: https://www.metacareers.com
-  note: "Own careers site (metacareers.com); adapter planned for stage 3"
+  note: 'robots.txt on www.metacareers.com opens with a notice that automated collection of data is prohibited without written permission, and the job search is rendered in the browser from token-protected GraphQL calls. Checked 2026-11-15'
 
 - key: tesla
   name: Tesla
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  ats: custom
-  board: tesla
+  ats: unsupported
   careers_url: https://www.tesla.com/careers
-  note: "Own careers site behind bot protection; adapter planned for stage 3"
+  note: 'www.tesla.com answers every request, robots.txt included, with an Akamai "Access Denied" (HTTP 403) unless it comes from a browser. Checked 2026-11-15'
 
 - key: amd
   name: AMD
@@ -120,7 +121,8 @@
   ats: custom
   board: amd
   careers_url: https://careers.amd.com
-  note: "Careers site runs on iCIMS (careers-amd.icims.com); adapter planned for stage 3"
+  note: "Student / Intern / Temp category plus keyword searches for intern, placement and graduate (careers.amd.com/api/jobs; Crawl-delay: 5)"
+  verified: 2026-11-15
 
 - key: palantir
   name: Palantir
@@ -421,10 +423,9 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  ats: smartrecruiters
-  board: ServiceNow
+  ats: unsupported
   careers_url: https://careers.servicenow.com
-  verified: 2026-11-15
+  note: "SmartRecruiters board (id ServiceNow). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
 
 - key: workday
   name: Workday
@@ -2437,10 +2438,9 @@
   industry: finance
   tags: []
   regions: [uk]
-  ats: smartrecruiters
-  board: legalandgeneral
+  ats: unsupported
   careers_url: https://jobs.smartrecruiters.com/legalandgeneral
-  verified: 2026-11-15
+  note: "SmartRecruiters board (id legalandgeneral). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
 
 - key: baillie-gifford
   name: Baillie Gifford
@@ -2492,10 +2492,9 @@
   industry: fintech
   tags: []
   regions: [uk, us, india]
-  ats: smartrecruiters
-  board: Wise
+  ats: unsupported
   careers_url: https://wise.jobs
-  verified: 2026-11-15
+  note: "SmartRecruiters board (id Wise). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
 
 - key: starling-bank
   name: Starling Bank
@@ -3320,10 +3319,9 @@
   industry: cybersecurity
   tags: []
   regions: [uk, us, india]
-  ats: smartrecruiters
-  board: CheckPointSoftwareTechnologies2
+  ats: unsupported
   careers_url: https://careers.checkpoint.com
-  verified: 2026-11-15
+  note: "SmartRecruiters board (id CheckPointSoftwareTechnologies2). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
 
 - key: proofpoint
   name: Proofpoint
@@ -3693,10 +3691,9 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  ats: smartrecruiters
-  board: armis
+  ats: unsupported
   careers_url: https://www.armis.com/careers/
-  verified: 2026-11-15
+  note: "SmartRecruiters board (id armis). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
 
 - key: dragos
   name: Dragos
@@ -3864,10 +3861,9 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  ats: smartrecruiters
-  board: Canva
+  ats: unsupported
   careers_url: https://www.lifeatcanva.com
-  verified: 2026-11-15
+  note: "SmartRecruiters board (id Canva). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
 
 - key: gitlab
   name: GitLab

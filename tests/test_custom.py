@@ -18,7 +18,7 @@ DEEPMIND = make_company("google-deepmind", ats="custom", board="google")
 def test_a_custom_company_is_polled_only_once_its_module_exists():
     assert adapter_for(JPMORGAN) is jpmorgan.fetch
     assert adapter_for(GOOGLE) is google.fetch
-    assert adapter_for(make_company("apple", ats="custom", board="apple")) is None
+    assert adapter_for(make_company("acme", ats="custom", board="not-written-yet")) is None
     assert adapter_for(make_company("citadel", ats="unsupported", board=None)) is None
 
 

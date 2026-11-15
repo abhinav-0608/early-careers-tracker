@@ -124,7 +124,7 @@ def filters(profile: Profile) -> Filters:
 @pytest.fixture(scope="session")
 def settings(config: Config):
     # No waiting between requests and no retries unless a test asks for them.
-    return replace(config.settings, per_host_delay_seconds=0, retries=0)
+    return replace(config.settings, per_host_delay_seconds=0, host_delay_seconds={}, retries=0)
 
 
 GREENHOUSE = "boards-api.greenhouse.io"

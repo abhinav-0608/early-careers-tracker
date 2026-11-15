@@ -1,8 +1,8 @@
 # Job Alert Tracker — Design
 
 Status: **approved 2026-11-15**. Stages 1 and 2 are built, the tracker is profile-ready
-(section 2a), and stage 3 is part built (section 13 says which part); sections below are
-kept in step with the code.
+(section 2a), and stage 3 is built, including stage 3b (section 13; 3b is on a branch
+awaiting review); sections below are kept in step with the code.
 
 ## 1. Goals and constraints
 
@@ -87,11 +87,11 @@ src/jobtracker/
   sources/
     __init__.py        adapter registry
     common.py          date / list parsing helpers shared by adapters
-    greenhouse.py  lever.py  ashby.py  smartrecruiters.py  workable.py
+    greenhouse.py  lever.py  ashby.py  workable.py
     workday.py         one generic adapter, configured per company
     talnet.py          one generic adapter for tal.net (Oleeo) campus boards
     custom/            one module per company with its own careers site
-      google.py  jpmorgan.py
+      amazon.py  amd.py  apple.py  google.py  jpmorgan.py  microsoft.py
     boards/            grad boards / community repos (stage 4, only if permitted)
 state/
   sources.json         per-board health, shared
@@ -291,6 +291,8 @@ http:
   retries: 2                 # on 429 / 5xx / timeouts, with backoff; honours Retry-After
   per_host_delay_seconds: 1.0
   max_workers: 8             # hosts run in parallel; requests to one host are serial
+  host_delay_seconds:        # a longer gap for the hosts named here
+    apply.workable.com: 5.0
 polling:
   every_minutes:             # minimum minutes between polls of a source; 0 = every run
     greenhouse: 0
@@ -301,6 +303,11 @@ polling:
     workday: 0               # Workday sites small enough to read in full
     workday_search: 60       # the searches run on Workday sites too large for that
     google: 60
+    workable: 60
+    amazon: 60
+    apple: 60
+    amd: 60
+    microsoft: 0
 notify:
   batch_threshold: 5         # more than this many new jobs in one run → one summary
   priority: {dream: 5, normal: 3}
@@ -413,8 +420,8 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   tags: []
   regions: [uk, us]
   opt_in: false          # true = only profiles naming this company watch it (section 2a)
-  ats: greenhouse        # greenhouse | lever | ashby | smartrecruiters | workable |
-                         # workday | talnet | custom | unsupported
+  ats: greenhouse        # greenhouse | lever | ashby | workable | workday | talnet |
+                         # custom | unsupported
   board: janestreet      # board id in the ATS's API (module name for custom)
   careers_url: https://www.janestreet.com/join-jane-street/
   verified: 2026-11-15   # date the board id last returned live postings
@@ -494,18 +501,32 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Greenhouse | `GET boards-api.greenhouse.io/v1/boards/{board}/jobs` | Whole board in one response. `?content=true` is not used: it adds departments but makes the response ~20x larger, so Greenhouse jobs are classified from the title alone |
 | Lever | `GET api.lever.co/v0/postings/{board}?mode=json` | Whole board in one response |
 | Ashby | `GET api.ashbyhq.com/posting-api/job-board/{board}` | Remote is read from `workplaceType`; `isRemote` is unreliable (true on hundreds of hybrid jobs) |
-| SmartRecruiters | `GET api.smartrecruiters.com/v1/companies/{id}/postings` | Paginated (`offset`/`limit`) |
-| Workable | `GET apply.workable.com/api/v1/widget/accounts/{id}` | Whole board in one response |
+| Workable | `GET apply.workable.com/api/v1/widget/accounts/{id}` | Whole board in one response. Not yet checked against the live API (see below) |
 | Workday | `POST {tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` | Paginated, 20 per page; `searchText` narrows large tenants. No usable date ("Posted 3 Days Ago") |
 | tal.net (Oleeo) | `GET {tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/` | The HTML job board a candidate sees; 50 per page (`?start=50`). No date. `Crawl-delay: 10` |
 | Custom: JPMorgan | `GET jpmc.fa.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions` | Oracle Recruiting Cloud, 200 per page, narrowed to one job family |
 | Custom: Google | `GET www.google.com/about/careers/applications/jobs/results` | JSON embedded in the page; first page of each search only (robots.txt) |
+| Custom: Amazon | `GET www.amazon.jobs/en/search.json` | 100 per page, each role with its full description (about 1 MB a page); narrowed to one category and three countries |
+| Custom: Apple | `GET jobs.apple.com/en-gb/search` | JSON embedded in the page, 20 per page (about 320 KB a page); narrowed to one team |
+| Custom: Microsoft | `GET apply.careers.microsoft.com/api/pcsx/search` | Eightfold; 10 per page; narrowed to one experience level |
+| Custom: AMD | `GET careers.amd.com/api/jobs` | iCIMS Attract; 100 per page with full descriptions; one category and three keyword searches. `Crawl-delay: 5` |
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
 
-Greenhouse, Lever, Ashby, Workday, tal.net, JPMorgan and Google were verified against the
-live sites on 2026-11-15 and their test fixtures are trimmed copies of those responses.
-SmartRecruiters and Workable are from memory of the public documentation and are verified
-the same way when they are built.
+Greenhouse, Lever, Ashby, Workday, tal.net, JPMorgan, Google, Amazon, Apple, Microsoft and
+AMD were verified against the live sites on 2026-11-15 and their test fixtures are trimmed
+copies of those responses. Workable is the exception: its adapter and fixture follow
+Workable's documented response and have not met the live API yet (below).
+
+**SmartRecruiters is not polled.** `api.smartrecruiters.com/robots.txt` reads, in full,
+`User-agent: LinkedInBot / Allow: /v1/companies/` then `User-agent: * / Disallow: /`. The
+postings API is therefore disallowed to this tracker, and the six companies on it
+(ServiceNow, Legal & General, Wise, Check Point, Armis, Canva) are `unsupported`. Stage 2
+verified their board ids before the client enforced robots.txt, which is how they came
+to be listed as pollable. The same postings are shown on `jobs.smartrecruiters.com`,
+which has no robots.txt, but reading them there would be the alternate-host workaround
+that decision 12 rules out. A company's *own* careers site (wise.jobs, lifeatcanva.com)
+is a different matter: each would be a custom scraper under its own robots.txt, and none
+has been built.
 
 **Workday and robots.txt.** Each tenant publishes a `robots.txt` naming its sites. Where it
 disallows a site (Citi, RBC, PIMCO, Zoom, eBay, Palo Alto Networks, Darktrace and a few
@@ -516,9 +537,16 @@ before calling the endpoint it asks `HttpClient.require_allowed()` whether the s
 page (`/{site}/`) is allowed, so a tenant that starts disallowing a site stops being
 polled and shows up as `blocked`.
 
-**Workable rate limits.** `apply.workable.com` sits behind a Cloudflare rate limit that
-blocked a few hundred requests made about a second apart during stage 2. The handful of
-Workable boards must be polled gently (stage 3: a longer per-host delay, and not every run).
+**Workable rate limits.** `apply.workable.com` sits behind a rate limit, by IP address,
+that blocked a few hundred requests made about a second apart during stage 2. Hours later
+it was still answering 429 on every path, `robots.txt` included, with a `Retry-After` of
+about seven hours, so the adapter could not be checked against the live API when it was
+written (stage 3b), and with `robots.txt` unreadable the client fetches nothing from the
+host. The six Workable boards are therefore polled gently: five seconds between requests
+to that host (`http.host_delay_seconds`) and at most once an hour, which is seven requests
+an hour including `robots.txt`. Whether GitHub's runners are rate-limited too is only
+known once it runs there; until a first good poll, a Workable *parsing* error means the
+documented shape was wrong rather than that a board broke.
 
 **Workday at scale.** Large tenants hold thousands of postings at 20 per page. Fetching all
 of them every 15 minutes is rude and slow. A site with up to 200 postings is read in full
@@ -562,11 +590,16 @@ pages that list roles, is `unsupported` with the reason in its `note`.
 | Goldman Sachs | Unsupported | `higher.gs.com/robots.txt` allows only single role pages (`/roles/`) and disallows everything else, including every page that lists roles. The site's data API is on another host with no robots.txt, but as with Workday the owner's intent is clear |
 | Citadel, Citadel Securities | Unsupported | Careers pages answer with a Cloudflare browser challenge (403 without JavaScript) |
 | Revolut | Unsupported | Careers page answers with a browser security check (403 without JavaScript); robots.txt also disallows `/api/` and any URL with a query string |
+| Amazon | Polled, narrowed | `www.amazon.jobs/en/search.json`; robots.txt disallows only `/internal`. The site holds tens of thousands of roles, so the request uses its "Student Programs" business category and the UK, India and the US: 126 roles, 2 requests of about 0.7 MB. A student role filed under another category (some AWS data-centre internships) or in another country is not seen |
+| Apple | Polled, narrowed | The search page embeds its results as JSON. The site's "Students: Internships" team, worldwide: 133 listings (115 roles, since a role is listed once per location), 7 pages of 320 KB. Graduate, retail and support programmes are not seen. `jobs.apple.com/robots.txt` redirects to apple.com's not-found page, which means "no robots.txt" (see robots.txt redirects below) |
+| Microsoft | Polled, narrowed | The careers site is an Eightfold site whose robots.txt disallows everything except a short list that includes `/api/pcsx` (the search API) and `/careers`. The "Intern" experience level, worldwide: 44 roles, 5 requests of 20 KB. Graduate ("Entry") roles are not seen |
+| AMD | Polled, narrowed | `careers.amd.com/api/jobs`; robots.txt allows everything with `Crawl-delay: 5`. Reading all 1,300 roles would be 43 MB, so: the "Student / Intern / Temp" category plus keyword searches for intern, placement and graduate (AMD files many internships under Engineering): 105 roles, 4 requests, 2 MB. Applications go to `careers-amd.icims.com`, which disallows everything and is never requested |
+| Meta | Unsupported | `www.metacareers.com/robots.txt` opens with a notice that automated collection of data is prohibited without written permission. Its Disallow lines do not name the job search and it advertises a jobs sitemap, but the notice states the owner's intent, and the search itself is rendered in the browser from GraphQL calls that need page tokens. Nothing beyond robots.txt was requested |
+| Tesla | Unsupported | `www.tesla.com` answers every request, robots.txt included, with an Akamai "Access Denied" (403) unless it comes from a browser |
 
-Still to investigate: Amazon (public `search.json`), Apple, Microsoft, Meta, Tesla and AMD
-(iCIMS). Meta and Tesla are the most likely to end up `unsupported` (GraphQL with rotating
-tokens, and aggressive bot protection respectively). Anthropic (Greenhouse), OpenAI (Ashby)
-and Palantir (Lever) were already covered.
+Counts are from 2026-11-15. Anthropic (Greenhouse), OpenAI (Ashby) and Palantir (Lever)
+were already covered. Of the 23 dream-tier companies, 17 are polled and 6 are not
+(Goldman Sachs, Citadel, Citadel Securities, Revolut, Meta, Tesla).
 
 **Politeness, enforced in `http.py` so no adapter can skip it:**
 
@@ -575,7 +608,11 @@ and Palantir (Lever) were already covered.
   by host and each queue gets one thread of a small pool, so every thread is always working
   on a different host and ~340 companies finish in about four minutes without hammering
   anyone.
-- `429` and `Retry-After` are honoured. Retries are capped at 2.
+- `429` and `Retry-After` are honoured. Retries are capped at 2. A `Retry-After` of more
+  than 30 seconds is not waited out and is not retried sooner either: the request fails
+  for this run (Workable asked for seven hours).
+- A host can be given a longer gap than the default (`http.host_delay_seconds`), for a
+  site that publishes no Crawl-delay but is known to rate-limit.
 - **robots.txt, for every adapter.** The client reads each host's `robots.txt` once per run,
   before the first request to it, and checks every request against it (path and query). A
   disallowed path is never requested and the source is reported as `blocked`.
@@ -584,6 +621,19 @@ and Palantir (Lever) were already covered.
     `Disallow: /*/ats/` as allowing everything.
   - A 4xx answer for `robots.txt` means the host has no rules. A 5xx, a 429 or a timeout
     means the rules are unknown, and then nothing is fetched from that host for the run.
+  - `robots.txt` is requested as text (`Accept: text/plain`). Until stage 3b it went out
+    with the client's default `Accept: application/json`, which Workday refuses with 406,
+    and the 406 was read as "no rules": no Workday tenant's file was actually being read,
+    so the per-site check described above could never fire. With the header fixed, the
+    files of the 57 tenants that answered were read and every configured site is allowed.
+  - **robots.txt redirects.** A redirect to another `robots.txt` (the usual bare domain
+    to `www`) is followed. A redirect to any other page on the *same* host is not,
+    because with that host's rules unread the page cannot be known to be allowed; the
+    rules count as unreadable. A redirect to a page on *another* host is followed as an
+    ordinary request, checked against that host's own robots.txt, and only a 4xx at the
+    end of it is taken to mean "no robots.txt", as RFC 9309 describes. This is what
+    `jobs.apple.com` does (to `apple.com/pagenotfound`, a 404). A home page, a login page
+    or an error at the end leaves the rules unreadable.
   - The only request that skips the check is publishing to ntfy, which is not crawling.
 - **Redirects are never followed blindly.** The client follows a redirect one hop at a time
   and puts each hop through the same checks as any request, so a redirect into a disallowed
@@ -594,8 +644,9 @@ and Palantir (Lever) were already covered.
   than 60 seconds is not fetched at all, because a 12-minute run could not honour it.
 - **Polling intervals.** `settings.yaml` gives each kind of source a minimum number of
   minutes between polls (`polling.every_minutes`, keyed by ATS name or custom module name;
-  0 or absent means every run). Today the ATS APIs, tal.net, JPMorgan and small Workday
-  sites are polled every run, and two things are held to once an hour:
+  0 or absent means every run). Today the ATS APIs, tal.net, JPMorgan, Microsoft and small
+  Workday sites are polled every run. Workable, Amazon, Apple and AMD are held to once an
+  hour as whole sources (their weight is in the tables above), and so are two more:
   - **Google** (whole source): each request is a 1.3 MB page. When it is not due it gets a
     `not_due` result and no request at all.
   - **Workday searches** (`workday_search`): a tenant is still polled every run, so its
@@ -872,6 +923,15 @@ them; which one (the owner's, most likely) is settled when the table is built in
   reopen, failed source closes nothing, empty regression, baseline, filter-change baseline.
 - **Notify:** batching threshold, dream tier always individual, failed send is retried.
 - **Pipeline:** one end-to-end test with fake sources where one raises, proving isolation.
+- **Stage 3b adapters** (`test_workable.py`, `test_custom_bigtech.py`): for each of
+  Amazon, Apple, Microsoft and AMD, a trimmed live response mapped field by field, an
+  empty result, a malformed one, and the requests `fetch` makes (filters, paging, page
+  limit and its log line). Apple: a role listed once per location is merged; the
+  robots.txt redirect chain of the live site. AMD: the crawl delay between its requests;
+  nothing points at the iCIMS host. Workable: the documented shape (hand-written fixture),
+  a rate-limited host left alone after one request, the five-second gap. The real
+  robots.txt files of SmartRecruiters' API (why it is unsupported), Microsoft, Amazon and
+  AMD.
 - **Polling intervals** (`test_polling.py`): an hourly source is polled once in four runs
   and makes no request in the other three; a skipped source is never a failure and never
   closes a job, even one that really has gone; a failing source is retried every run; a
@@ -910,8 +970,18 @@ As you specified, stopping after each for review:
    - **Measured** (2026-11-15, 340 companies): a run in which everything is due takes 3 min
      47 s and makes 1,037 requests; the other three runs of each hour take 2 min 53 s and
      582. The floor is Greenhouse: 150 boards on one host, one second apart.
-   - **Stage 3b, still to do:** SmartRecruiters and Workable (6 companies each); Amazon,
-     Apple, Microsoft, Meta, Tesla and AMD.
+   - **Stage 3b, built (on a branch, awaiting review):** the Workable adapter (6
+     companies, not yet checked against the live API); custom adapters for Amazon, Apple,
+     Microsoft and AMD. **Unsupported:** the six SmartRecruiters companies, Meta and Tesla
+     (section 5). 350 companies have an adapter, up from 340; 72 are unsupported.
+   - **Measured again** (2026-11-15, 350 companies, everything due): 3 min 45 s and 1,021
+     requests to 79 hosts, of which the four new custom sources are 22 (5.7 MB) plus 5
+     to apple.com for the robots.txt redirect. The run is no longer: the new hosts are
+     fetched in parallel with the Greenhouse queue, which still sets the floor. In that
+     run Workable was not contacted (rate-limited, above) and seven Workday tenants
+     answered 429 for robots.txt from the development machine (they are healthy in the
+     committed state from GitHub's runners), so the request count is about 100 lower
+     than a clean run's.
 4. Grad boards and community repos: terms and robots.txt report first, build only what is
    allowed.
 5. README table, keep-alive, full tests and CI, hardening.
@@ -964,3 +1034,18 @@ As you specified, stopping after each for review:
 12. **No workarounds for unsupported sites** (2026-11-15). Goldman Sachs, Citadel, Citadel
     Securities and Revolut stay unsupported: no headless browser, and no reading the same
     data from another host that robots.txt happens not to cover. JPMorgan stays polled.
+
+**Made in stage 3b, for review** (2026-11-15; these follow from decisions 10 and 12 but
+were judgement calls, so they are listed until confirmed):
+
+- **SmartRecruiters is unsupported** (Wise, Canva, ServiceNow, Legal & General, Check
+  Point, Armis): its API host's robots.txt disallows every crawler but LinkedIn's. Not
+  read from `jobs.smartrecruiters.com` instead, under decision 12.
+- **Meta is unsupported on the notice in its robots.txt**, not on a Disallow line.
+- **A robots.txt redirect to another host's not-found page means "no robots.txt"**, when
+  that other host's rules allow the hop. This is what lets Apple be polled. Without it
+  Apple would be unsupported ("robots.txt cannot be read").
+- **AMD is read from careers.amd.com** although its application host (icims.com)
+  disallows everything: careers.amd.com is AMD's own careers site, allows everything,
+  and is the only host requested.
+- **Workable is built but unproven**, and polled hourly with a five-second gap.
