@@ -18,11 +18,13 @@ is one, and friends can be added later without affecting it (section 2a).
 | One broken source must never fail the run | Every source runs inside its own error boundary and reports a result object |
 | Explainable in an interview | Small modules, plain dataclasses, no framework, no clever abstractions |
 
-**What "every 15 minutes" really means.** GitHub's scheduler is best-effort: runs are commonly
-5–20 minutes late under load and are occasionally skipped. Realistic alert latency is 15–40
-minutes after a job is posted. Nothing free does better. To reduce delay, the cron uses an
-offset (`7,22,37,52 * * * *`) rather than `*/15`, because runs scheduled on the hour and
-quarter-hour queue behind everybody else's. Same frequency, less contention.
+**What "every 15 minutes" really means.** GitHub's own scheduler is best-effort, and in
+practice far worse than "commonly 5–20 minutes late": in this repo's first 12 hours it fired
+**1 of 49** scheduled slots. So the 15-minute beat comes from outside. A free external
+scheduler (cron-job.org) calls GitHub's `workflow_dispatch` API every 15 minutes, which starts
+a run within seconds; realistic alert latency is then 15–20 minutes after a job is posted.
+GitHub's schedule stays in the workflow as a fallback, offset to `7,22,37,52 * * * *` so that
+it lands between the external calls. Section 9 covers how the two coexist.
 
 ## 2. Architecture
 
@@ -644,9 +646,36 @@ alert:
   succeeded, so a persistent crash sends one alert rather than one every 15 minutes; the
   dead-man's switch below covers a failure that persists.
 
+**Two triggers, no double alerts.** The external scheduler and GitHub's schedule can fire at
+the same moment, and either can arrive while a run is in progress. Three things keep that
+safe:
+
+- `concurrency: {group: poll, cancel-in-progress: false}`: runs queue rather than overlap, so
+  only one run at a time reads and writes state. GitHub keeps one run waiting at most; a
+  newer arrival replaces an older waiting one (shown as cancelled, which is harmless).
+- Checkout names the branch (`ref: main`). By default a run checks out the commit that was
+  current when it was *triggered*, so a run that waited in the queue would read the state
+  from before the run ahead of it and alert the same new jobs again. Naming the branch makes
+  every run start from the latest committed state, which already has those jobs marked
+  notified.
+- A scheduled run first checks whether a dispatched run started in the last 10 minutes and
+  succeeded. If so it stops before fetching anything: the schedule is a fallback, not a
+  second poll of every board. Dispatched runs (the external scheduler, or by hand) always go
+  ahead.
+
+Each run is named after its trigger ("Poll (cron-job.org)", "Poll (GitHub schedule)",
+"Poll (manual)"), so the run history shows which trigger is doing the work.
+
+**The external scheduler's token.** cron-job.org holds a fine-grained GitHub token limited to
+this one repository with a single permission, Actions: read and write. It can start, cancel
+and disable workflow runs here; it cannot read secrets, push code or touch any other repo.
+If it expires or is revoked, cron-job.org's calls fail (it emails after repeated failures),
+the fallback schedule carries on, and the dead-man's switch below reports any gap over an
+hour.
+
 **Git push conflicts.**
 
-- `concurrency: {group: poll, cancel-in-progress: false}` so runs queue rather than overlap.
+- The same concurrency group means two runs never push state at the same moment.
 - The commit step does `git pull --rebase` then push, with 3 attempts, in case you push a
   config change mid-run.
 - `timeout-minutes: 12` so a hung run cannot block the queue for long.

@@ -1,13 +1,29 @@
 name: Poll
+run-name: Poll (${{ github.event_name == 'schedule' && 'GitHub schedule' || inputs.source }})
 
+# Two things start a poll:
+#
+#   1. An external scheduler (cron-job.org) calling the workflow_dispatch API every 15
+#      minutes. This is the trigger that is relied on.
+#   2. GitHub's own schedule, kept as a fallback. It is best-effort, and on this repo it
+#      fired once in its first 49 slots, which is why it is not the main trigger.
+#
+# The steps below make it safe for both to fire, in any order and at the same moment.
 on:
-  schedule:
-    # Every 15 minutes, offset from :00/:15/:30/:45 where GitHub's scheduler is busiest.
-    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
+    inputs:
+      source:
+        description: Who started this run (shown in the run's name)
+        default: manual
+  schedule:
+    # Every 15 minutes, offset from :00/:15/:30/:45 where GitHub's scheduler is busiest
+    # (and where the external scheduler fires).
+    - cron: "7,22,37,52 * * * *"
 
 # Only one poll at a time. A run that starts while another is in progress waits for it,
-# so two runs can never push state at the same moment.
+# so two runs can never read or push state at the same moment. GitHub keeps at most one
+# run waiting: if a third arrives, the older waiting run is cancelled (not failed), which
+# is fine because the one that replaced it does the same job.
 concurrency:
   group: poll
   cancel-in-progress: false
@@ -21,17 +37,48 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      # The schedule is only a fallback. If a poll started through the API in the last 10
+      # minutes and succeeded, a scheduled run has nothing to add, so it stops here
+      # instead of fetching every board a second time. Runs started through the API or
+      # by hand always go ahead. If the lookup itself fails, the run goes ahead too.
+      - name: Skip a scheduled run that would repeat a recent poll
+        id: gate
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          cutoff=$(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%SZ)
+          # Only dispatched runs count: they are never skipped, so each one really polled.
+          recent=$(gh run list --repo "$REPO" --workflow poll.yml --event workflow_dispatch \
+            --status success --limit 5 --json createdAt \
+            --jq "[.[] | select(.createdAt >= \"$cutoff\")] | length") || recent=0
+          if [ "${recent:-0}" -gt 0 ]; then
+            echo "A poll that started after $cutoff already succeeded; skipping this one."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ref: main is deliberate. Without it, checkout uses the commit that was current
+      # when the run was TRIGGERED. A run that waited in the queue behind another would
+      # then read the state from before that run, and alert its new jobs a second time.
+      # Naming the branch makes every run start from the latest committed state.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.gate.outputs.skip != 'true'
+        with:
+          ref: main
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: steps.gate.outputs.skip != 'true'
         with:
           python-version: "3.12"
           cache: pip
 
       - name: Install
+        if: steps.gate.outputs.skip != 'true'
         run: pip install --quiet .
 
       - name: Poll sources and send alerts
+        if: steps.gate.outputs.skip != 'true'
         env:
           # One topic per profile, read from NTFY_TOPIC_<PROFILE KEY>. A profile whose
           # variable is empty is skipped; the others are unaffected. To add a profile,
@@ -41,6 +88,7 @@ jobs:
         run: python -m jobtracker run
 
       - name: Commit state
+        if: steps.gate.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -64,6 +112,7 @@ jobs:
       # alerts the health topic itself if the pings stop, which is the one failure nothing
       # inside GitHub Actions can report: Actions not running at all.
       - name: Ping healthchecks.io
+        if: steps.gate.outputs.skip != 'true'
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
         run: |
