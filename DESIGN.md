@@ -1,6 +1,6 @@
 # Job Alert Tracker — Design
 
-Status: **approved 2026-11-15**. Stage 1 is built; sections below are kept in step with the code.
+Status: **approved 2026-11-15**. Stages 1 and 2 are built; sections below are kept in step with the code.
 
 ## 1. Goals and constraints
 
@@ -289,9 +289,15 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   tier: dream            # dream | normal
   ats: greenhouse        # greenhouse | lever | ashby | smartrecruiters | workable |
                          # workday | custom | unsupported
-  board: janestreet      # board token / tenant / module name, depending on ats
+  board: janestreet      # board id in the ATS's API (module name for custom)
   careers_url: https://www.janestreet.com/join-jane-street/
-  verified: 2026-11-15   # date the board id last returned data
+  verified: 2026-11-15   # date the board id last returned live postings
+- key: lloyds-banking-group
+  name: Lloyds Banking Group
+  ats: workday
+  tenant: lbg            # https://{tenant}.{host}.myworkdayjobs.com/{site}
+  host: wd3
+  sites: [LBG_Careers, Undergraduate_careers, Graduate_careers]
 - key: some-company
   name: Some Company
   ats: unsupported
@@ -299,9 +305,30 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   note: "Careers site is client-rendered behind bot protection"
 ```
 
-Workday entries carry `tenant`, `host` (e.g. `wd5`) and `site` instead of `board`.
-`unsupported` companies stay in the file with a reason and are listed in the README, so
-nothing is dropped silently.
+Workday entries carry `tenant`, `host` (e.g. `wd5`) and a list of `sites` instead of `board`.
+One tenant often runs separate sites for experienced hires, campus and graduates, and the
+early-careers programmes this tracker exists for live on the campus ones, so a company lists
+every site worth polling.
+
+`unsupported` companies stay in the file with a `note` giving the reason (validation rejects
+an unsupported entry without one) and are listed in the README, so nothing is dropped
+silently. A company whose `ats` has no adapter yet is loaded and validated like any other
+and simply not polled.
+
+**Tags** drive the India location rule, so validation rejects any tag outside this set:
+
+| Tag | Meaning |
+|---|---|
+| `big_tech` | Large public tech company, or a subsidiary of one |
+| `vc_backed` | Venture-funded and still private, or listed within about the last two years |
+| `yc` | Went through Y Combinator (kept after an IPO) |
+
+**How the list was built (stage 2).** Each candidate was probed against the public endpoints
+below, and a board id was accepted only if it returned live postings that were recognisably
+that company's (several plausible ids belong to an unrelated firm of the same name). Workday
+tenants were resolved from their own `robots.txt`, which lists the tenant's public sites.
+Every Greenhouse, Lever and Ashby entry was then fetched through the real pipeline in a dry
+run. `verified` records the date; an entry without it carries a note saying why.
 
 ## 5. Source adapters
 
@@ -331,15 +358,26 @@ Greenhouse, Lever and Ashby were verified against live boards on 2026-11-15 and 
 fixtures are trimmed copies of those responses. The remaining endpoints are from memory of
 the public documentation and are verified the same way in the stage that builds them.
 
+**Workday and robots.txt.** Each tenant publishes a `robots.txt` naming its sites. Where it
+disallows a site (Citi, RBC, PIMCO, Zoom, eBay, Palo Alto Networks, Darktrace and a few
+others disallow their main one), that company is marked `unsupported` rather than polled.
+The JSON endpoint sits on a different path and is not literally covered by the rule, but the
+owner's intent is clear enough to respect.
+
+**Workable rate limits.** `apply.workable.com` sits behind a Cloudflare rate limit that
+blocked a few hundred requests made about a second apart during stage 2. The handful of
+Workable boards must be polled gently (stage 3: a longer per-host delay, and not every run).
+
 **Workday at scale.** Large tenants hold thousands of postings at 20 per page. Fetching all
 of them every 15 minutes is rude and slow, so the Workday adapter issues a few targeted
 searches (`searchText` values derived from the enabled role types, configurable per company)
 and merges results by job ID.
 
 **Custom scrapers (stage 3).** Expected approach per dream-tier company, to be confirmed
-then: NVIDIA via the generic Workday adapter; Anthropic, DeepMind via Greenhouse; OpenAI via
-Ashby; Palantir via Lever; Amazon via its public `search.json`; Apple, Microsoft, Google, Meta,
-Tesla and AMD need individual investigation. Meta and Tesla are the most likely to end up
+then: NVIDIA via the generic Workday adapter; Anthropic via Greenhouse; OpenAI via Ashby;
+Palantir via Lever; Amazon via its public `search.json`; Apple, Microsoft, Google, Meta, Tesla
+and AMD (iCIMS) need individual investigation. Google DeepMind has left Greenhouse and now
+lists its roles on Google Careers, so it is covered by the Google adapter. Meta and Tesla are the most likely to end up
 `unsupported` (GraphQL with rotating tokens, and aggressive bot protection respectively). I
 will report what is and is not feasible rather than force it.
 
@@ -573,9 +611,12 @@ As you specified, stopping after each for review:
 1. Core pipeline: Job schema, Greenhouse/Lever/Ashby, filters, dedupe/state, ntfy job and
    health alerts, cron workflow. End-to-end with ~5 companies.
 2. Research and verify `companies.yaml`; propose dream-tier picks for the non-big-tech
-   industries for you to confirm.
+   industries for you to confirm. (Built: 421 companies, 269 polled today.)
 3. SmartRecruiters, Workable, Workday, and custom scrapers for dream-tier companies,
-   prioritising those running UK spring weeks and insight programmes.
+   prioritising those running UK spring weeks and insight programmes. Also investigate
+   tal.net (Oleeo) as a generic adapter, since several UK banks (Morgan Stanley, Bank of
+   America, Jefferies, Nomura) host their spring weeks there; its robots.txt is checked
+   before anything is built.
 4. Grad boards and community repos: terms and robots.txt report first, build only what is
    allowed.
 5. README table, keep-alive, full tests and CI, hardening.
@@ -591,3 +632,11 @@ As you specified, stopping after each for review:
 4. **Enabling a role type later** baselines the existing matches with one summary.
 5. **Repo:** public, named `early-careers-tracker`. Nothing is created or pushed without
    asking first.
+6. **Dream tier** (confirmed after stage 2). Big tech: Apple, NVIDIA, Microsoft, Google,
+   Amazon, Meta, Tesla, AMD, Palantir. AI labs: Anthropic, OpenAI, Google DeepMind. Quant:
+   Jane Street, Hudson River Trading, Optiver, G-Research, Citadel. Banks: Goldman Sachs,
+   JPMorgan, Morgan Stanley. Fintech: Stripe, Revolut. Everything else is normal tier.
+7. **Workday sites disallowed by robots.txt stay unsupported** (Citi, RBC, PIMCO, Franklin
+   Templeton, eBay, Zoom, Palo Alto Networks, Darktrace, and BlackRock's early-careers site).
+8. **xAI is included** as a normal-tier AI lab, although its board is now named "SpaceXSI"
+   and SpaceX itself stays excluded.

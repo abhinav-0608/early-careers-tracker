@@ -20,7 +20,14 @@ from jobtracker.text import KeywordSet
 TIERS = {"dream", "normal"}
 LOCATION_MODES = {"onsite", "remote"}
 FIELD_MATCH_MODES = {"lenient", "strict"}
+COMPANY_TAGS = {"big_tech", "vc_backed", "yc"}
+
+# Every value "ats" may take. A company whose ats has no adapter yet is loaded and
+# validated like any other, and simply not polled until its adapter exists.
+WORKDAY = "workday"
 UNSUPPORTED = "unsupported"
+BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom"}
+KNOWN_ATS = BOARD_ATS | {WORKDAY, UNSUPPORTED}
 
 
 class ConfigError(Exception):
@@ -273,9 +280,25 @@ def load_companies(path: Path) -> tuple[Company, ...]:
             raise ConfigError(f"{where}: tier must be one of {sorted(TIERS)}")
 
         ats = _get(raw, "ats", str, where)
+        if ats not in KNOWN_ATS:
+            raise ConfigError(f"{where}: ats must be one of {sorted(KNOWN_ATS)}")
         board = raw.get("board")
-        if ats != UNSUPPORTED and not board:
-            raise ConfigError(f"{where}: board is required unless ats is 'unsupported'")
+        if ats in BOARD_ATS and not board:
+            raise ConfigError(f"{where}: board is required when ats is '{ats}'")
+        sites = tuple(_get(raw, "sites", list, where, default=[]))
+        if ats == WORKDAY:
+            for part in ("tenant", "host"):
+                _get(raw, part, str, f"{where} (workday)")
+            if not sites or not all(isinstance(site, str) for site in sites):
+                raise ConfigError(f"{where}: a workday company needs a list of sites")
+        if ats == UNSUPPORTED and not raw.get("note"):
+            # An unsupported company is a known gap; the note says why, for the README.
+            raise ConfigError(f"{where}: an unsupported company needs a note saying why")
+
+        # The India location rule depends on tags, so a misspelt tag must not pass quietly.
+        tags = tuple(_get(raw, "tags", list, where, default=[]))
+        if not set(tags) <= COMPANY_TAGS:
+            raise ConfigError(f"{where}: tags must be from {sorted(COMPANY_TAGS)}")
 
         companies.append(
             Company(
@@ -285,7 +308,10 @@ def load_companies(path: Path) -> tuple[Company, ...]:
                 tier=tier,
                 ats=ats,
                 board=str(board) if board else None,
-                tags=tuple(_get(raw, "tags", list, where, default=[])),
+                tenant=raw.get("tenant"),
+                host=raw.get("host"),
+                sites=sites,
+                tags=tags,
                 regions=tuple(_get(raw, "regions", list, where, default=[])),
                 careers_url=raw.get("careers_url"),
                 note=raw.get("note"),

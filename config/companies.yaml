@@ -1,19 +1,716 @@
-# Companies to poll. Stage 1 holds a small verified set; stage 2 expands it.
+# Companies to poll, grouped by industry. Built and verified in stage 2 (2026-11-15).
 #
 #   key          stable id used in state and job keys (never rename once in use)
 #   industry     big_tech | ai_lab | quant | finance | fintech | cybersecurity | startup
-#   tags         big_tech / vc_backed / yc (the India location rule depends on these)
-#   regions      where the company hires (informational)
+#   tags         the India location rule only passes companies carrying one of these:
+#                  big_tech   large public tech company (or a subsidiary of one)
+#                  vc_backed  venture-funded and still private, or listed within about two years
+#                  yc         went through Y Combinator (kept after an IPO)
+#   regions      where the company hires, of uk / us / india (informational)
 #   tier         dream (priority 5 alerts, never batched) | normal
-#   ats          greenhouse | lever | ashby | unsupported
-#   board        the board identifier in the ATS's public API
-#   verified     date the board identifier last returned data
+#   ats          greenhouse | lever | ashby            polled now
+#                smartrecruiters | workable | workday  verified; polled once stage 3 adds the adapter
+#                custom                                own careers site; one module each in stage 3
+#                unsupported                           cannot be polled; the note says why
+#   board        the board identifier in the ATS's public API (module name for custom)
+#   tenant, host, sites
+#                Workday only: https://{tenant}.{host}.myworkdayjobs.com/{site}. A company
+#                lists every site worth polling (experienced, campus, graduate ...).
+#   verified     date the identifier last returned live postings. Absent means not yet
+#                verified; the note says why.
+#
+# Excluded on purpose: consulting and Big 4 firms, and SpaceX.
+
+
+# ---------------------------------------------------------------------------------------
+# Big tech
+# ---------------------------------------------------------------------------------------
+
+- key: apple
+  name: Apple
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: apple
+  careers_url: https://jobs.apple.com
+  note: "Own careers site (jobs.apple.com); adapter planned for stage 3"
+
+- key: nvidia
+  name: NVIDIA
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: workday
+  tenant: nvidia
+  host: wd5
+  sites: [NVIDIAExternalCareerSite]
+  careers_url: https://www.nvidia.com/en-us/about-nvidia/careers/
+  verified: 2026-11-15
+
+- key: microsoft
+  name: Microsoft
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: microsoft
+  careers_url: https://careers.microsoft.com
+  note: "Own careers site; adapter planned for stage 3"
+
+- key: google
+  name: Google
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: google
+  careers_url: https://www.google.com/about/careers/applications/
+  note: "Own careers site; adapter planned for stage 3"
+
+- key: amazon
+  name: Amazon
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: amazon
+  careers_url: https://www.amazon.jobs
+  note: "Own careers site (amazon.jobs search.json); adapter planned for stage 3"
+
+- key: meta
+  name: Meta
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: meta
+  careers_url: https://www.metacareers.com
+  note: "Own careers site (metacareers.com); adapter planned for stage 3"
+
+- key: tesla
+  name: Tesla
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: tesla
+  careers_url: https://www.tesla.com/careers
+  note: "Own careers site behind bot protection; adapter planned for stage 3"
+
+- key: amd
+  name: AMD
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: custom
+  board: amd
+  careers_url: https://careers.amd.com
+  note: "Careers site runs on iCIMS (careers-amd.icims.com); adapter planned for stage 3"
+
+- key: palantir
+  name: Palantir
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: dream
+  ats: lever
+  board: palantir
+  careers_url: https://www.palantir.com/careers
+  verified: 2026-11-15
+
+- key: netflix
+  name: Netflix
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://explore.jobs.netflix.net/careers
+  note: "Eightfold careers site (netflix.eightfold.ai); its Workday site is disallowed by robots.txt"
+
+- key: adobe
+  name: Adobe
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: adobe
+  host: wd5
+  sites: [external_experienced]
+  careers_url: https://careers.adobe.com
+  verified: 2026-11-15
+
+- key: salesforce
+  name: Salesforce
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: salesforce
+  host: wd12
+  sites: [External_Career_Site, Futureforce_Internships, Futureforce_NewGradRoles]
+  careers_url: https://careers.salesforce.com
+  verified: 2026-11-15
+
+- key: oracle
+  name: Oracle
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.oracle.com
+  note: "Oracle Cloud HCM (eeho.fa.us2.oraclecloud.com)"
+
+- key: ibm
+  name: IBM
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.ibm.com/careers
+  note: "Own careers site (careers.ibm.com)"
+
+- key: intel
+  name: Intel
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: intel
+  host: wd1
+  sites: [External]
+  careers_url: https://jobs.intel.com
+  verified: 2026-11-15
+
+- key: cisco
+  name: Cisco
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: cisco
+  host: wd5
+  sites: [Cisco_Careers]
+  careers_url: https://jobs.cisco.com
+  verified: 2026-11-15
+
+- key: qualcomm
+  name: Qualcomm
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.qualcomm.com
+  note: "Eightfold careers site (qualcomm.eightfold.ai); its Workday site is empty"
+
+- key: arm
+  name: Arm
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.arm.com
+  note: "iCIMS (experienced-arm.icims.com, earlycareers-arm.icims.com)"
+
+- key: samsung
+  name: Samsung
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: sec
+  host: wd3
+  sites: [Samsung_Careers]
+  careers_url: https://www.samsung.com/uk/about-us/careers/
+  verified: 2026-11-15
+
+- key: sony
+  name: Sony
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: sonyglobal
+  host: wd1
+  sites: [SonyGlobalCareers, Sony_Europe_Careers]
+  careers_url: https://www.sony.com/en/SonyInfo/Careers/
+  verified: 2026-11-15
+
+- key: playstation
+  name: PlayStation
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: sonyinteractiveentertainmentglobal
+  careers_url: https://www.playstation.com/en-gb/corporate/playstation-careers/
+  verified: 2026-11-15
+
+- key: uber
+  name: Uber
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.uber.com/careers
+  note: "Own careers site backed by Oracle Cloud HCM"
+
+- key: airbnb
+  name: Airbnb
+  industry: big_tech
+  tags: [big_tech, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: airbnb
+  careers_url: https://careers.airbnb.com
+  verified: 2026-11-15
+
+- key: spotify
+  name: Spotify
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: lever
+  board: spotify
+  careers_url: https://www.lifeatspotify.com
+  verified: 2026-11-15
+
+- key: snap
+  name: Snap
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: snapchat
+  host: wd1
+  sites: [snap]
+  careers_url: https://careers.snap.com
+  verified: 2026-11-15
+
+- key: pinterest
+  name: Pinterest
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: pinterest
+  careers_url: https://www.pinterestcareers.com
+  verified: 2026-11-15
+
+- key: linkedin
+  name: LinkedIn
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.linkedin.com
+  note: "Hosted on linkedin.com, which this project never fetches"
+
+- key: tiktok
+  name: TikTok
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://lifeattiktok.com
+  note: "Own careers site (lifeattiktok.com)"
+
+- key: shopify
+  name: Shopify
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.shopify.com/careers
+  note: "Own careers site (shopify.com/careers); no public job-board endpoint found (checked 2026-11-15)"
+
+- key: atlassian
+  name: Atlassian
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.atlassian.com/company/careers
+  note: "iCIMS (careers-atlassian.icims.com)"
+
+- key: dropbox
+  name: Dropbox
+  industry: big_tech
+  tags: [big_tech, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: dropbox
+  careers_url: https://jobs.dropbox.com
+  verified: 2026-11-15
+
+- key: twilio
+  name: Twilio
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: twilio
+  careers_url: https://www.twilio.com/en-us/company/jobs
+  verified: 2026-11-15
+
+- key: cloudflare
+  name: Cloudflare
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: cloudflare
+  careers_url: https://www.cloudflare.com/careers/
+  verified: 2026-11-15
+
+- key: datadog
+  name: Datadog
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: datadog
+  careers_url: https://careers.datadoghq.com
+  verified: 2026-11-15
+
+- key: snowflake
+  name: Snowflake
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: snowflake
+  careers_url: https://careers.snowflake.com
+  verified: 2026-11-15
+
+- key: databricks
+  name: Databricks
+  industry: big_tech
+  tags: [big_tech, vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: databricks
+  careers_url: https://www.databricks.com/company/careers
+  verified: 2026-11-15
+
+- key: mongodb
+  name: MongoDB
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: mongodb
+  careers_url: https://www.mongodb.com/company/careers
+  verified: 2026-11-15
+
+- key: servicenow
+  name: ServiceNow
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: smartrecruiters
+  board: ServiceNow
+  careers_url: https://careers.servicenow.com
+  verified: 2026-11-15
+
+- key: workday
+  name: Workday
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: workday
+  host: wd5
+  sites: [Workday, Workday_Early_Career]
+  careers_url: https://www.workday.com/en-us/company/careers.html
+  verified: 2026-11-15
+
+- key: sap
+  name: SAP
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.sap.com
+  note: "SAP SuccessFactors"
+
+- key: broadcom
+  name: Broadcom
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: broadcom
+  host: wd1
+  sites: [External_Career]
+  careers_url: https://www.broadcom.com/company/careers
+  verified: 2026-11-15
+
+- key: dell
+  name: Dell Technologies
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.dell.com
+  note: "Own careers site (jobs.dell.com); no public job-board endpoint found (checked 2026-11-15)"
+
+- key: hp
+  name: HP
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: hp
+  host: wd5
+  sites: [ExternalCareerSite]
+  careers_url: https://jobs.hp.com
+  verified: 2026-11-15
+
+- key: intuit
+  name: Intuit
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.intuit.com
+  note: "Own careers site"
+
+- key: ebay
+  name: eBay
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.ebayinc.com
+  note: "Workday site 'apply' is disallowed by the tenant's robots.txt"
+
+- key: booking-com
+  name: Booking.com
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.booking.com
+  note: "iCIMS (external-workingatbooking.icims.com)"
+
+- key: bloomberg
+  name: Bloomberg
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.bloomberg.com/company/careers/
+  note: "Avature (bloomberg.avature.net)"
+
+- key: electronic-arts
+  name: Electronic Arts
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.ea.com
+  note: "Own careers site (jobs.ea.com)"
+
+- key: roblox
+  name: Roblox
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: roblox
+  careers_url: https://careers.roblox.com
+  verified: 2026-11-15
+
+- key: doordash
+  name: DoorDash
+  industry: big_tech
+  tags: [big_tech, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: doordashusa
+  careers_url: https://careersatdoordash.com
+  verified: 2026-11-15
+
+- key: reddit
+  name: Reddit
+  industry: big_tech
+  tags: [big_tech, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: reddit
+  careers_url: https://www.redditinc.com/careers
+  verified: 2026-11-15
+
+- key: discord
+  name: Discord
+  industry: big_tech
+  tags: [big_tech]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: discord
+  careers_url: https://discord.com/careers
+  verified: 2026-11-15
+
+- key: zoom
+  name: Zoom
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.zoom.us
+  note: "Workday site 'Zoom' is disallowed by the tenant's robots.txt"
+
+- key: github
+  name: GitHub
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.github.careers
+  note: "iCIMS (careers-githubinc.icims.com)"
+
+- key: expedia
+  name: Expedia Group
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: expedia
+  host: wd108
+  sites: [search]
+  careers_url: https://careers.expediagroup.com
+  verified: 2026-11-15
+
+- key: elastic
+  name: Elastic
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: elastic
+  careers_url: https://www.elastic.co/careers
+  verified: 2026-11-15
+
+- key: hubspot
+  name: HubSpot
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: hubspotjobs
+  careers_url: https://www.hubspot.com/careers
+  verified: 2026-11-15
+
+- key: ocado
+  name: Ocado Group
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: ocadogroup
+  careers_url: https://careers.ocadogroup.com
+  verified: 2026-11-15
+
+- key: instacart
+  name: Instacart
+  industry: big_tech
+  tags: [big_tech, yc]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: instacart
+  careers_url: https://boards.greenhouse.io/instacart
+  verified: 2026-11-15
+
+- key: asana
+  name: Asana
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: asana
+  careers_url: https://asana.com/jobs
+  verified: 2026-11-15
+
+- key: duolingo
+  name: Duolingo
+  industry: big_tech
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: duolingo
+  careers_url: https://careers.duolingo.com
+  verified: 2026-11-15
+
+# ---------------------------------------------------------------------------------------
+# AI labs
+# ---------------------------------------------------------------------------------------
 
 - key: anthropic
   name: Anthropic
   industry: ai_lab
   tags: [vc_backed]
-  regions: [uk, us]
+  regions: [uk, us, india]
   tier: dream
   ats: greenhouse
   board: anthropic
@@ -24,53 +721,4032 @@
   name: OpenAI
   industry: ai_lab
   tags: [vc_backed]
-  regions: [uk, us]
+  regions: [uk, us, india]
   tier: dream
   ats: ashby
   board: openai
   careers_url: https://openai.com/careers
   verified: 2026-11-15
 
-- key: palantir
-  name: Palantir
-  industry: big_tech
+- key: google-deepmind
+  name: Google DeepMind
+  industry: ai_lab
   tags: [big_tech]
-  regions: [uk, us]
+  regions: [uk, us, india]
   tier: dream
-  ats: lever
-  board: palantir
-  careers_url: https://www.palantir.com/careers
+  ats: custom
+  board: google
+  careers_url: https://deepmind.google/careers/
+  note: "Left Greenhouse; roles are now listed on Google Careers (company=DeepMind), so this waits for the Google adapter in stage 3"
+
+- key: mistral-ai
+  name: Mistral AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: "mistral.ai"
+  careers_url: https://mistral.ai/careers
   verified: 2026-11-15
+
+- key: cohere
+  name: Cohere
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: cohere
+  careers_url: https://cohere.com/careers
+  verified: 2026-11-15
+
+- key: xai
+  name: xAI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: xai
+  careers_url: https://x.ai/careers
+  note: "Kept at your request; its Greenhouse board is now named 'SpaceXSI'"
+  verified: 2026-11-15
+
+- key: hugging-face
+  name: Hugging Face
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: workable
+  board: huggingface
+  careers_url: https://huggingface.co/jobs
+  verified: 2026-11-15
+
+- key: stability-ai
+  name: Stability AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: stabilityai
+  careers_url: https://stability.ai/careers
+  verified: 2026-11-15
+
+- key: perplexity
+  name: Perplexity
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: perplexity
+  careers_url: https://www.perplexity.ai/hub/careers
+  verified: 2026-11-15
+
+- key: scale-ai
+  name: Scale AI
+  industry: ai_lab
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: scaleai
+  careers_url: https://scale.com/careers
+  verified: 2026-11-15
+
+- key: character-ai
+  name: Character.AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: character
+  careers_url: https://character.ai/careers
+  verified: 2026-11-15
+
+- key: runway
+  name: Runway
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: runway-ml
+  careers_url: https://runwayml.com/careers
+  verified: 2026-11-15
+
+- key: elevenlabs
+  name: ElevenLabs
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: elevenlabs
+  careers_url: https://elevenlabs.io/careers
+  verified: 2026-11-15
+
+- key: synthesia
+  name: Synthesia
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: synthesia
+  careers_url: https://www.synthesia.io/careers
+  verified: 2026-11-15
+
+- key: wayve
+  name: Wayve
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: wayve
+  careers_url: https://wayve.ai/careers/
+  verified: 2026-11-15
+
+- key: faculty
+  name: Faculty
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: faculty
+  careers_url: https://faculty.ai/careers
+  verified: 2026-11-15
+
+- key: polyai
+  name: PolyAI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: polyai
+  careers_url: https://poly.ai/careers
+  verified: 2026-11-15
+
+- key: isomorphic-labs
+  name: Isomorphic Labs
+  industry: ai_lab
+  tags: [big_tech]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: isomorphiclabs
+  careers_url: https://www.isomorphiclabs.com/careers
+  verified: 2026-11-15
+
+- key: helsing
+  name: Helsing
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: helsing
+  careers_url: https://helsing.ai/careers
+  verified: 2026-11-15
+
+- key: together-ai
+  name: Together AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: togetherai
+  careers_url: https://www.together.ai/careers
+  verified: 2026-11-15
+
+- key: anyscale
+  name: Anyscale
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us, india]
+  tier: normal
+  ats: ashby
+  board: anyscale
+  careers_url: https://www.anyscale.com/careers
+  verified: 2026-11-15
+
+- key: modal
+  name: Modal
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: modal
+  careers_url: https://modal.com/careers
+  verified: 2026-11-15
+
+- key: pinecone
+  name: Pinecone
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: pinecone
+  careers_url: https://www.pinecone.io/careers/
+  verified: 2026-11-15
+
+- key: langchain
+  name: LangChain
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: langchain
+  careers_url: https://www.langchain.com/careers
+  verified: 2026-11-15
+
+- key: cursor
+  name: Cursor
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: cursor
+  careers_url: https://cursor.com/careers
+  verified: 2026-11-15
+
+- key: cognition
+  name: Cognition
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: cognition
+  careers_url: https://cognition.ai/careers
+  verified: 2026-11-15
+
+- key: harvey
+  name: Harvey
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: harvey
+  careers_url: https://www.harvey.ai/careers
+  verified: 2026-11-15
+
+- key: sierra
+  name: Sierra
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: sierra
+  careers_url: https://sierra.ai/careers
+  verified: 2026-11-15
+
+- key: glean
+  name: Glean
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: gleanwork
+  careers_url: https://www.glean.com/careers
+  verified: 2026-11-15
+
+- key: figure-ai
+  name: Figure AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: figureai
+  careers_url: https://www.figure.ai/careers
+  verified: 2026-11-15
+
+- key: physical-intelligence
+  name: Physical Intelligence
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: physicalintelligence
+  careers_url: https://www.physicalintelligence.company/join-us
+  verified: 2026-11-15
+
+- key: waymo
+  name: Waymo
+  industry: ai_lab
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: waymo
+  careers_url: https://careers.withwaymo.com
+  verified: 2026-11-15
+
+- key: nuro
+  name: Nuro
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: nuro
+  careers_url: https://www.nuro.ai/careers
+  verified: 2026-11-15
+
+- key: cerebras
+  name: Cerebras
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us, india]
+  tier: normal
+  ats: ashby
+  board: cerebras
+  careers_url: https://www.cerebras.ai/careers
+  verified: 2026-11-15
+
+- key: sambanova
+  name: SambaNova
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: sambanovasystems
+  careers_url: https://sambanova.ai/company/careers
+  verified: 2026-11-15
+
+- key: groq
+  name: Groq
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://groq.com/careers
+  note: "Gem ATS (jobs.gem.com), no adapter"
+
+- key: lambda
+  name: Lambda
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: lambda
+  careers_url: https://lambda.ai/careers
+  verified: 2026-11-15
+
+- key: coreweave
+  name: CoreWeave
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: coreweave
+  careers_url: https://www.coreweave.com/careers
+  verified: 2026-11-15
+
+- key: luma-ai
+  name: Luma AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: lumaai
+  careers_url: https://lumalabs.ai/careers
+  verified: 2026-11-15
+
+- key: suno
+  name: Suno
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: suno
+  careers_url: https://suno.com/careers
+  verified: 2026-11-15
+
+- key: poolside
+  name: Poolside
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: poolside
+  careers_url: https://poolside.ai/careers
+  verified: 2026-11-15
+
+- key: black-forest-labs
+  name: Black Forest Labs
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: black-forest-labs
+  careers_url: https://bfl.ai/careers
+  verified: 2026-11-15
+
+- key: deepl
+  name: DeepL
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: DeepL
+  careers_url: https://www.deepl.com/careers
+  verified: 2026-11-15
+
+- key: snorkel-ai
+  name: Snorkel AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: snorkelai
+  careers_url: https://snorkel.ai/careers/
+  verified: 2026-11-15
+
+- key: speechmatics
+  name: Speechmatics
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: speechmatics
+  careers_url: https://www.speechmatics.com/company/careers
+  verified: 2026-11-15
+
+- key: tractable
+  name: Tractable
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: tractable
+  careers_url: https://tractable.ai/careers
+  verified: 2026-11-15
+
+- key: apollo-research
+  name: Apollo Research
+  industry: ai_lab
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: lever
+  board: apolloresearch
+  careers_url: https://www.apolloresearch.ai/careers
+  verified: 2026-11-15
+
+- key: applied-intuition
+  name: Applied Intuition
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: applied
+  careers_url: https://www.appliedintuition.com/careers
+  verified: 2026-11-15
+
+- key: writer
+  name: Writer
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: writer
+  careers_url: https://writer.com/company/careers/
+  verified: 2026-11-15
+
+- key: oxa
+  name: Oxa
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: oxa
+  careers_url: https://oxa.tech/careers
+  verified: 2026-11-15
+
+- key: graphcore
+  name: Graphcore
+  industry: ai_lab
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: greenhouse
+  board: graphcore
+  careers_url: https://www.graphcore.ai/jobs
+  verified: 2026-11-15
+
+- key: baseten
+  name: Baseten
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: baseten
+  careers_url: https://www.baseten.co/careers
+  verified: 2026-11-15
+
+- key: fireworks-ai
+  name: Fireworks AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: fireworks
+  careers_url: https://fireworks.ai/careers
+  verified: 2026-11-15
+
+- key: world-labs
+  name: World Labs
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: worldlabs
+  careers_url: https://www.worldlabs.ai/careers
+  verified: 2026-11-15
+
+- key: decagon
+  name: Decagon
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: decagon
+  careers_url: https://decagon.ai/careers
+  verified: 2026-11-15
+
+- key: reflection-ai
+  name: Reflection AI
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: reflectionai
+  careers_url: https://reflection.ai/careers
+  verified: 2026-11-15
+
+- key: thinking-machines-lab
+  name: Thinking Machines Lab
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: thinkingmachines
+  careers_url: https://thinkingmachines.ai
+  verified: 2026-11-15
+
+- key: physicsx
+  name: PhysicsX
+  industry: ai_lab
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: physicsx
+  careers_url: https://www.physicsx.ai/careers
+  verified: 2026-11-15
+
+- key: encord
+  name: Encord
+  industry: ai_lab
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: encord
+  careers_url: https://encord.com/careers
+  verified: 2026-11-15
+
+# ---------------------------------------------------------------------------------------
+# Quant, HFT and market makers
+# ---------------------------------------------------------------------------------------
 
 - key: jane-street
   name: Jane Street
   industry: quant
   tags: []
   regions: [uk, us]
-  tier: normal
+  tier: dream
   ats: greenhouse
   board: janestreet
   careers_url: https://www.janestreet.com/join-jane-street
   verified: 2026-11-15
 
-- key: point72
-  name: Point72
+- key: citadel
+  name: Citadel
   industry: quant
   tags: []
-  regions: [uk, us]
-  tier: normal
+  regions: [uk, us, india]
+  tier: dream
+  ats: unsupported
+  careers_url: https://www.citadel.com/careers
+  note: "Own careers site (citadel.com)"
+
+- key: hudson-river-trading
+  name: Hudson River Trading
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: dream
   ats: greenhouse
-  board: point72
-  careers_url: https://careers.point72.com
+  board: wehrtyou
+  careers_url: https://www.hudsonrivertrading.com/careers
   verified: 2026-11-15
 
 - key: optiver
   name: Optiver
   industry: quant
   tags: []
-  regions: [uk, us]
-  tier: normal
+  regions: [uk, us, india]
+  tier: dream
   ats: greenhouse
   board: optiverus
   careers_url: https://optiver.com/working-at-optiver/career-opportunities
+  verified: 2026-11-15
+
+- key: g-research
+  name: G-Research
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: dream
+  ats: workday
+  tenant: gresearch
+  host: wd103
+  sites: [G-Research, GRPlacements]
+  careers_url: https://www.gresearch.com/vacancies
+  verified: 2026-11-15
+
+- key: citadel-securities
+  name: Citadel Securities
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.citadelsecurities.com/careers
+  note: "Own careers site (citadelsecurities.com)"
+
+- key: two-sigma
+  name: Two Sigma
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.twosigma.com
+  note: "Avature (careers.twosigma.com)"
+
+- key: jump-trading
+  name: Jump Trading
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: jumptrading
+  careers_url: https://www.jumptrading.com/careers
+  verified: 2026-11-15
+
+- key: drw
+  name: DRW
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: drweng
+  careers_url: https://www.drw.com/work-at-drw
+  verified: 2026-11-15
+
+- key: imc-trading
+  name: IMC Trading
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: imc
+  careers_url: https://www.imc.com/eu/careers
+  verified: 2026-11-15
+
+- key: susquehanna
+  name: Susquehanna (SIG)
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.sig.com
+  note: "iCIMS (sig.icims.com) behind careers.sig.com"
+
+- key: tower-research-capital
+  name: Tower Research Capital
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: towerresearchcapital
+  careers_url: https://www.tower-research.com/open-positions
+  verified: 2026-11-15
+
+- key: virtu-financial
+  name: Virtu Financial
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: virtu
+  careers_url: https://www.virtu.com/careers
+  verified: 2026-11-15
+
+- key: xtx-markets
+  name: XTX Markets
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: xtxmarketstechnologies
+  careers_url: https://www.xtxmarkets.com/careers
+  verified: 2026-11-15
+
+- key: man-group
+  name: Man Group
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: mangroup
+  careers_url: https://www.man.com/careers
+  verified: 2026-11-15
+
+- key: de-shaw
+  name: D. E. Shaw
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.deshaw.com/careers
+  note: "Own careers site (deshaw.com)"
+
+- key: millennium
+  name: Millennium
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.mlp.com/careers
+  note: "Eightfold careers site (mlp.eightfold.ai); its Workday sites are empty"
+
+- key: point72
+  name: Point72
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: point72
+  careers_url: https://boards.greenhouse.io/point72
+  verified: 2026-11-15
+
+- key: balyasny
+  name: Balyasny Asset Management
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.bamfunds.com/careers
+  note: "Own careers site (bamfunds.com); no public job-board endpoint found (checked 2026-11-15)"
+
+- key: squarepoint-capital
+  name: Squarepoint Capital
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: squarepointcapital
+  careers_url: https://boards.greenhouse.io/squarepointcapital
+  verified: 2026-11-15
+
+- key: qube-rt
+  name: Qube Research & Technologies
+  industry: quant
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: greenhouse
+  board: quberesearchandtechnologies
+  careers_url: https://boards.greenhouse.io/quberesearchandtechnologies
+  verified: 2026-11-15
+
+- key: marshall-wace
+  name: Marshall Wace
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: mwinternshipprogram
+  careers_url: https://boards.greenhouse.io/mwinternshipprogram
+  note: "Internship-programme board; experienced roles are not on a public board"
+  verified: 2026-11-15
+
+- key: gsa-capital
+  name: GSA Capital
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: gsacapital
+  careers_url: https://www.gsacapital.com/careers
+  verified: 2026-11-15
+
+- key: maven-securities
+  name: Maven Securities
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: mavensecuritiesholdingltd
+  careers_url: https://www.mavensecurities.com/careers
+  verified: 2026-11-15
+
+- key: flow-traders
+  name: Flow Traders
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: flowtraders
+  careers_url: https://www.flowtraders.com/careers
+  verified: 2026-11-15
+
+- key: da-vinci
+  name: Da Vinci
+  industry: quant
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: greenhouse
+  board: davinciderivatives
+  careers_url: https://boards.greenhouse.io/davinciderivatives
+  verified: 2026-11-15
+
+- key: akuna-capital
+  name: Akuna Capital
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: akunacapital
+  careers_url: https://akunacapital.com/careers
+  verified: 2026-11-15
+
+- key: old-mission-capital
+  name: Old Mission Capital
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: old-mission-capital
+  careers_url: https://www.oldmissioncapital.com/careers
+  verified: 2026-11-15
+
+- key: five-rings
+  name: Five Rings
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: fiveringsllc
+  careers_url: https://fiverings.com/careers
+  verified: 2026-11-15
+
+- key: belvedere-trading
+  name: Belvedere Trading
+  industry: quant
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: lever
+  board: belvederetrading
+  careers_url: https://www.belvederetrading.com/careers
+  verified: 2026-11-15
+
+- key: chicago-trading
+  name: Chicago Trading Company
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: chicagotradingcampus
+  careers_url: https://www.chicagotrading.com/careers
+  note: "Campus board; experienced roles are on the separate board 'chicagotrading'"
+  verified: 2026-11-15
+
+- key: pdt-partners
+  name: PDT Partners
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: pdtpartners
+  careers_url: https://pdtpartners.com/careers
+  verified: 2026-11-15
+
+- key: voleon
+  name: Voleon
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: voleon
+  careers_url: https://jobs.ashbyhq.com/voleon
+  verified: 2026-11-15
+
+- key: aqr
+  name: AQR
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: aqr
+  careers_url: https://careers.aqr.com
+  verified: 2026-11-15
+
+- key: bridgewater-associates
+  name: Bridgewater Associates
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: bridgewater89
+  careers_url: https://www.bridgewater.com/careers
+  verified: 2026-11-15
+
+- key: worldquant
+  name: WorldQuant
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: worldquant
+  careers_url: https://www.worldquant.com/career-listing/
+  verified: 2026-11-15
+
+- key: schonfeld
+  name: Schonfeld
+  industry: quant
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: schonfeld
+  careers_url: https://www.schonfeld.com/careers
+  verified: 2026-11-15
+
+- key: exoduspoint
+  name: ExodusPoint
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: exoduspoint
+  careers_url: https://boards.greenhouse.io/exoduspoint
+  verified: 2026-11-15
+
+- key: headlands-technologies
+  name: Headlands Technologies
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: headlandstechnologiesllc
+  careers_url: https://www.headlandstech.com/careers
+  verified: 2026-11-15
+
+- key: radix-trading
+  name: Radix Trading
+  industry: quant
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: radixuniversity
+  careers_url: https://boards.greenhouse.io/radixuniversity
+  note: "University board; experienced roles are on the separate board 'radixexperienced'"
+  verified: 2026-11-15
+
+- key: transmarket-group
+  name: TransMarket Group
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: transmarketgroup
+  careers_url: https://www.transmarketgroup.com/careers
+  verified: 2026-11-15
+
+- key: mako-trading
+  name: Mako Trading
+  industry: quant
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: mako
+  careers_url: https://boards.greenhouse.io/mako
+  verified: 2026-11-15
+
+- key: vatic-labs
+  name: Vatic Labs
+  industry: quant
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: vaticlabs
+  careers_url: https://www.vaticlabs.com/careers
+  verified: 2026-11-15
+
+- key: aquatic
+  name: Aquatic Capital Management
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: aquaticcapitalmanagement
+  careers_url: https://www.aquatic.com/careers
+  verified: 2026-11-15
+
+- key: engineers-gate
+  name: Engineers Gate
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: engineersgate
+  careers_url: https://www.engineersgate.com/careers
+  verified: 2026-11-15
+
+- key: wintermute
+  name: Wintermute
+  industry: quant
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: lever
+  board: wintermute-trading
+  careers_url: https://www.wintermute.com/careers
+  verified: 2026-11-15
+
+- key: quadrature-capital
+  name: Quadrature Capital
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: quadraturecapital
+  careers_url: https://quadrature.ai/careers
+  verified: 2026-11-15
+
+- key: winton
+  name: Winton
+  industry: quant
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: winton
+  careers_url: https://boards.greenhouse.io/winton
+  verified: 2026-11-15
+
+- key: brevan-howard
+  name: Brevan Howard
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.brevanhoward.com/careers
+  note: "Phenom careers site, no adapter"
+
+- key: capula
+  name: Capula Investment Management
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workable
+  board: capula-investment-management-ltd
+  careers_url: https://www.capulaglobal.com/careers
+  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+
+- key: jain-global
+  name: Jain Global
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: jainglobal
+  host: wd5
+  sites: [LinkedInCareerSite]
+  careers_url: https://www.jainglobal.com/careers
+  note: "The main external site is disallowed by robots.txt; this is the allowed public site"
+  verified: 2026-11-15
+
+- key: dv-trading
+  name: DV Trading
+  industry: quant
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: dvtrading
+  careers_url: https://boards.greenhouse.io/dvtrading
+  verified: 2026-11-15
+
+- key: trexquant
+  name: Trexquant
+  industry: quant
+  tags: []
+  regions: [us, india]
+  tier: normal
+  ats: workable
+  board: trexquant
+  careers_url: https://trexquant.com/careers
+  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+
+- key: stevens-capital
+  name: Stevens Capital Management
+  industry: quant
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: scm
+  careers_url: https://www.scm-lp.com/careers
+  verified: 2026-11-15
+
+- key: ansatz-capital
+  name: Ansatz Capital
+  industry: quant
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: lever
+  board: ansatzcapital
+  careers_url: https://jobs.lever.co/ansatzcapital
+  verified: 2026-11-15
+
+- key: valkyrie-trading
+  name: Valkyrie Trading
+  industry: quant
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: lever
+  board: valkyrietrading
+  careers_url: https://jobs.lever.co/valkyrietrading
+  verified: 2026-11-15
+
+# ---------------------------------------------------------------------------------------
+# Investment banks and asset managers
+# ---------------------------------------------------------------------------------------
+
+- key: goldman-sachs
+  name: Goldman Sachs
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: dream
+  ats: unsupported
+  careers_url: https://higher.gs.com
+  note: "Own careers site (higher.gs.com)"
+
+- key: jpmorgan-chase
+  name: JPMorgan Chase
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: dream
+  ats: unsupported
+  careers_url: https://careers.jpmorgan.com
+  note: "Oracle Cloud HCM (jpmc.fa.oraclecloud.com)"
+
+- key: morgan-stanley
+  name: Morgan Stanley
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: dream
+  ats: workday
+  tenant: ms
+  host: wd5
+  sites: [External]
+  careers_url: https://www.morganstanley.com/careers
+  note: "Campus programmes (spring weeks, insight) are on tal.net and are not covered by this board"
+  verified: 2026-11-15
+
+- key: bank-of-america
+  name: Bank of America
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://campus.bankofamerica.com
+  note: "Campus programmes are on bankcampuscareers.tal.net; its Workday sites carry experienced hires only"
+
+- key: citi
+  name: Citi
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.citi.com
+  note: "Workday site '2' is disallowed by the tenant's robots.txt (also the early-careers events site)"
+
+- key: barclays
+  name: Barclays
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: barclays
+  host: wd3
+  sites: [External_Career_Site_Barclays]
+  careers_url: https://search.jobs.barclays
+  note: "Experienced-hire board; early-careers programmes are advertised on search.jobs.barclays"
+  verified: 2026-11-15
+
+- key: hsbc
+  name: HSBC
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.hsbc.com/careers
+  note: "Own careers site (mycareer.hsbc.com)"
+
+- key: ubs
+  name: UBS
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.ubs.com/global/en/careers.html
+  note: "Own careers site (jobs.ubs.com)"
+
+- key: deutsche-bank
+  name: Deutsche Bank
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: db
+  host: wd3
+  sites: [DBWebsite]
+  careers_url: https://careers.db.com
+  verified: 2026-11-15
+
+- key: bnp-paribas
+  name: BNP Paribas
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://group.bnpparibas/en/careers
+  note: "Own careers site"
+
+- key: societe-generale
+  name: Societe Generale
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.societegenerale.com
+  note: "Oracle Taleo (socgen.taleo.net)"
+
+- key: nomura
+  name: Nomura
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.nomura.com/careers/
+  note: "Own careers site; campus programmes on tal.net"
+
+- key: rbc
+  name: RBC Capital Markets
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.rbc.com
+  note: "Workday site 'RBCGLOBAL1' is disallowed by the tenant's robots.txt"
+
+- key: jefferies
+  name: Jefferies
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.jefferies.com/careers/
+  note: "tal.net (jefferies.tal.net), no adapter"
+
+- key: macquarie
+  name: Macquarie
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: mq
+  host: wd3
+  sites: [CareersatMQ]
+  careers_url: https://www.macquarie.com/careers.html
+  verified: 2026-11-15
+
+- key: standard-chartered
+  name: Standard Chartered
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.sc.com/en/careers/
+  note: "Oracle Taleo"
+
+- key: natwest-group
+  name: NatWest Group
+  industry: finance
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.natwestgroup.com
+  note: "Own careers site (jobs.natwestgroup.com); no public job-board endpoint found (checked 2026-11-15)"
+
+- key: lloyds-banking-group
+  name: Lloyds Banking Group
+  industry: finance
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: workday
+  tenant: lbg
+  host: wd3
+  sites: [LBG_Careers, Undergraduate_careers, Graduate_careers, Lloyds_Technology_Centre]
+  careers_url: https://www.lloydsbankinggroup.com/careers.html
+  verified: 2026-11-15
+
+- key: santander-uk
+  name: Santander UK
+  industry: finance
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: workday
+  tenant: santander
+  host: wd3
+  sites: [SantanderCareers]
+  careers_url: https://www.santanderjobs.co.uk
+  note: "Global board; the UK-only site is disallowed by robots.txt"
+  verified: 2026-11-15
+
+- key: mizuho
+  name: Mizuho
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: mizuho
+  host: wd1
+  sites: [mizuhoamericas]
+  careers_url: https://www.mizuhogroup.com/emea/careers
+  verified: 2026-11-15
+
+- key: mufg
+  name: MUFG
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: mufgub
+  host: wd3
+  sites: [MUFG-Careers]
+  careers_url: https://www.mufgemea.com/careers/
+  note: "The separate early-careers Workday site is disallowed by robots.txt and is not polled"
+  verified: 2026-11-15
+
+- key: wells-fargo
+  name: Wells Fargo
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: wf
+  host: wd1
+  sites: [WellsFargoJobs]
+  careers_url: https://www.wellsfargojobs.com
+  verified: 2026-11-15
+
+- key: capital-one
+  name: Capital One
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: capitalone
+  host: wd12
+  sites: [Capital_One]
+  careers_url: https://capitalone.wd12.myworkdayjobs.com/Capital_One
+  verified: 2026-11-15
+
+- key: bny
+  name: BNY
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.bny.com/corporate/global/en/careers.html
+  note: "Oracle Cloud HCM (eofe.fa.us2.oraclecloud.com)"
+
+- key: lazard
+  name: Lazard
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.lazard.com/careers/
+  note: "Oracle Cloud HCM (icbpjb.fa.ocs.oraclecloud.com)"
+
+- key: evercore
+  name: Evercore
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.evercore.com/careers/
+  note: "No public job-board endpoint found (checked 2026-11-15)"
+
+- key: rothschild-and-co
+  name: Rothschild & Co
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: rothschildandco
+  host: wd3
+  sites: [Rothschildandco_Lateral, Rothschildandco_Interns]
+  careers_url: https://www.rothschildandco.com/en/careers/
+  verified: 2026-11-15
+
+- key: houlihan-lokey
+  name: Houlihan Lokey
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: hl
+  host: wd1
+  sites: [Campus, Lateral]
+  careers_url: https://hl.com/careers/
+  verified: 2026-11-15
+
+- key: td
+  name: TD Securities
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: td
+  host: wd3
+  sites: [TD_Bank_Careers]
+  careers_url: https://jobs.td.com
+  verified: 2026-11-15
+
+- key: blackrock
+  name: BlackRock
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: blackrock
+  host: wd1
+  sites: [BlackRock_Professional]
+  careers_url: https://careers.blackrock.com
+  note: "The separate early-careers Workday site is disallowed by robots.txt and is not polled"
+  verified: 2026-11-15
+
+- key: vanguard
+  name: Vanguard
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: vanguard
+  host: wd5
+  sites: [vanguard_external]
+  careers_url: https://www.vanguardjobs.com
+  verified: 2026-11-15
+
+- key: fidelity-international
+  name: Fidelity International
+  industry: finance
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: workday
+  tenant: fil
+  host: wd3
+  sites: ["001"]
+  careers_url: https://careers.fidelityinternational.com
+  verified: 2026-11-15
+
+- key: fidelity-investments
+  name: Fidelity Investments
+  industry: finance
+  tags: []
+  regions: [us, india]
+  tier: normal
+  ats: workday
+  tenant: fmr
+  host: wd1
+  sites: [FidelityCareers]
+  careers_url: https://jobs.fidelity.com
+  verified: 2026-11-15
+
+- key: state-street
+  name: State Street
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: statestreet
+  host: wd1
+  sites: [Global]
+  careers_url: https://careers.statestreet.com
+  verified: 2026-11-15
+
+- key: schroders
+  name: Schroders
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.schroders.com/en/global/individual/careers/
+  note: "Oracle Cloud HCM (ekbq.fa.em2.oraclecloud.com)"
+
+- key: mandg
+  name: M&G
+  industry: finance
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: workday
+  tenant: mgpru
+  host: wd3
+  sites: [mandgprudential]
+  careers_url: https://www.mandg.com/careers
+  verified: 2026-11-15
+
+- key: invesco
+  name: Invesco
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: invesco
+  host: wd1
+  sites: [IVZ, IVZearlycareers]
+  careers_url: https://careers.invesco.com
+  verified: 2026-11-15
+
+- key: pimco
+  name: PIMCO
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.pimco.com/careers
+  note: "Workday site 'pimco-careers' is disallowed by the tenant's robots.txt"
+
+- key: t-rowe-price
+  name: T. Rowe Price
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: troweprice
+  host: wd5
+  sites: [TRowePrice, TRowePriceInternational]
+  careers_url: https://www.troweprice.com/corporate/us/en/careers.html
+  verified: 2026-11-15
+
+- key: wellington-management
+  name: Wellington Management
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: wellington
+  host: wd5
+  sites: [External, Campus]
+  careers_url: https://www.wellington.com/en/careers
+  verified: 2026-11-15
+
+- key: capital-group
+  name: Capital Group
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: capgroup
+  host: wd1
+  sites: [capitalgroupcareers]
+  careers_url: https://www.capitalgroup.com/about-us/careers.html
+  verified: 2026-11-15
+
+- key: blackstone
+  name: Blackstone
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: blackstone
+  host: wd1
+  sites: [Blackstone_Careers, Blackstone_Campus_Careers]
+  careers_url: https://www.blackstone.com/careers/
+  verified: 2026-11-15
+
+- key: kkr
+  name: KKR
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.kkr.com/careers
+  note: "Workday tenant (kkr.wd5) exposes no public site name"
+
+- key: lseg
+  name: LSEG
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: lseg
+  host: wd3
+  sites: [Careers, Graduate_Careers]
+  careers_url: https://www.lseg.com/en/careers
+  verified: 2026-11-15
+
+- key: nasdaq
+  name: Nasdaq
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: nasdaq
+  host: wd1
+  sites: [Global_External_Site]
+  careers_url: https://www.nasdaq.com/about/careers
+  verified: 2026-11-15
+
+- key: cme-group
+  name: CME Group
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: cmegroup
+  host: wd1
+  sites: [cme_careers]
+  careers_url: https://www.cmegroup.com/careers.html
+  verified: 2026-11-15
+
+- key: cboe-global-markets
+  name: Cboe Global Markets
+  industry: finance
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: cboe
+  host: wd1
+  sites: [External_Career_CBOE]
+  careers_url: https://www.cboe.com/careers/
+  verified: 2026-11-15
+
+- key: moodys
+  name: Moody's
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.moodys.com
+  note: "SAP SuccessFactors"
+
+- key: sp-global
+  name: S&P Global
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: spgi
+  host: wd5
+  sites: [SPGI_Careers]
+  careers_url: https://careers.spglobal.com
+  verified: 2026-11-15
+
+- key: msci
+  name: MSCI
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.msci.com
+  note: "iCIMS (globalcareers-msci.icims.com)"
+
+- key: factset
+  name: FactSet
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: factset
+  host: wd108
+  sites: [FactSetCareers]
+  careers_url: https://www.factset.com/careers
+  verified: 2026-11-15
+
+- key: northern-trust
+  name: Northern Trust
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: ntrs
+  host: wd1
+  sites: [northerntrust, ntcampus]
+  careers_url: https://www.northerntrust.com/united-states/about-us/careers
+  verified: 2026-11-15
+
+- key: franklin-templeton
+  name: Franklin Templeton
+  industry: finance
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.franklintempleton.com/about-us/careers
+  note: "Workday site 'Primary-External-1' is disallowed by the tenant's robots.txt"
+
+- key: abrdn
+  name: abrdn
+  industry: finance
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: workday
+  tenant: abrdn
+  host: wd3
+  sites: [abrdn, AberdeenEarlyCareer]
+  careers_url: https://www.aberdeenplc.com/en-gb/careers
+  verified: 2026-11-15
+
+- key: legal-and-general
+  name: Legal & General
+  industry: finance
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: smartrecruiters
+  board: legalandgeneral
+  careers_url: https://jobs.smartrecruiters.com/legalandgeneral
+  verified: 2026-11-15
+
+- key: baillie-gifford
+  name: Baillie Gifford
+  industry: finance
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: workday
+  tenant: bailliegifford
+  host: wd3
+  sites: [BaillieGiffordCareers, BaillieGiffordEarlyCareers]
+  careers_url: https://bailliegifford.wd3.myworkdayjobs.com/BaillieGiffordCareers
+  verified: 2026-11-15
+
+# ---------------------------------------------------------------------------------------
+# Fintech
+# ---------------------------------------------------------------------------------------
+
+- key: stripe
+  name: Stripe
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: dream
+  ats: greenhouse
+  board: stripe
+  careers_url: https://stripe.com/jobs
+  verified: 2026-11-15
+
+- key: revolut
+  name: Revolut
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: dream
+  ats: unsupported
+  careers_url: https://www.revolut.com/careers/
+  note: "Own careers site (revolut.com/careers)"
+
+- key: monzo
+  name: Monzo
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: monzo
+  careers_url: https://monzo.com/careers
+  verified: 2026-11-15
+
+- key: wise
+  name: Wise
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: smartrecruiters
+  board: Wise
+  careers_url: https://wise.jobs
+  verified: 2026-11-15
+
+- key: starling-bank
+  name: Starling Bank
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: workable
+  board: starling-bank
+  careers_url: https://www.starlingbank.com/careers/
+  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+
+- key: checkout-com
+  name: Checkout.com
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: "checkout.com"
+  careers_url: https://www.checkout.com/careers
+  verified: 2026-11-15
+
+- key: gocardless
+  name: GoCardless
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: gocardless
+  careers_url: https://gocardless.com/about/careers/
+  verified: 2026-11-15
+
+- key: klarna
+  name: Klarna
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.klarna.com/careers/
+  note: "No public job-board endpoint found (checked 2026-11-15)"
+
+- key: adyen
+  name: Adyen
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: adyen
+  careers_url: https://careers.adyen.com
+  verified: 2026-11-15
+
+- key: plaid
+  name: Plaid
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: plaid
+  careers_url: https://plaid.com/careers/
+  verified: 2026-11-15
+
+- key: brex
+  name: Brex
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: brex
+  careers_url: https://www.brex.com/careers
+  verified: 2026-11-15
+
+- key: ramp
+  name: Ramp
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: ramp
+  careers_url: https://ramp.com/careers
+  verified: 2026-11-15
+
+- key: mercury
+  name: Mercury
+  industry: fintech
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: mercury
+  careers_url: https://mercury.com/jobs
+  verified: 2026-11-15
+
+- key: chime
+  name: Chime
+  industry: fintech
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: chime
+  careers_url: https://careers.chime.com
+  verified: 2026-11-15
+
+- key: robinhood
+  name: Robinhood
+  industry: fintech
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: robinhood
+  careers_url: https://careers.robinhood.com
+  verified: 2026-11-15
+
+- key: coinbase
+  name: Coinbase
+  industry: fintech
+  tags: [yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: coinbase
+  careers_url: https://www.coinbase.com/careers
+  verified: 2026-11-15
+
+- key: kraken
+  name: Kraken
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: "kraken.com"
+  careers_url: https://www.kraken.com/careers
+  verified: 2026-11-15
+
+- key: block
+  name: Block
+  industry: fintech
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: block
+  careers_url: https://block.xyz/careers
+  verified: 2026-11-15
+
+- key: paypal
+  name: PayPal
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: paypal
+  host: wd1
+  sites: [jobs]
+  careers_url: https://careers.pypl.com
+  verified: 2026-11-15
+
+- key: visa
+  name: Visa
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: visa
+  host: wd5
+  sites: [Visa, Visa_Early_Careers]
+  careers_url: https://corporate.visa.com/en/jobs/
+  verified: 2026-11-15
+
+- key: mastercard
+  name: Mastercard
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: mastercard
+  host: wd1
+  sites: [CorporateCareers, Campus]
+  careers_url: https://careers.mastercard.com
+  verified: 2026-11-15
+
+- key: american-express
+  name: American Express
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.americanexpress.com/en-us/careers/
+  note: "Eightfold (aexp.eightfold.ai)"
+
+- key: affirm
+  name: Affirm
+  industry: fintech
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: affirm
+  careers_url: https://www.affirm.com/careers
+  verified: 2026-11-15
+
+- key: sofi
+  name: SoFi
+  industry: fintech
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: sofi
+  careers_url: https://www.sofi.com/careers/
+  verified: 2026-11-15
+
+- key: airwallex
+  name: Airwallex
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: airwallex
+  careers_url: https://careers.airwallex.com
+  verified: 2026-11-15
+
+- key: nubank
+  name: Nubank
+  industry: fintech
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: nubank
+  careers_url: https://international.nubank.com.br/careers/
+  verified: 2026-11-15
+
+- key: n26
+  name: N26
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: n26
+  careers_url: https://n26.com/en/careers
+  verified: 2026-11-15
+
+- key: zopa
+  name: Zopa
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: lever
+  board: zopa
+  careers_url: https://www.zopa.com/careers
+  verified: 2026-11-15
+
+- key: oaknorth
+  name: OakNorth
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, india]
+  tier: normal
+  ats: ashby
+  board: oaknorth
+  careers_url: https://oaknorth.co.uk/careers/
+  verified: 2026-11-15
+
+- key: thought-machine
+  name: Thought Machine
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: thought-machine
+  careers_url: https://www.thoughtmachine.net/careers
+  verified: 2026-11-15
+
+- key: clearbank
+  name: ClearBank
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: clearbank
+  careers_url: https://jobs.ashbyhq.com/clearbank
+  verified: 2026-11-15
+
+- key: tide
+  name: Tide
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, india]
+  tier: normal
+  ats: greenhouse
+  board: tide
+  careers_url: https://www.tide.co/careers/
+  verified: 2026-11-15
+
+- key: marshmallow
+  name: Marshmallow
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: marshmallow
+  careers_url: https://jobs.ashbyhq.com/marshmallow
+  verified: 2026-11-15
+
+- key: cleo
+  name: Cleo
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: cleo-2
+  careers_url: https://web.meetcleo.com/careers
+  verified: 2026-11-15
+
+- key: lendable
+  name: Lendable
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: lendable
+  careers_url: https://jobs.ashbyhq.com/lendable
+  verified: 2026-11-15
+
+- key: funding-circle
+  name: Funding Circle
+  industry: fintech
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: fundingcircle
+  careers_url: https://www.fundingcircle.com/uk/careers/
+  verified: 2026-11-15
+
+- key: paddle
+  name: Paddle
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: paddle
+  careers_url: https://www.paddle.com/careers
+  verified: 2026-11-15
+
+- key: sumup
+  name: SumUp
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: sumup
+  careers_url: https://www.sumup.com/careers/
+  verified: 2026-11-15
+
+- key: pleo
+  name: Pleo
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: pleo
+  careers_url: https://www.pleo.io/en/careers
+  verified: 2026-11-15
+
+- key: truelayer
+  name: TrueLayer
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: truelayer
+  careers_url: https://truelayer.com/careers/
+  verified: 2026-11-15
+
+- key: form3
+  name: Form3
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: form3
+  careers_url: https://www.form3.tech/careers
+  verified: 2026-11-15
+
+- key: 9fin
+  name: 9fin
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: "9fin"
+  careers_url: https://9fin.com/careers
+  verified: 2026-11-15
+
+- key: moneybox
+  name: Moneybox
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: moneybox
+  careers_url: https://www.moneyboxapp.com/careers/
+  verified: 2026-11-15
+
+- key: trading-212
+  name: Trading 212
+  industry: fintech
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: trading212
+  careers_url: https://www.trading212.com/careers
+  verified: 2026-11-15
+
+- key: freetrade
+  name: Freetrade
+  industry: fintech
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: freetrade
+  careers_url: https://freetrade.io/careers
+  verified: 2026-11-15
+
+- key: zilch
+  name: Zilch
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: zilch
+  careers_url: https://www.zilch.com/careers
+  verified: 2026-11-15
+
+- key: capital-on-tap
+  name: Capital on Tap
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: capitalontap
+  careers_url: https://www.capitalontap.com/en/careers/
+  verified: 2026-11-15
+
+- key: iwoca
+  name: iwoca
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: "iwoca.co.uk"
+  careers_url: https://www.iwoca.co.uk/careers
+  verified: 2026-11-15
+
+- key: griffin
+  name: Griffin
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: griffin
+  careers_url: https://griffin.com/careers
+  verified: 2026-11-15
+
+- key: carta
+  name: Carta
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: carta
+  careers_url: https://carta.com/careers/
+  verified: 2026-11-15
+
+- key: rippling
+  name: Rippling
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.rippling.com/careers
+  note: "Own ATS (ats.rippling.com), no adapter"
+
+- key: deel
+  name: Deel
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.deel.com/careers
+  note: "Ashby board 'deel' exists but lists no public postings"
+
+- key: gusto
+  name: Gusto
+  industry: fintech
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: gusto
+  careers_url: https://gusto.com/about/careers
+  verified: 2026-11-15
+
+- key: clear-street
+  name: Clear Street
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: clearstreet
+  careers_url: https://clearstreet.io/careers
+  verified: 2026-11-15
+
+- key: addepar
+  name: Addepar
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: addepar1
+  careers_url: https://addepar.com/careers
+  verified: 2026-11-15
+
+- key: chainalysis
+  name: Chainalysis
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: chainalysis-careers
+  careers_url: https://www.chainalysis.com/careers/
+  verified: 2026-11-15
+
+- key: ripple
+  name: Ripple
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: ripple
+  careers_url: https://ripple.com/careers/
+  verified: 2026-11-15
+
+- key: circle
+  name: Circle
+  industry: fintech
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.circle.com/careers
+  note: "Phenom careers site, no adapter"
+
+- key: fireblocks
+  name: Fireblocks
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: fireblocks
+  careers_url: https://www.fireblocks.com/careers
+  verified: 2026-11-15
+
+- key: blockchain-com
+  name: Blockchain.com
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: blockchain
+  careers_url: https://www.blockchain.com/careers
+  verified: 2026-11-15
+
+- key: elliptic
+  name: Elliptic
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: elliptic
+  careers_url: https://www.elliptic.co/careers
+  verified: 2026-11-15
+
+- key: copper
+  name: Copper
+  industry: fintech
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: copperco
+  careers_url: https://boards.greenhouse.io/copperco
+  verified: 2026-11-15
+
+- key: fiserv
+  name: Fiserv
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: fiserv
+  host: wd5
+  sites: [EXT]
+  careers_url: https://www.careers.fiserv.com
+  verified: 2026-11-15
+
+- key: fis
+  name: FIS
+  industry: fintech
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: fis
+  host: wd5
+  sites: [SearchJobs]
+  careers_url: https://careers.fisglobal.com
+  verified: 2026-11-15
+
+- key: sage
+  name: Sage
+  industry: fintech
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.sage.com/en-gb/company/careers/
+  note: "No public job-board endpoint found (checked 2026-11-15)"
+
+- key: ig-group
+  name: IG Group
+  industry: fintech
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: workday
+  tenant: ig
+  host: wd103
+  sites: [EXT_IG]
+  careers_url: https://www.iggroup.com/careers
+  verified: 2026-11-15
+
+- key: razorpay
+  name: Razorpay
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [india]
+  tier: normal
+  ats: greenhouse
+  board: razorpaysoftwareprivatelimited
+  careers_url: https://razorpay.com/jobs/
+  verified: 2026-11-15
+
+- key: cred
+  name: CRED
+  industry: fintech
+  tags: [vc_backed]
+  regions: [india]
+  tier: normal
+  ats: lever
+  board: cred
+  careers_url: https://careers.cred.club
+  verified: 2026-11-15
+
+- key: groww
+  name: Groww
+  industry: fintech
+  tags: [vc_backed, yc]
+  regions: [india]
+  tier: normal
+  ats: greenhouse
+  board: groww
+  careers_url: https://groww.in/careers
+  verified: 2026-11-15
+
+# ---------------------------------------------------------------------------------------
+# Cybersecurity
+# ---------------------------------------------------------------------------------------
+
+- key: crowdstrike
+  name: CrowdStrike
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: crowdstrike
+  host: wd5
+  sites: [crowdstrikecareers]
+  careers_url: https://www.crowdstrike.com/careers/
+  verified: 2026-11-15
+
+- key: palo-alto-networks
+  name: Palo Alto Networks
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://jobs.paloaltonetworks.com
+  note: "Workday site 'panwexternalcareers' is disallowed by the tenant's robots.txt"
+
+- key: fortinet
+  name: Fortinet
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.fortinet.com/corporate/careers
+  note: "Oracle Cloud HCM"
+
+- key: zscaler
+  name: Zscaler
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: zscaler
+  careers_url: https://www.zscaler.com/careers
+  verified: 2026-11-15
+
+- key: okta
+  name: Okta
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: okta
+  careers_url: https://www.okta.com/company/careers/
+  verified: 2026-11-15
+
+- key: sentinelone
+  name: SentinelOne
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: sentinellabs
+  careers_url: https://www.sentinelone.com/careers/
+  verified: 2026-11-15
+
+- key: darktrace
+  name: Darktrace
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.darktrace.com/careers
+  note: "Workday site 'DarktaceExternal' is disallowed by the tenant's robots.txt"
+
+- key: sophos
+  name: Sophos
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: sophos
+  careers_url: https://www.sophos.com/en-us/careers
+  verified: 2026-11-15
+
+- key: ncc-group
+  name: NCC Group
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.nccgroupplc.com/careers/
+  note: "Pinpoint (nccgroup.pinpointhq.com), no adapter"
+
+- key: bae-systems
+  name: BAE Systems Digital Intelligence
+  industry: cybersecurity
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.baesystems.com/en/careers
+  note: "Own careers site (jobs.baesystems.com)"
+
+- key: snyk
+  name: Snyk
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: snyk
+  careers_url: https://snyk.io/careers/
+  verified: 2026-11-15
+
+- key: wiz
+  name: Wiz
+  industry: cybersecurity
+  tags: [big_tech]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: wizinc
+  careers_url: https://www.wiz.io/careers
+  verified: 2026-11-15
+
+- key: tanium
+  name: Tanium
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: tanium
+  careers_url: https://www.tanium.com/careers/
+  verified: 2026-11-15
+
+- key: rapid7
+  name: Rapid7
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://careers.rapid7.com
+  note: "Own careers site (careers.rapid7.com)"
+
+- key: tenable
+  name: Tenable
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: tenableinc
+  careers_url: https://careers.tenable.com
+  verified: 2026-11-15
+
+- key: qualys
+  name: Qualys
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: qualys
+  host: wd5
+  sites: [Careers]
+  careers_url: https://www.qualys.com/careers/
+  verified: 2026-11-15
+
+- key: check-point
+  name: Check Point
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: smartrecruiters
+  board: CheckPointSoftwareTechnologies2
+  careers_url: https://careers.checkpoint.com
+  verified: 2026-11-15
+
+- key: proofpoint
+  name: Proofpoint
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: proofpoint
+  host: wd5
+  sites: [ProofpointCareers]
+  careers_url: https://www.proofpoint.com/us/company/careers
+  verified: 2026-11-15
+
+- key: mimecast
+  name: Mimecast
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: workday
+  tenant: mimecast
+  host: wd5
+  sites: [Mimecast-Careers]
+  careers_url: https://mimecast.wd5.myworkdayjobs.com/Mimecast-Careers
+  verified: 2026-11-15
+
+- key: trellix
+  name: Trellix
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: trellix
+  host: wd1
+  sites: [EnterpriseCareers]
+  careers_url: https://careers.trellix.com
+  verified: 2026-11-15
+
+- key: trend-micro
+  name: Trend Micro
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: trendmicro
+  host: wd3
+  sites: [External]
+  careers_url: https://www.trendmicro.com/en_us/about/careers.html
+  verified: 2026-11-15
+
+- key: gen-digital
+  name: Gen Digital
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: gen-digital
+  careers_url: https://jobs.ashbyhq.com/gen-digital
+  verified: 2026-11-15
+
+- key: sailpoint
+  name: SailPoint
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: sailpoint
+  host: wd1
+  sites: [SailPoint]
+  careers_url: https://www.sailpoint.com/company/careers
+  verified: 2026-11-15
+
+- key: arctic-wolf
+  name: Arctic Wolf
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: arcticwolf
+  host: wd1
+  sites: [External]
+  careers_url: https://arcticwolf.com/company/careers/
+  verified: 2026-11-15
+
+- key: akamai
+  name: Akamai
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.akamai.com/careers
+  note: "Own careers site (akamaicareers.inflightcloud.com)"
+
+- key: f5
+  name: F5
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: ffive
+  host: wd5
+  sites: [f5jobs]
+  careers_url: https://www.f5.com/company/careers
+  verified: 2026-11-15
+
+- key: ping-identity
+  name: Ping Identity
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: pingidentity
+  careers_url: https://www.pingidentity.com/en/company/careers.html
+  verified: 2026-11-15
+
+- key: 1password
+  name: 1Password
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: "1password"
+  careers_url: https://1password.com/careers
+  verified: 2026-11-15
+
+- key: bitwarden
+  name: Bitwarden
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: bitwarden
+  careers_url: https://bitwarden.com/careers/
+  verified: 2026-11-15
+
+- key: proton
+  name: Proton
+  industry: cybersecurity
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: greenhouse
+  board: proton
+  careers_url: https://proton.me/careers
+  verified: 2026-11-15
+
+- key: tailscale
+  name: Tailscale
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: tailscale
+  careers_url: https://tailscale.com/careers
+  verified: 2026-11-15
+
+- key: teleport
+  name: Teleport
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: goteleport
+  careers_url: https://goteleport.com/careers/
+  verified: 2026-11-15
+
+- key: netskope
+  name: Netskope
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: netskope
+  careers_url: https://www.netskope.com/company/careers
+  verified: 2026-11-15
+
+- key: illumio
+  name: Illumio
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: illumio
+  careers_url: https://www.illumio.com/company/careers
+  verified: 2026-11-15
+
+- key: abnormal-ai
+  name: Abnormal AI
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: abnormalsecurity
+  careers_url: https://abnormal.ai/careers
+  verified: 2026-11-15
+
+- key: huntress
+  name: Huntress
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: huntress
+  careers_url: https://www.huntress.com/company/careers
+  verified: 2026-11-15
+
+- key: expel
+  name: Expel
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: expel
+  careers_url: https://expel.com/about/careers/
+  verified: 2026-11-15
+
+- key: recorded-future
+  name: Recorded Future
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: recordedfuture
+  careers_url: https://www.recordedfuture.com/careers
+  verified: 2026-11-15
+
+- key: trail-of-bits
+  name: Trail of Bits
+  industry: cybersecurity
+  tags: []
+  regions: [us]
+  tier: normal
+  ats: workable
+  board: trailofbits
+  careers_url: https://www.trailofbits.com/careers/
+  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+
+- key: bishop-fox
+  name: Bishop Fox
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: bishopfox
+  careers_url: https://bishopfox.com/careers
+  verified: 2026-11-15
+
+- key: hackerone
+  name: HackerOne
+  industry: cybersecurity
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: hackerone
+  careers_url: https://www.hackerone.com/careers
+  verified: 2026-11-15
+
+- key: bugcrowd
+  name: Bugcrowd
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: bugcrowd
+  careers_url: https://www.bugcrowd.com/about/careers/
+  verified: 2026-11-15
+
+- key: orca-security
+  name: Orca Security
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: orcasecurity
+  careers_url: https://orca.security/about/careers/
+  verified: 2026-11-15
+
+- key: sysdig
+  name: Sysdig
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: lever
+  board: sysdig
+  careers_url: https://sysdig.com/careers/
+  verified: 2026-11-15
+
+- key: chainguard
+  name: Chainguard
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: chainguard
+  careers_url: https://www.chainguard.dev/careers
+  verified: 2026-11-15
+
+- key: semgrep
+  name: Semgrep
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: semgrep
+  careers_url: https://semgrep.dev/careers
+  verified: 2026-11-15
+
+- key: socket
+  name: Socket
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: socket
+  careers_url: https://socket.dev/careers
+  verified: 2026-11-15
+
+- key: vanta
+  name: Vanta
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: vanta
+  careers_url: https://www.vanta.com/company/careers
+  verified: 2026-11-15
+
+- key: drata
+  name: Drata
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: drata
+  careers_url: https://drata.com/careers
+  verified: 2026-11-15
+
+- key: tines
+  name: Tines
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: tines
+  careers_url: https://www.tines.com/careers
+  verified: 2026-11-15
+
+- key: island
+  name: Island
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: island
+  careers_url: https://www.island.io/careers
+  verified: 2026-11-15
+
+- key: cato-networks
+  name: Cato Networks
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: catonetworks
+  careers_url: https://www.catonetworks.com/careers/
+  verified: 2026-11-15
+
+- key: armis
+  name: Armis
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: smartrecruiters
+  board: armis
+  careers_url: https://www.armis.com/careers/
+  verified: 2026-11-15
+
+- key: dragos
+  name: Dragos
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: dragos
+  careers_url: https://www.dragos.com/careers/
+  verified: 2026-11-15
+
+- key: exabeam
+  name: Exabeam
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.exabeam.com/careers/
+  note: "Jobvite, no adapter"
+
+- key: cyera
+  name: Cyera
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.cyera.com/careers
+  note: "Comeet, no adapter"
+
+- key: censys
+  name: Censys
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: censys
+  careers_url: https://censys.com/careers/
+  verified: 2026-11-15
+
+- key: horizon3-ai
+  name: Horizon3.ai
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: horizon3ai
+  careers_url: https://www.horizon3.ai/careers/
+  verified: 2026-11-15
+
+- key: rubrik
+  name: Rubrik
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: rubrik
+  careers_url: https://www.rubrik.com/company/careers
+  verified: 2026-11-15
+
+- key: portswigger
+  name: PortSwigger
+  industry: cybersecurity
+  tags: []
+  regions: [uk]
+  tier: normal
+  ats: workable
+  board: portswigger
+  careers_url: https://portswigger.net/careers
+  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+
+- key: immersive
+  name: Immersive
+  industry: cybersecurity
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: immersivelabs
+  careers_url: https://www.immersivelabs.com/careers
+  verified: 2026-11-15
+
+- key: knowbe4
+  name: KnowBe4
+  industry: cybersecurity
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: knowbe4
+  careers_url: https://www.knowbe4.com/careers
+  verified: 2026-11-15
+
+# ---------------------------------------------------------------------------------------
+# VC / YC-backed startups
+# ---------------------------------------------------------------------------------------
+
+- key: notion
+  name: Notion
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: notion
+  careers_url: https://www.notion.com/careers
+  verified: 2026-11-15
+
+- key: figma
+  name: Figma
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: figma
+  careers_url: https://www.figma.com/careers/
+  verified: 2026-11-15
+
+- key: linear
+  name: Linear
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: linear
+  careers_url: https://linear.app/careers
+  verified: 2026-11-15
+
+- key: vercel
+  name: Vercel
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: vercel
+  careers_url: https://vercel.com/careers
+  verified: 2026-11-15
+
+- key: supabase
+  name: Supabase
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: supabase
+  careers_url: https://supabase.com/careers
+  verified: 2026-11-15
+
+- key: retool
+  name: Retool
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: unsupported
+  careers_url: https://retool.com/careers
+  note: "Gem ATS (jobs.gem.com), no adapter"
+
+- key: airtable
+  name: Airtable
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: airtable
+  careers_url: https://airtable.com/careers
+  verified: 2026-11-15
+
+- key: canva
+  name: Canva
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: smartrecruiters
+  board: Canva
+  careers_url: https://www.lifeatcanva.com
+  verified: 2026-11-15
+
+- key: gitlab
+  name: GitLab
+  industry: startup
+  tags: [yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: gitlab
+  careers_url: https://about.gitlab.com/jobs/
+  verified: 2026-11-15
+
+- key: zapier
+  name: Zapier
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: zapier
+  careers_url: https://zapier.com/jobs
+  verified: 2026-11-15
+
+- key: posthog
+  name: PostHog
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: posthog
+  careers_url: https://posthog.com/careers
+  verified: 2026-11-15
+
+- key: sentry
+  name: Sentry
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: sentry
+  careers_url: https://sentry.io/careers/
+  verified: 2026-11-15
+
+- key: replit
+  name: Replit
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: replit
+  careers_url: https://replit.com/careers
+  verified: 2026-11-15
+
+- key: benchling
+  name: Benchling
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: benchling
+  careers_url: https://www.benchling.com/careers
+  verified: 2026-11-15
+
+- key: flexport
+  name: Flexport
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: flexport
+  careers_url: https://www.flexport.com/careers/
+  verified: 2026-11-15
+
+- key: faire
+  name: Faire
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: faire
+  careers_url: https://www.faire.com/careers
+  verified: 2026-11-15
+
+- key: checkr
+  name: Checkr
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [us]
+  tier: normal
+  ats: greenhouse
+  board: checkr
+  careers_url: https://checkr.com/company/careers
+  verified: 2026-11-15
+
+- key: fivetran
+  name: Fivetran
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: fivetran
+  careers_url: https://www.fivetran.com/careers
+  verified: 2026-11-15
+
+- key: webflow
+  name: Webflow
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: webflow
+  careers_url: https://webflow.com/careers
+  verified: 2026-11-15
+
+- key: amplitude
+  name: Amplitude
+  industry: startup
+  tags: [yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: amplitude
+  careers_url: https://amplitude.com/careers
+  verified: 2026-11-15
+
+- key: mixpanel
+  name: Mixpanel
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: mixpanel
+  careers_url: https://mixpanel.com/jobs/
+  verified: 2026-11-15
+
+- key: algolia
+  name: Algolia
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: algolia
+  careers_url: https://www.algolia.com/careers
+  verified: 2026-11-15
+
+- key: pagerduty
+  name: PagerDuty
+  industry: startup
+  tags: [yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: pagerduty
+  careers_url: https://careers.pagerduty.com
+  verified: 2026-11-15
+
+- key: lattice
+  name: Lattice
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: lattice
+  careers_url: https://lattice.com/careers
+  verified: 2026-11-15
+
+- key: meesho
+  name: Meesho
+  industry: startup
+  tags: [yc]
+  regions: [india]
+  tier: normal
+  ats: lever
+  board: meesho
+  careers_url: https://www.meesho.io/jobs
+  verified: 2026-11-15
+
+- key: postman
+  name: Postman
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: workday
+  tenant: postman
+  host: wd108
+  sites: [careers]
+  careers_url: https://www.postman.com/company/careers/
+  verified: 2026-11-15
+
+- key: browserstack
+  name: BrowserStack
+  industry: startup
+  tags: [vc_backed]
+  regions: [india]
+  tier: normal
+  ats: workday
+  tenant: browserstack
+  host: wd3
+  sites: [External]
+  careers_url: https://www.browserstack.com/careers
+  verified: 2026-11-15
+
+- key: improbable
+  name: Improbable
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: improbable
+  careers_url: https://www.improbable.io/careers
+  verified: 2026-11-15
+
+- key: skyscanner
+  name: Skyscanner
+  industry: startup
+  tags: []
+  regions: [uk, india]
+  tier: normal
+  ats: unsupported
+  careers_url: https://www.skyscanner.net/jobs/
+  note: "No public job-board endpoint found (checked 2026-11-15)"
+
+- key: multiverse
+  name: Multiverse
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: multiverse
+  careers_url: https://www.multiverse.io/en-GB/careers
+  verified: 2026-11-15
+
+- key: quantexa
+  name: Quantexa
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: quantexa
+  careers_url: https://www.quantexa.com/careers/
+  verified: 2026-11-15
+
+- key: complyadvantage
+  name: ComplyAdvantage
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: complyadvantage
+  careers_url: https://complyadvantage.com/careers/
+  verified: 2026-11-15
+
+- key: beamery
+  name: Beamery
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: beamery
+  careers_url: https://jobs.ashbyhq.com/beamery
+  verified: 2026-11-15
+
+- key: motorway
+  name: Motorway
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: motorway
+  careers_url: https://jobs.ashbyhq.com/motorway
+  verified: 2026-11-15
+
+- key: lovable
+  name: Lovable
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: lovable
+  careers_url: https://lovable.dev/careers
+  verified: 2026-11-15
+
+- key: cockroach-labs
+  name: Cockroach Labs
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: cockroachlabs
+  careers_url: https://www.cockroachlabs.com/careers/
+  verified: 2026-11-15
+
+- key: temporal
+  name: Temporal
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: temporal
+  careers_url: https://temporal.io/careers
+  verified: 2026-11-15
+
+- key: hex
+  name: Hex
+  industry: startup
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: hex
+  careers_url: https://hex.tech/careers/
+  verified: 2026-11-15
+
+- key: clickhouse
+  name: ClickHouse
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: ashby
+  board: clickhouse
+  careers_url: https://clickhouse.com/company/careers
+  verified: 2026-11-15
+
+- key: grafana-labs
+  name: Grafana Labs
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: grafanalabs
+  careers_url: https://grafana.com/about/careers/
+  verified: 2026-11-15
+
+- key: render
+  name: Render
+  industry: startup
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: render
+  careers_url: https://render.com/careers
+  verified: 2026-11-15
+
+- key: railway
+  name: Railway
+  industry: startup
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: railway
+  careers_url: https://railway.com/careers
+  verified: 2026-11-15
+
+- key: sourcegraph
+  name: Sourcegraph
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: sourcegraph91
+  careers_url: https://sourcegraph.com/jobs
+  verified: 2026-11-15
+
+- key: miro
+  name: Miro
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: miro
+  careers_url: https://miro.com/careers/
+  verified: 2026-11-15
+
+- key: samsara
+  name: Samsara
+  industry: startup
+  tags: []
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: samsara
+  careers_url: https://www.samsara.com/company/careers
+  verified: 2026-11-15
+
+- key: verkada
+  name: Verkada
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: verkada
+  careers_url: https://www.verkada.com/careers/
+  verified: 2026-11-15
+
+- key: zipline
+  name: Zipline
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: flyzipline
+  careers_url: https://www.zipline.com/careers
+  verified: 2026-11-15
+
+- key: anduril
+  name: Anduril
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: andurilindustries
+  careers_url: https://www.anduril.com/careers
+  verified: 2026-11-15
+
+- key: mintlify
+  name: Mintlify
+  industry: startup
+  tags: [vc_backed, yc]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: mintlify
+  careers_url: https://www.mintlify.com/careers
+  verified: 2026-11-15
+
+- key: clerk
+  name: Clerk
+  industry: startup
+  tags: [vc_backed]
+  regions: [us]
+  tier: normal
+  ats: ashby
+  board: clerk
+  careers_url: https://clerk.com/careers
+  verified: 2026-11-15
+
+- key: gong
+  name: Gong
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us, india]
+  tier: normal
+  ats: greenhouse
+  board: gongio
+  careers_url: https://www.gong.io/careers/
+  verified: 2026-11-15
+
+- key: intercom
+  name: Intercom
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: greenhouse
+  board: intercom
+  careers_url: https://www.intercom.com/careers
+  verified: 2026-11-15
+
+- key: tessl
+  name: Tessl
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: tesslcareers
+  careers_url: https://tessl.io/careers
+  verified: 2026-11-15
+
+- key: incident-io
+  name: Incident.io
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: incident
+  careers_url: https://incident.io/careers
+  verified: 2026-11-15
+
+- key: attio
+  name: Attio
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk]
+  tier: normal
+  ats: ashby
+  board: attio
+  careers_url: https://attio.com/careers
+  verified: 2026-11-15
+
+- key: granola
+  name: Granola
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: granola
+  careers_url: https://www.granola.ai/jobs
+  verified: 2026-11-15
+
+- key: kraken-technologies
+  name: Kraken Technologies
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: ashby
+  board: krakentech
+  careers_url: https://kraken.tech/careers
+  verified: 2026-11-15
+
+- key: octopus-energy
+  name: Octopus Energy
+  industry: startup
+  tags: [vc_backed]
+  regions: [uk, us]
+  tier: normal
+  ats: lever
+  board: octoenergy
+  careers_url: https://octopus.energy/careers/
   verified: 2026-11-15

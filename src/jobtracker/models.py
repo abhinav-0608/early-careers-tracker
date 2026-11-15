@@ -15,7 +15,13 @@ class Company:
     industry: str
     tier: str  # "dream" or "normal"
     ats: str  # which adapter fetches it, or "unsupported"
-    board: str | None = None
+    board: str | None = None  # board id in the ATS's API (or module name, for custom)
+    # Workday boards are addressed by three parts instead of one board id:
+    # https://{tenant}.{host}.myworkdayjobs.com/{site}. One tenant often runs several
+    # sites (experienced hires, campus, graduates), so a company lists every site to poll.
+    tenant: str | None = None
+    host: str | None = None
+    sites: tuple[str, ...] = ()
     tags: tuple[str, ...] = ()
     regions: tuple[str, ...] = ()
     careers_url: str | None = None
