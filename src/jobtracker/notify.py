@@ -194,7 +194,7 @@ def baseline_notification(
         title = f"Baseline: {len(jobs)} matching {noun} currently open"
     return Notification(
         title=title,
-        message="\n".join(lines) or "Nothing open right now. New roles will be alerted.",
+        message="\n".join(lines),
         priority=config.settings.priority_normal,
         tags=("clipboard",),
         click=config.settings.repo_url,

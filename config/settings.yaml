@@ -16,8 +16,19 @@ http:
   host_delay_seconds:
     apply.workable.com: 5.0     # rate-limits by IP address: it blocked this tracker's
                                 # probing for hours during stage 2
+  # Hosts checked by hand that have no robots.txt but answer /robots.txt with a redirect
+  # to an ordinary page instead of "not found". The client would otherwise treat their
+  # rules as unreadable and fetch nothing. A real robots.txt appearing there is obeyed.
+  hosts_without_robots_txt:
+    - careers.smartrecruiters.com   # redirects to the job-board home page (2026-11-15)
 
 polling:
+  # Kinds of source that are switched off: not polled at all, and not reported as failing.
+  # Same names as under every_minutes.
+  disabled:
+    - workable            # built from the documented response but never checked against
+                          # the live API (the host was rate-limiting). Verify one board,
+                          # then delete this line
   # Minimum minutes between polls of a source. 0 = every run (every 15 minutes).
   # A key is an ATS name, or the module name of a custom adapter. A source that is not
   # due is skipped: that is not a failure, and nothing is closed because of it.
@@ -34,6 +45,8 @@ polling:
                           # page, the newest 20 postings, is read
     google: 60            # each request is a 1.3 MB page
     workable: 60          # six boards behind one strict rate limit (see host_delay_seconds)
+    smartrecruiters: 60   # the public job board, paged by location: a large board
+                          # (ServiceNow) is dozens of requests
     amazon: 60            # about 1 MB per page of 100 roles
     apple: 60             # about 7 pages of 320 KB
     amd: 60               # four requests, five seconds apart (the site's Crawl-delay)

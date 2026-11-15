@@ -153,8 +153,13 @@ def run(
 
     # --- fetch, once per company -------------------------------------------------------
     # Companies with no adapter (ats: unsupported, or a source not built yet) are kept in
-    # the config for visibility but are not polled. Nor is one that nobody is watching.
-    pollable = [company for company in config.companies if adapter_for(company)]
+    # the config for visibility but are not polled. Nor is one whose kind of source is
+    # switched off in settings.yaml (polling.disabled), nor one that nobody is watching.
+    pollable = [
+        company
+        for company in config.companies
+        if adapter_for(company) and company.poll_kind not in settings.disabled_sources
+    ]
     watched = [c for c in pollable if any(profile.watches(c) for profile in active)]
     targets = [company for company in watched if not only or company.key in only]
     log.event(
@@ -247,7 +252,6 @@ def run_profile(
     # --- classify and reconcile --------------------------------------------------------
     reconciler = Reconciler(state, now, settings)
     baselined_jobs: list[StoredJob] = []
-    baseline_ran = False
     filters_changed = False
     fetched: set[str] = set()
 
@@ -273,7 +277,6 @@ def run_profile(
             fetched.add(company.source_key)
         counts = report.sources.setdefault(company.source_key, SourceCounts())
         if baseline:
-            baseline_ran = True
             filters_changed = filters_changed or previous_hash is not None
             state.baselines[company.source_key] = filters.hash
 
@@ -298,9 +301,10 @@ def run_profile(
     state.baselines = {key: value for key, value in state.baselines.items() if key in in_scope}
 
     # --- notify ------------------------------------------------------------------------
-    # A filter change that surfaces nothing new is not worth a notification; a newly
-    # watched company is, even with zero matches, as confirmation that it is being watched.
-    if baseline_ran and (baselined_jobs or not filters_changed):
+    # One summary for everything baselined this run. A baseline that found nothing (a
+    # new company with no matching roles, a filter change that surfaces nothing) sends
+    # no notification: "0 matching roles" is not worth a buzz.
+    if baselined_jobs:
         notification = baseline_notification(baselined_jobs, config, filters_changed)
         report.baseline_sent = notifier.send_job(profile.key, notification)
 

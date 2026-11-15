@@ -39,7 +39,7 @@ WORKDAY = "workday"
 WORKDAY_SEARCH = "workday_search"
 TALNET = "talnet"
 UNSUPPORTED = "unsupported"
-BOARD_ATS = {"greenhouse", "lever", "ashby", "workable", "custom", TALNET}
+BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom", TALNET}
 KNOWN_ATS = BOARD_ATS | {WORKDAY, UNSUPPORTED}
 
 # A profile's key is its folder name. It ends up in a file name and in the name of an
@@ -76,6 +76,10 @@ class Settings:
     # polling: minimum minutes between polls, by kind of source. Not listed = every run.
     poll_every_minutes: dict[str, int] = field(default_factory=dict)
     host_delay_seconds: dict[str, float] = field(default_factory=dict)
+    # http: hosts checked by hand whose /robots.txt redirects to an ordinary page
+    hosts_without_robots_txt: frozenset[str] = frozenset()
+    # polling: kinds of source that are switched off (same names as poll_every_minutes)
+    disabled_sources: frozenset[str] = frozenset()
 
     def poll_interval(self, kind: str | None) -> int:
         """Minimum minutes between polls of this kind of source; 0 means every run."""
@@ -209,6 +213,11 @@ def _check_poll_kinds(settings: Settings, path: Path) -> None:
             f"{path}: polling.every_minutes: no source is called '{kind}' "
             f"(expected one of {sorted(known)})"
         )
+    for kind in sorted(settings.disabled_sources - (known - {WORKDAY_SEARCH})):
+        raise ConfigError(
+            f"{path}: polling.disabled: no source is called '{kind}' "
+            f"(expected one of {sorted(known - {WORKDAY_SEARCH})})"
+        )
 
 
 # --- settings.yaml ---------------------------------------------------------------------
@@ -226,8 +235,14 @@ def load_settings(path: Path) -> Settings:
         _expect(seconds, (int, float), f"{path}: http.host_delay_seconds.{host}")
         if seconds < 0:
             raise ConfigError(f"{path}: http.host_delay_seconds.{host} must be 0 or more")
+    no_robots = _get(http, "hosts_without_robots_txt", list, f"{path}: http", default=[])
+    for host in no_robots:
+        _expect(host, str, f"{path}: http.hosts_without_robots_txt")
     polling = _get(data, "polling", dict, path, default={})
-    _only_keys(polling, {"every_minutes"}, f"{path}: polling")
+    _only_keys(polling, {"every_minutes", "disabled"}, f"{path}: polling")
+    disabled = _get(polling, "disabled", list, f"{path}: polling", default=[])
+    for kind in disabled:
+        _expect(kind, str, f"{path}: polling.disabled")
     every = _get(polling, "every_minutes", dict, f"{path}: polling", default={})
     for kind, minutes in every.items():
         _expect(minutes, int, f"{path}: polling.every_minutes.{kind}")
@@ -262,6 +277,8 @@ def load_settings(path: Path) -> Settings:
         accept_empty_after_runs=_get(health, "accept_empty_after_runs", int, f"{path}: health"),
         poll_every_minutes={str(kind): minutes for kind, minutes in every.items()},
         host_delay_seconds={str(host): float(seconds) for host, seconds in host_delays.items()},
+        hosts_without_robots_txt=frozenset(no_robots),
+        disabled_sources=frozenset(disabled),
     )
 
     if settings.max_workers < 1:

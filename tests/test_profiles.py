@@ -428,8 +428,8 @@ def test_health_alert_is_sent_once_to_the_health_topic_whoever_watches_the_board
     health = world.web.sent_to(HEALTH_TOPIC)
     assert [message["title"] for message in health] == ["3 sources failing"]
     assert "Point72 (greenhouse)" in health[0]["message"]
-    # Neither profile's own topic hears about it; Alice only got her first-run baseline.
-    assert world.titles("alice") == ["Baseline: 0 matching roles currently open"]
+    # Neither profile's own topic hears about it.
+    assert world.titles("alice") == []
     assert world.titles("bob") == []
 
 

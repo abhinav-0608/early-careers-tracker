@@ -488,6 +488,29 @@ def test_a_robots_txt_redirect_that_loops_back_is_given_up_on(settings):
     ]
 
 
+def test_a_host_recorded_as_having_no_robots_txt_may_redirect_the_request(settings):
+    """For a host checked by hand (settings.yaml). A real file there is still obeyed."""
+    requested = []
+    answers = {"redirecting.example.com": httpx.Response(302, headers={"Location": "/home"})}
+
+    def handler(request):
+        requested.append(request.url.host + request.url.path)
+        if request.url.path == "/robots.txt":
+            return answers.get(
+                request.url.host, httpx.Response(200, text="User-agent: *\nDisallow: /private/\n")
+            )
+        return httpx.Response(200, text="page")
+
+    listed = frozenset({"redirecting.example.com", "strict.example.com"})
+    client = HttpClient(
+        replace(settings, hosts_without_robots_txt=listed), transport=httpx.MockTransport(handler)
+    )
+    assert client.get_text("https://redirecting.example.com/private/x") == "page"
+    with pytest.raises(RobotsDisallowedError, match="Disallow: /private/"):
+        client.get_text("https://strict.example.com/private/x")
+    assert "redirecting.example.com/home" not in requested  # the redirect is not followed
+
+
 def test_an_unreadable_robots_txt_is_not_retried_when_the_host_asks_for_hours(settings):
     requested = []
 

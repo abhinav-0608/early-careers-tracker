@@ -138,7 +138,7 @@ def test_goldman_sachs_allows_only_single_role_pages():
 
 
 def test_smartrecruiters_api_disallows_every_crawler_but_one():
-    """Why the SmartRecruiters companies (Wise, Canva ...) are unsupported."""
+    """Why the SmartRecruiters adapter reads the public job board and not this API."""
     text = load_text("robots/smartrecruiters-api.txt")
     assert not rules(text).allows("/v1/companies/Wise/postings")
     assert not rules(text).allows("/v1/companies/Canva/postings?offset=100&limit=100")

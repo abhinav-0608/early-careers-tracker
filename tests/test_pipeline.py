@@ -190,6 +190,40 @@ def test_a_source_robots_txt_disallows_is_reported_as_blocked_and_not_fetched(tr
     assert "blocked, robots.txt on api.lever.co disallows /v0/postings/palantir" in alert["message"]
 
 
+def test_a_source_switched_off_in_settings_is_not_polled_or_reported(tracker, web, tmp_path):
+    """polling.disabled: how Workable ships until it has been checked against a live board."""
+    settings = replace(tracker.config.settings, disabled_sources=frozenset({"lever"}))
+    web.broken_hosts.add("api.lever.co")  # would be a failure if it were asked
+
+    report = tracker(config=replace(tracker.config, settings=settings))
+    tracker(NOW + RUN, config=replace(tracker.config, settings=settings))
+
+    assert [result.company.key for result in report.results] == ["point72", "openai"]
+    assert not any("api.lever.co" in fetch for fetch in web.fetches)
+    assert web.sent_to(HEALTH_TOPIC) == []
+    assert "lever:palantir" not in load_sources(tmp_path)
+
+    # Switched back on, it is baselined like any newly added company.
+    web.broken_hosts.clear()
+    report = tracker(NOW + 2 * RUN)
+    assert [result.company.key for result in report.results] == ["point72", "palantir", "openai"]
+
+
+def test_a_baseline_that_finds_nothing_sends_no_notification(tracker, web):
+    web.remove_greenhouse_job(8845395002)  # the one role in the fixtures that matches
+    report = tracker()
+
+    assert report.total("baselined") == 0
+    assert report.profile(OWNER).baseline_sent is False
+    assert web.published == []
+    # The boards are baselined all the same: a role posted later is alerted individually.
+    web.add_greenhouse_job(900, "Spring Week 2027 - Technology")
+    tracker(NOW + RUN)
+    assert [message["title"] for message in web.sent_to(JOB_TOPIC)] == [
+        "Point72 – Spring Week 2027 - Technology"
+    ]
+
+
 def test_results_come_back_in_config_order_whatever_order_hosts_finish_in(tracker):
     report = tracker()
     assert [result.company.key for result in report.results] == ["point72", "palantir", "openai"]
@@ -205,10 +239,9 @@ def test_broken_source_recovers_and_is_baselined_then(tracker, web):
     tracker(NOW + 2 * RUN)
 
     assert [message["title"] for message in web.sent_to(HEALTH_TOPIC)] == ["Sources recovered"]
-    # Palantir's first successful fetch is its baseline, not a flood of alerts.
-    assert [message["title"] for message in web.sent_to(JOB_TOPIC)] == [
-        "Baseline: 0 matching roles currently open"
-    ]
+    # Palantir's first successful fetch is its baseline, not a flood of alerts. Nothing
+    # on its board matches, and a baseline of nothing is not announced.
+    assert web.sent_to(JOB_TOPIC) == []
 
 
 def test_board_that_goes_empty_raises_a_health_alert_and_closes_nothing(tracker, web):

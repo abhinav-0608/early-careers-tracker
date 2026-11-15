@@ -16,8 +16,10 @@
 #                  vc_backed  venture-funded and still private, or listed within about two years
 #                  yc         went through Y Combinator (kept after an IPO)
 #   regions      where the company hires, of uk / us / india (informational)
-#   ats          greenhouse | lever | ashby | workable | workday | talnet
+#   ats          greenhouse | lever | ashby | smartrecruiters | workable | workday | talnet
 #                                                      polled through the adapter of that name
+#                                                      (workable is switched off in
+#                                                      settings.yaml until it is verified)
 #                custom                                own careers site, one module each under
 #                                                      sources/custom/ (amazon, amd, apple,
 #                                                      google, jpmorgan, microsoft)
@@ -102,7 +104,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://www.metacareers.com
-  note: 'robots.txt on www.metacareers.com opens with a notice that automated collection of data is prohibited without written permission, and the job search is rendered in the browser from token-protected GraphQL calls. Checked 2026-11-15'
+  note: "robots.txt on www.metacareers.com opens with a notice that automated collection of data is prohibited without written permission. Checked 2026-11-15"
 
 - key: tesla
   name: Tesla
@@ -423,9 +425,11 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  ats: unsupported
+  ats: smartrecruiters
+  board: ServiceNow
   careers_url: https://careers.servicenow.com
-  note: "SmartRecruiters board (id ServiceNow). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
+  note: "Read from the public job board on careers.smartrecruiters.com, not the postings API (which robots.txt disallows)"
+  verified: 2026-11-15
 
 - key: workday
   name: Workday
@@ -2440,7 +2444,7 @@
   regions: [uk]
   ats: unsupported
   careers_url: https://jobs.smartrecruiters.com/legalandgeneral
-  note: "SmartRecruiters board (id legalandgeneral). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
+  note: "SmartRecruiters (board id legalandgeneral). Its postings API is disallowed by robots.txt on api.smartrecruiters.com, and its public board redirects to careers.legalandgeneral.com, a separate site with no adapter. Checked 2026-11-15"
 
 - key: baillie-gifford
   name: Baillie Gifford
@@ -2494,7 +2498,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://wise.jobs
-  note: "SmartRecruiters board (id Wise). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
+  note: "SmartRecruiters (board id Wise). Its postings API is disallowed by robots.txt on api.smartrecruiters.com, and its public board redirects to wise.jobs, whose robots.txt disallows paging the job search (/jobs?*): only the first 12 of 436 roles could be read. Checked 2026-11-15"
 
 - key: starling-bank
   name: Starling Bank
@@ -3321,7 +3325,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://careers.checkpoint.com
-  note: "SmartRecruiters board (id CheckPointSoftwareTechnologies2). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
+  note: "SmartRecruiters (board id CheckPointSoftwareTechnologies2). Its postings API is disallowed by robots.txt on api.smartrecruiters.com, and its public board redirects to www.checkpoint.com/careers, a separate site with no adapter. Checked 2026-11-15"
 
 - key: proofpoint
   name: Proofpoint
@@ -3691,9 +3695,11 @@
   industry: cybersecurity
   tags: [vc_backed]
   regions: [uk, us]
-  ats: unsupported
+  ats: smartrecruiters
+  board: armis
   careers_url: https://www.armis.com/careers/
-  note: "SmartRecruiters board (id armis). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
+  note: "Read from the public job board on careers.smartrecruiters.com, not the postings API (which robots.txt disallows)"
+  verified: 2026-11-15
 
 - key: dragos
   name: Dragos
@@ -3861,9 +3867,11 @@
   industry: startup
   tags: [vc_backed]
   regions: [uk, us]
-  ats: unsupported
+  ats: smartrecruiters
+  board: Canva
   careers_url: https://www.lifeatcanva.com
-  note: "SmartRecruiters board (id Canva). robots.txt on api.smartrecruiters.com disallows every crawler but one (User-agent: * / Disallow: /), so the postings API may not be read. Checked 2026-11-15"
+  note: "Read from the public job board on careers.smartrecruiters.com, not the postings API (which robots.txt disallows)"
+  verified: 2026-11-15
 
 - key: gitlab
   name: GitLab

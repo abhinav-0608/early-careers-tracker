@@ -75,6 +75,7 @@ class HttpClient:
         self._retries = settings.retries
         self._delay = settings.per_host_delay_seconds
         self._host_delays = dict(settings.host_delay_seconds)
+        self._no_robots_hosts = frozenset(settings.hosts_without_robots_txt)
         self._sleep = sleep
         self._clock = clock
         self._agent = robots.product_token(settings.user_agent)
@@ -227,6 +228,10 @@ class HttpClient:
                     rules = robots.parse(response.text, self._agent)
                 elif 400 <= status < 500 and status != 429:
                     rules = robots.ALLOW_ALL
+                elif status in REDIRECT_STATUS and host in self._no_robots_hosts:
+                    # Checked by hand and recorded in settings.yaml: this host sends
+                    # /robots.txt to an ordinary page because it has no such file.
+                    rules = robots.ALLOW_ALL
                 elif status in REDIRECT_STATUS or response.is_success:
                     # Still a redirect, or a page that is not a robots.txt at the end of one.
                     problem = "it redirects somewhere that is not a robots.txt"
@@ -254,7 +259,10 @@ class HttpClient:
         returned as it is, and the caller treats the rules as unreadable.
 
         A redirect to a page on *another* host can be checked, against that host's own
-        robots.txt, so it is followed (see _follow_robots_redirect).
+        robots.txt, so it is followed (see _follow_robots_redirect). The exception is a
+        host listed in settings.yaml as having no robots.txt: its redirect is known to
+        lead to an ordinary page, so it is not followed, and the caller reads it as "no
+        rules". A real robots.txt on such a host (a 200) is still read and obeyed.
         """
         for _ in range(MAX_REDIRECTS):
             response = self._attempt("GET", url, host, headers=ROBOTS_HEADERS)
@@ -262,7 +270,7 @@ class HttpClient:
                 return response
             target = response.url.join(response.headers.get("Location", ""))
             if target.path != "/robots.txt":
-                if target.host == host:
+                if target.host == host or host in self._no_robots_hosts:
                     return response
                 return self._follow_robots_redirect(str(target), host) or response
             url = str(target)
