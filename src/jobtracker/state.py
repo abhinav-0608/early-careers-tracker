@@ -219,7 +219,7 @@ def save_profile_state(
         record = asdict(job)
         del record["key"]  # already the dictionary key
         if job.company in private:
-            record.update(title="", url="", locations=[])
+            record.update(title="", url="", locations=[], posted_at=None)
             if record["eligibility"]:
                 record["eligibility"] = privacy.redact_basis(record["eligibility"])
         if not record["eligibility_note"]:

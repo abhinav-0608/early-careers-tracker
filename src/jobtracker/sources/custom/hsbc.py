@@ -10,9 +10,10 @@ written, two requests). Each row carries the title, location, opening date, prog
 type and area of interest; the posting page (descriptions) is /emergingtalent/job/...
 
 robots.txt (checked 2026-11-16) disallows only the apply, talent-community, e-mail and
-/services/ paths, so the search and posting pages may be read. The site's terms and
-conditions allow copying extracts for personal information and say nothing on
-automated access (checked 2026-11-16).
+/services/ paths, so the search and posting pages may be read. The site's terms say
+nothing on automated access but allow extracts only for one's personal information,
+not to be distributed or linked to, so HSBC is a private company: alerts only, nothing
+in public output (companies.yaml `private: true`, privacy.py, DESIGN.md decision 32).
 """
 
 from __future__ import annotations
@@ -41,8 +42,13 @@ def fetch(company: Company, http: HttpClient) -> list[Job]:
     for page in range(MAX_PAGES):
         text = http.get_text(SEARCH, params=_params(page * PAGE_SIZE))
         found = parse(company, text)
+        before = len(jobs)
         for job in found:
             jobs.setdefault(job.job_id, job)
+        if found and len(jobs) == before:
+            # The page repeated an earlier one (the offset was ignored): a short list
+            # would close the unseen roles, so fail instead.
+            raise ValueError(f"HSBC search page {page + 1} repeated earlier results")
         if not found or (page + 1) * PAGE_SIZE >= total(text):
             break
     return list(jobs.values())

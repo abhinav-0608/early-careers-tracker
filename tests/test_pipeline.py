@@ -798,7 +798,7 @@ def test_the_re_read_never_changes_a_verdict_only_adds_a_note(tracker, web, now_
     assert web.published == []
 
 
-# --- private companies (alerts only; privacy.py, DESIGN.md decision 31) ----------------
+# --- private companies (alerts only; privacy.py, DESIGN.md decision 32) ----------------
 
 
 def _private(config, key="point72"):
@@ -904,3 +904,22 @@ def test_a_private_company_s_roles_are_left_out_of_the_readme(
     text = readme_path.read_text()
     assert "## Open roles" in text
     assert "Point72" not in text and "Spring Insight" not in text
+
+
+def test_a_private_alert_that_failed_waits_for_a_fetch_rather_than_going_out_blank(tracker, web):
+    private = _private(tracker.config)
+    tracker(config=private)
+    web.published.clear()
+    web.add_greenhouse_job(9000001, "Spring Week 2027 - Technology")
+    web.ntfy_down = True
+    tracker(NOW + RUN, config=private)  # fetched, but the alert fails
+
+    web.ntfy_down = False
+    web.broken_hosts.add("boards-api.greenhouse.io")
+    tracker(NOW + 2 * RUN, config=private)  # the saved record has no title: wait
+    assert web.published == []
+
+    web.broken_hosts.clear()
+    tracker(NOW + 3 * RUN, config=private)
+    (alert,) = web.published
+    assert alert["title"] == "Point72 – Spring Week 2027 - Technology"

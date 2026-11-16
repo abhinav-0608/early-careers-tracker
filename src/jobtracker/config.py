@@ -265,6 +265,16 @@ def load_config(config_dir: Path | str = "config") -> Config:
                 f"{config_dir / 'settings.yaml'}: pauses.{pause.kind}.probe_company: "
                 f"no {pause.kind} company called '{pause.probe_company}'"
             )
+    for company in companies:
+        # A private company's roles may reach one person only: its terms allow extracts
+        # for one's own information, not passing them on (DESIGN.md decision 32).
+        watchers = [profile.key for profile in profiles if profile.watches(company)]
+        if company.private and len(watchers) > 1:
+            raise ConfigError(
+                f"{config_dir / 'companies.yaml'}: {company.key} is private (alerts for one "
+                f"person only) but {', '.join(watchers)} all watch it; mark it opt_in and "
+                "name it in one profile"
+            )
     known = {profile.key for profile in profiles} | set(errors)
     if settings.readme_profile is not None and settings.readme_profile not in known:
         raise ConfigError(

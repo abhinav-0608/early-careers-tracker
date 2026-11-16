@@ -91,6 +91,22 @@ def test_fetch_reads_every_page_newest_first(settings):
     assert queries[0]["sortColumn"] == "referencedate"
 
 
+def test_a_page_that_repeats_the_first_is_an_error_not_a_shorter_list(settings):
+    # If the site ignored the offset, page two would repeat page one; 25 of 37 roles
+    # returned as complete would close the other 12.
+    def handler(request: httpx.Request) -> httpx.Response:
+        tiles = "".join(
+            f'<li class="job-tile job-id-{n}" data-url="/emergingtalent/job/x/{n}/">'
+            f'<a class="jobTitle-link" href="/emergingtalent/job/x/{n}/">Insight {n}</a></li>'
+            for n in range(25)
+        )
+        return httpx.Response(200, text=f"<p>Showing 1 to 25 of 37 Jobs</p><ul>{tiles}</ul>")
+
+    robots_txt = load_text("robots/hsbc-careers.txt")
+    with pytest.raises(ValueError, match="page 2 repeated earlier results"):
+        hsbc.fetch(HSBC, mock_client(settings, handler, robots_txt=robots_txt))
+
+
 def test_robots_txt_allows_the_search_and_postings_but_not_services_or_apply():
     rules = robots.parse(load_text("robots/hsbc-careers.txt"), "job-alert-tracker")
     assert rules.allows("/emergingtalent/search/?q=&startrow=25")

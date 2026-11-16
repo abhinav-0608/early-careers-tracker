@@ -411,6 +411,7 @@ def run_profile(
     state.baselines = {key: value for key, value in state.baselines.items() if key in in_scope}
 
     # --- notify ------------------------------------------------------------------------
+    private = {company.key for company in config.companies if company.private}
     # One summary for everything baselined this run. A baseline that found nothing (a
     # new company with no matching roles, a filter change that surfaces nothing) sends
     # no notification: "0 matching roles" is not worth a buzz.
@@ -420,7 +421,15 @@ def run_profile(
 
     # Everything not yet announced: this run's new jobs plus any whose alert failed to
     # send on an earlier run. A job is marked notified only once ntfy has accepted it.
-    pending = [job for job in state.jobs.values() if job.status == OPEN and not job.notified]
+    # A private company's saved record has no title or link (privacy.py); one that this
+    # run's fetch did not refresh waits for a run that does, rather than going out blank.
+    pending = [
+        job
+        for job in state.jobs.values()
+        if job.status == OPEN
+        and not job.notified
+        and not (job.company in private and not job.title)
+    ]
     for notification in plan_job_notifications(pending, profile, config):
         if notifier.send_job(profile.key, notification):
             report.job_alerts_sent += 1
@@ -430,7 +439,6 @@ def run_profile(
             report.job_alerts_failed += 1
 
     if save:
-        private = {company.key for company in config.companies if company.private}
         save_profile_state(state, state_dir, profile.key, private)
         if readme_path and settings.readme_profile == profile.key:
             # The state is already saved; a README that cannot be written costs the

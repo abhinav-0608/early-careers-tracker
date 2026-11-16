@@ -173,7 +173,12 @@ state and logs are opaque), the dedupe fingerprint is a hash (reposts are still
 recognised), saved records keep no title, link, location or quoted posting text (they are
 whole in memory during a run, which is all alerts need), log lines give `(private)` for
 the role, and the README leaves the roles out. Counts per source still appear, and the
-host's robots.txt rules are cached in `state/hosts.json` as for any host. See privacy.py.
+host's robots.txt rules are cached in `state/hosts.json` as for any host. Because a saved
+record has no title, an alert that failed to send waits for a run whose fetch refreshes
+it rather than going out blank. Only one profile may watch a private company (a second
+would be passing its roles on): the config is rejected otherwise. The id hashes are not
+keyed, so a determined reader could recover the numeric ids; ids are not the site's
+content, and the titles, links and text are never written. See privacy.py.
 
 **A profile that cannot run** shows as a warning on the Actions run page and in the logs,
 and the run still succeeds so that the other profiles' state is committed. The run fails

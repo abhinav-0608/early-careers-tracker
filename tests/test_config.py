@@ -569,3 +569,14 @@ def test_an_eightfold_company_needs_its_host_and_domain(tmp_path):
     entry = "- {key: acme, name: Acme, ats: eightfold, host: acme.eightfold.ai}"
     with pytest.raises(ConfigError, match="board is required"):
         load_config(_companies_file(tmp_path / "b", entry))
+
+
+def test_a_private_company_may_be_watched_by_one_profile_only(tmp_path):
+    entry = "- {key: acme, name: Acme, industry: quant, ats: greenhouse, board: a, private: true}"
+    config_dir = _companies_file(tmp_path, entry)
+    assert load_config(config_dir).company("acme").private
+
+    owner_dir = (config_dir / OWNER_PROFILE).parent
+    shutil.copytree(owner_dir, owner_dir.parent / "someone-else")
+    with pytest.raises(ConfigError, match="acme is private .* all watch it"):
+        load_config(config_dir)
