@@ -5,12 +5,28 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Owner's decisions on #4 and #5** (2026-11-16):
+  - JPMorgan: check its own careers-site terms; keep polling only if they do not forbid
+    automated access. jpmorgan.com's terms say "you will not use any robot, spider, other
+    automatic device or manual process to monitor or copy our web pages, data or the
+    content contained herein ... without our prior expressed written permission", and
+    no separate careers-site terms were found, so it is at best unclear: **switched
+    off** (`ats: unsupported`; no stored JPMorgan roles, so nothing closed) and added to
+    the manual email alerts. The other Oracle companies are not added.
+  - UBS skipped; UBS, NatWest and BNP Paribas added to the manual email alerts.
+- **Qualcomm not switched on**: the reviewer blocked the Eightfold change because
+  Qualcomm's own terms had not been checked. Its terms page renders only in a browser and
+  no readable copy was found, so they are unclear: Qualcomm stays unsupported (and on the
+  manual list); the adapter is kept for Microsoft.
+- **Tooling** (owner's request): the reviewer agent inherits the session model; no
+  setting selects Fable (the Fable entry in the user settings' `modelSettings` was
+  removed); worktrees live under `.worktrees/`, gitignored.
 - **Microsoft polled hourly, not every run** (autonomous): apply.careers.microsoft.com
   answered 429 twice on 2026-11-16 (run 43924111375 and earlier), so the tracker was
   asking too often. Fewer requests, no change to what is seen beyond up to an hour's delay.
-- **Generic Eightfold adapter; Qualcomm polled** (owner's decision 1): Netflix and
+- **Generic Eightfold adapter** (owner's decision 1), used by Microsoft. Netflix and
   Millennium refused the search API (403) and stay unsupported; Amex's careers host is
-  unknown.
+  unknown; Qualcomm waits on its terms (below).
 - **Merged the preference note** (`0e8abe4`): the reviewer blocked the first attempt
   (eligibility widened by accident; a re-read could close a role), approved after the
   fixes. Manual run 43924111375: success in 4 min 36 s, no notifications, no health

@@ -214,12 +214,9 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  ats: eightfold
-  host: qualcomm.eightfold.ai
-  board: qualcomm.com
+  ats: unsupported
   careers_url: https://careers.qualcomm.com
-  note: "Intern experience level only, worldwide (Eightfold search API, which its robots.txt allows); its Workday site is empty"
-  verified: 2026-11-16
+  note: "Eightfold careers site (qualcomm.eightfold.ai; robots.txt allows the search API), but its terms of use could not be read (the page renders only in a browser, 2026-11-16). If they allow it: ats: eightfold, host: qualcomm.eightfold.ai, board: qualcomm.com"
 
 - key: arm
   name: Arm
@@ -1838,11 +1835,9 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  ats: custom
-  board: jpmorgan
+  ats: unsupported
   careers_url: https://careers.jpmorgan.com
-  note: "Oracle Recruiting Cloud (jpmc.fa.oraclecloud.com), narrowed to the Program Analysts & Associate job family"
-  verified: 2026-11-15
+  note: "Switched off 2026-11-16: jpmorgan.com's terms forbid any robot that monitors or copies its pages or data without written permission, and may cover its careers site (Oracle Recruiting Cloud, jpmc.fa.oraclecloud.com). custom/jpmorgan.py is kept: ats: custom, board: jpmorgan turns it back on"
 
 - key: morgan-stanley
   name: Morgan Stanley

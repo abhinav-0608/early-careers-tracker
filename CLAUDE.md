@@ -59,6 +59,10 @@ change. If the two disagree, stop and ask (it is a MUST-stop item below).
   decision in section 14 for anything a future reader would ask "why?" about).
 - Commits end with the attribution lines the session gives. Commit on a branch; `main`
   changes only through the safe merge below.
+- Worktrees go inside the repo under `.worktrees/` (gitignored), never outside the
+  project folder.
+- Pre-merge reviews use the dedicated `reviewer` agent, which inherits the session's
+  model; no agent or setting selects Fable.
 
 ### Dry run
 

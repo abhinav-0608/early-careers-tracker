@@ -18,6 +18,11 @@ or spring programmes in the UK.
 | Arm (early careers) | Its iCIMS early-careers site disallows everything in robots.txt |
 | Susquehanna (SIG) | Its iCIMS site disallows everything in robots.txt |
 | Bloomberg | Its Avature careers host did not answer at all (twice, 2026-11-16) |
+| JPMorgan Chase 🔥 | Switched off 2026-11-16: jpmorgan.com's terms forbid robots that monitor or copy its pages or data, and may cover its careers site |
+| UBS | Its job board (Kenexa BrassRing) needs a browser-like session handshake, and its terms allow only personal viewing (owner's decision, 2026-11-16) |
+| NatWest Group | Cloudflare challenge, even for robots.txt |
+| BNP Paribas | Akamai "Access Denied", even for robots.txt |
+| Qualcomm | Its terms of use could not be read (browser-only page); polled again if they turn out to allow it |
 | Barclays, Lloyds Banking Group, Deutsche Bank, BlackRock, NVIDIA 🔥 | **While Workday is paused.** Every Workday server has answered with a Cloudflare challenge since 2026-11-16 07:00 UTC, so Workday polling is paused (settings.yaml, `pauses`). If it is still refused on 2026-11-23 it will be marked unsupported, and these alerts become permanent |
 
 The grad boards whose terms forbid scraping (Trackr, Gradcracker) and the one behind a bot

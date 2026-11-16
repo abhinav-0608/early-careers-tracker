@@ -614,7 +614,7 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Custom: Google | `GET www.google.com/about/careers/applications/jobs/results` | JSON embedded in the page; first page of each search only (robots.txt) |
 | Custom: Amazon | `GET www.amazon.jobs/en/search.json` | 100 per page, each role with its full description (about 1 MB a page); narrowed to one category and three countries |
 | Custom: Apple | `GET jobs.apple.com/en-gb/search` | JSON embedded in the page, 20 per page (about 320 KB a page); narrowed to one team |
-| Eightfold | `GET {host}/api/pcsx/search?domain={board}` | 10 per page; narrowed to the "Intern" experience level. `host` and `board` (the site's domain) per company. Qualcomm; polled hourly |
+| Eightfold | `GET {host}/api/pcsx/search?domain={board}` | 10 per page; narrowed to the "Intern" experience level. `host` and `board` (the site's domain) per company. Used by Microsoft; Qualcomm waits on its terms (decision 29) |
 | Custom: Microsoft | `GET apply.careers.microsoft.com/api/pcsx/search` | Eightfold on Microsoft's own hostname, read by the Eightfold adapter; kept a custom source so its job keys are unchanged |
 | Custom: AMD | `GET careers.amd.com/api/jobs` | iCIMS Attract; 100 per page with full descriptions; one category and three keyword searches. `Crawl-delay: 5` |
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
@@ -706,7 +706,7 @@ pages that list roles, is `unsupported` with the reason in its `note`.
 |---|---|---|
 | NVIDIA, G-Research | Polled | Generic Workday adapter |
 | Morgan Stanley | Polled | Generic tal.net adapter (campus boards) |
-| JPMorgan Chase | Polled | Oracle Recruiting Cloud's public API. The site holds about 7,000 postings, so the request uses the site's own "Program Analysts & Associate" job-family filter (about 250 analyst, associate, internship and programme roles): 2 requests per run instead of 35. A role filed under another job family is not seen. Its `/robots.txt` answers 403 to every client, which RFC 9309 treats as "no rules" |
+| JPMorgan Chase | **Switched off 2026-11-16** (decision 30) | Oracle Recruiting Cloud's public API. The site holds about 7,000 postings, so the request uses the site's own "Program Analysts & Associate" job-family filter (about 250 analyst, associate, internship and programme roles): 2 requests per run instead of 35. A role filed under another job family is not seen. Its `/robots.txt` answers 403 to every client, which RFC 9309 treats as "no rules" |
 | Google, Google DeepMind | Polled, with a limit | No API; the results page embeds its data as JSON. robots.txt allows the results page but disallows every paginated form of it, so only the first 20 results of a search may be read. The adapter therefore runs narrow searches, newest first: intern-and-apprentice level only; Google in the UK, India and the US (one search each), DeepMind worldwide. A search that overflows is logged (`google_results_truncated`). Graduate roles and other countries are not seen |
 | Goldman Sachs | Unsupported | `higher.gs.com/robots.txt` allows only single role pages (`/roles/`) and disallows everything else, including every page that lists roles. The site's data API is on another host with no robots.txt, but as with Workday the owner's intent is clear |
 | Citadel, Citadel Securities | Unsupported | Careers pages answer with a Cloudflare browser challenge (403 without JavaScript) |
@@ -802,11 +802,11 @@ were already covered. Of the 23 FAANG+ 🔥 companies, 17 are polled and 6 are n
   than 60 seconds is not fetched at all, because a 12-minute run could not honour it.
 - **Polling intervals.** `settings.yaml` gives each kind of source a minimum number of
   minutes between polls (`polling.every_minutes`, keyed by ATS name or custom module name;
-  0 or absent means every run). Today the ATS APIs, tal.net, JPMorgan and small
-  Workday sites are polled every run. SmartRecruiters, Workable, Amazon, Apple, AMD,
-  Microsoft and Eightfold (Qualcomm) are held to once an hour as whole sources (Microsoft
-  since it answered 429 twice on 2026-11-16 when polled every run) (their weight is in the tables above), and
-  so are two more:
+  0 or absent means every run). Today the ATS APIs, tal.net and small Workday sites are
+  polled every run. SmartRecruiters, Workable, Amazon, Apple, AMD, Microsoft and any
+  Eightfold site are held to once an hour as whole sources; their weight is in the tables
+  above, and Microsoft answered 429 twice on 2026-11-16 when polled every run. Two more
+  are limited too:
   - **Google** (whole source): each request is a 1.3 MB page. When it is not due it gets a
     `not_due` result and no request at all.
   - **Workday searches** (`workday_search`): a tenant is still polled every run, so its
@@ -1494,8 +1494,17 @@ none should be without a decision to grow the scope.
     description are read once more (section 6a).
 29. **A generic Eightfold adapter** (2026-11-16, owner's decision on the gap report):
     `ats: eightfold` with `host` and `board` (the domain), the intern-level search
-    Microsoft's adapter already used, which Microsoft now shares. Qualcomm is polled with
-    it. Netflix and Millennium answer the search API with 403 and stay unsupported (a
-    refusal is not worked around); American Express's careers host could not be found
-    (aexp.eightfold.ai answers 404) and stays unsupported. Eightfold's acceptable use
-    policy has no clause on automated access.
+    Microsoft's adapter already used, which Microsoft now shares. Eightfold's acceptable
+    use policy (eightfold.ai/acceptable-use-policy) has no clause on automated access, but
+    each company's own careers-site terms decide too: Qualcomm's robots.txt allows the
+    search API, yet its terms page renders only in a browser and could not be read, so it
+    stays unsupported until they are. Netflix and Millennium answer the search API with
+    403 and stay unsupported (a refusal is not worked around); American Express's careers
+    host could not be found (aexp.eightfold.ai answers 404).
+30. **JPMorgan is switched off** (2026-11-16, owner's rule: a careers site's own terms
+    decide, and unclear means off). jpmorgan.com's terms forbid "any robot, spider, other
+    automatic device or manual process to monitor or copy our web pages, data or the
+    content contained herein" without written permission, and no separate careers-site
+    terms were found. Its adapter (custom/jpmorgan.py) is kept for if permission is ever
+    given; JPMorgan is on the manual email alert list. The same test applies to any other
+    Oracle Recruiting Cloud company: none is added unless its own terms are clear.
