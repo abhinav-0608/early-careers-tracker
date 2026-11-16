@@ -1,8 +1,12 @@
 {
   "backoff": {
-    "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T07:31:09+00:00",
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-16T08:00:55+00:00",
       "strikes": 1
+    },
+    "wd1.myworkdayjobs.com": {
+      "retry_at": "2026-11-16T08:30:55+00:00",
+      "strikes": 2
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-16T08:01:12+00:00",
@@ -17,8 +21,8 @@
       "strikes": 3
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T07:31:09+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-16T08:30:55+00:00",
+      "strikes": 2
     },
     "wd5.myworkdayjobs.com": {
       "retry_at": "2026-11-16T07:45:39+00:00",
@@ -65,26 +69,6 @@
         "Disallow: /cn/*/aow/*",
         "Disallow: /tmall*",
         "Allow: /ac/globalnav/2.0/*/images/ac-globalnav/globalnav/search/*"
-      ]
-    },
-    "apply.careers.microsoft.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T07:01:00+00:00",
-      "rules": [
-        "Disallow: /",
-        "Allow: /$",
-        "Allow: /careers",
-        "Allow: /api/apply",
-        "Allow: /api/pcsx",
-        "Allow: /candidate/login",
-        "Allow: /login",
-        "Allow: /events/candidate",
-        "Allow: /events/open",
-        "Allow: /api/events",
-        "Allow: /careerhub/explore/jobs",
-        "Allow: /api/career_hub",
-        "Allow: /static/gen",
-        "Allow: /gen"
       ]
     },
     "apply.workable.com": {
@@ -643,14 +627,6 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "intel.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "invesco.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
@@ -858,16 +834,6 @@
       "rules": [
         "Allow: /SantanderCareers/",
         "Disallow: /UKSantanderCareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "sec.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Samsung_Careers/",
-        "Allow: /Samsung_Jobs/",
-        "Allow: /Samsung_Suggestion/",
         "Disallow: /refreshFacet/"
       ]
     },
