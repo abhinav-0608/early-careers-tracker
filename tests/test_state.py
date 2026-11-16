@@ -4,12 +4,15 @@ from conftest import MATCHED, NOW, make_job
 from jobtracker.dedupe import Reconciler
 from jobtracker.state import (
     LEGACY_OWNER,
+    HostsState,
     ProfileState,
     SourceState,
+    load_hosts,
     load_profile_state,
     load_sources,
     migrate_legacy,
     profile_path,
+    save_hosts,
     save_profile_state,
     save_sources,
 )
@@ -144,3 +147,28 @@ def test_migration_interrupted_half_way_finishes_next_time(tmp_path, settings):
     assert migrate_legacy(tmp_path) is True
     assert load_profile_state(tmp_path, LEGACY_OWNER) == owner_before
     assert not (tmp_path / "jobs.json").exists()
+
+
+def test_host_memory_round_trips_and_is_stable_on_disk(tmp_path):
+    hosts = HostsState(
+        robots={
+            "example.com": {
+                "fetched_at": "2026-11-15T12:00:00+00:00",
+                "rules": ["Disallow: /private/"],
+                "crawl_delay": 10.0,
+            }
+        },
+        backoff={"wd5.myworkdayjobs.com": {"retry_at": "2026-11-15T12:30:00+00:00", "strikes": 1}},
+    )
+    save_hosts(hosts, tmp_path)
+    first = (tmp_path / "hosts.json").read_bytes()
+
+    assert load_hosts(tmp_path) == hosts
+    save_hosts(load_hosts(tmp_path), tmp_path)
+    assert (tmp_path / "hosts.json").read_bytes() == first
+
+
+def test_missing_or_damaged_host_memory_is_just_an_empty_cache(tmp_path):
+    assert load_hosts(tmp_path) == HostsState()
+    (tmp_path / "hosts.json").write_text("{ not json", encoding="utf-8")
+    assert load_hosts(tmp_path) == HostsState()

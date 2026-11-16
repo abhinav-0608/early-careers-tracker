@@ -60,6 +60,7 @@ class Settings:
     retries: int
     per_host_delay_seconds: float
     max_workers: int
+    robots_cache_hours: int
     # notify
     ntfy_server: str
     batch_threshold: int
@@ -71,6 +72,7 @@ class Settings:
     prune_closed_after_days: int
     # health
     fail_after_consecutive: int
+    fail_after_rate_limited: int
     reminder_hours: int
     accept_empty_after_runs: int
     # polling: minimum minutes between polls, by kind of source. Not listed = every run.
@@ -265,6 +267,7 @@ def load_settings(path: Path) -> Settings:
             _get(http, "per_host_delay_seconds", (int, float), f"{path}: http")
         ),
         max_workers=_get(http, "max_workers", int, f"{path}: http"),
+        robots_cache_hours=_get(http, "robots_cache_hours", int, f"{path}: http"),
         ntfy_server=_get(notify, "server", str, f"{path}: notify").rstrip("/"),
         batch_threshold=_get(notify, "batch_threshold", int, f"{path}: notify"),
         priority_dream=_get(priority, "dream", int, f"{path}: notify.priority"),
@@ -273,6 +276,7 @@ def load_settings(path: Path) -> Settings:
         repost_window_days=_get(state, "repost_window_days", int, f"{path}: state"),
         prune_closed_after_days=_get(state, "prune_closed_after_days", int, f"{path}: state"),
         fail_after_consecutive=_get(health, "fail_after_consecutive", int, f"{path}: health"),
+        fail_after_rate_limited=_get(health, "fail_after_rate_limited", int, f"{path}: health"),
         reminder_hours=_get(health, "reminder_hours", int, f"{path}: health"),
         accept_empty_after_runs=_get(health, "accept_empty_after_runs", int, f"{path}: health"),
         poll_every_minutes={str(kind): minutes for kind, minutes in every.items()},
@@ -287,6 +291,12 @@ def load_settings(path: Path) -> Settings:
         raise ConfigError(f"{path}: state.close_after_missing_runs must be at least 1")
     if settings.fail_after_consecutive < 1:
         raise ConfigError(f"{path}: health.fail_after_consecutive must be at least 1")
+    if settings.fail_after_rate_limited < settings.fail_after_consecutive:
+        raise ConfigError(
+            f"{path}: health.fail_after_rate_limited must be at least health.fail_after_consecutive"
+        )
+    if settings.robots_cache_hours < 0:
+        raise ConfigError(f"{path}: http.robots_cache_hours must be 0 or more")
     for name in ("priority_dream", "priority_normal"):
         if not 1 <= getattr(settings, name) <= 5:
             raise ConfigError(f"{path}: notify.priority values must be between 1 and 5")

@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from conftest import NOW, make_company, make_job
 from jobtracker import health
-from jobtracker.models import EMPTY, ERROR, OK, SourceResult
+from jobtracker.models import EMPTY, ERROR, OK, RATE_LIMITED, SourceResult
 from jobtracker.state import SourceState
 
 COMPANY = make_company("acme")
@@ -11,6 +11,10 @@ RUN = timedelta(minutes=15)
 
 def failed(error="HTTP 500 from example.com"):
     return SourceResult(company=COMPANY, status=ERROR, error=error)
+
+
+def rate_limited():
+    return SourceResult(company=COMPANY, status=RATE_LIMITED, error="example.com: HTTP 429")
 
 
 def succeeded():
@@ -149,3 +153,34 @@ def test_recovery_only_notification_is_low_priority(settings):
     notification = health.health_notification(report, {})
     assert notification.title == "Sources recovered"
     assert notification.priority == 2
+
+
+def test_a_rate_limit_alerts_on_the_third_refusal_in_a_row_not_the_second(settings):
+    source = SourceState()
+    first = one_run(source, rate_limited(), NOW, settings)
+    second = one_run(source, rate_limited(), NOW + RUN, settings)
+    third = one_run(source, rate_limited(), NOW + 2 * RUN, settings)
+    fourth = one_run(source, rate_limited(), NOW + 3 * RUN, settings)
+
+    assert not first and not second
+    assert [result.company.key for result in third.failing] == ["acme"]
+    assert not fourth  # alerted once
+    assert source.consecutive_failures == 3  # and capped, so the state stops changing
+
+
+def test_a_rate_limit_that_clears_before_the_third_attempt_never_alerts(settings):
+    source = SourceState()
+    one_run(source, rate_limited(), NOW, settings)
+    one_run(source, rate_limited(), NOW + RUN, settings)
+    report = one_run(source, succeeded(), NOW + 2 * RUN, settings)
+
+    assert not report  # nothing was announced, so there is no recovery to announce
+    assert source.consecutive_failures == 0
+
+
+def test_other_failures_still_alert_on_the_second_run(settings):
+    source = SourceState()
+    one_run(source, rate_limited(), NOW, settings)
+    report = one_run(source, failed(), NOW + RUN, settings)
+
+    assert [result.company.key for result in report.failing] == ["acme"]

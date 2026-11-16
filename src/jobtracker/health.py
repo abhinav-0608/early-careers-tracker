@@ -5,6 +5,10 @@ Alerts follow state changes rather than runs. A source alerts once it has failed
 broken, and once more when it recovers. A source that is down for a week therefore
 sends about eight messages, not one every fifteen minutes.
 
+A host answering 429 (rate limited) is treated as passing: it takes
+`fail_after_rate_limited` refusals in a row, and a run in which the backed-off host was
+not asked at all counts as neither a failure nor a success.
+
 Health is shared, not per profile: a board is fetched once per run and is either working
 or not, whoever watches it. Health alerts go to the one health topic (the person running
 the tracker), never to a profile's job topic.
@@ -16,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from jobtracker.config import Settings
-from jobtracker.models import EMPTY, OK, SourceResult
+from jobtracker.models import EMPTY, OK, RATE_LIMITED, SourceResult
 from jobtracker.notify import Notification
 from jobtracker.state import SourceState
 
@@ -74,11 +78,17 @@ def record_outcome(
 
     if source.failing_since is None:
         source.failing_since = now.isoformat(timespec="seconds")
-    # Capped so that a long outage does not change the state file on every run.
-    source.consecutive_failures = min(
-        source.consecutive_failures + 1, settings.fail_after_consecutive
+    # A rate limit (429) is usually short-lived and the host is backed off between
+    # attempts, so it has to persist for more attempts before it is worth an alert.
+    threshold = (
+        settings.fail_after_rate_limited
+        if result.status == RATE_LIMITED
+        else settings.fail_after_consecutive
     )
-    if source.consecutive_failures < settings.fail_after_consecutive:
+    # Capped so that a long outage does not change the state file on every run.
+    cap = max(settings.fail_after_consecutive, settings.fail_after_rate_limited)
+    source.consecutive_failures = min(source.consecutive_failures + 1, cap)
+    if source.consecutive_failures < threshold:
         return
 
     reminder_due = source.last_alert_at is None or now - datetime.fromisoformat(

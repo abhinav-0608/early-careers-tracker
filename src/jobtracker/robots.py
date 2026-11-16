@@ -51,6 +51,19 @@ class RobotsRules:
         # Longest pattern wins; on equal length, Allow (True sorts above False) wins.
         return max(matching, key=lambda rule: (len(rule.pattern), rule.allow))
 
+    def to_lines(self) -> list[str]:
+        """The rules as "Allow: /x" / "Disallow: /y" lines, for the cache kept in state."""
+        return [f"{'Allow' if rule.allow else 'Disallow'}: {rule.pattern}" for rule in self.rules]
+
+    @classmethod
+    def from_lines(cls, lines: list[str], crawl_delay: float | None) -> RobotsRules:
+        """Rebuild rules cached by to_lines(). They were already chosen for this tracker."""
+        rules = []
+        for line in lines:
+            field, pattern = (part.strip() for part in line.split(":", 1))
+            rules.append(Rule(allow=field == "Allow", pattern=pattern, regex=_compile(pattern)))
+        return cls(rules=tuple(rules), crawl_delay=crawl_delay)
+
 
 ALLOW_ALL = RobotsRules()
 

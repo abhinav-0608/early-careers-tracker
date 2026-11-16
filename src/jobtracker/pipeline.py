@@ -33,12 +33,15 @@ from jobtracker import health, log
 from jobtracker.config import WORKDAY_SEARCH, Config, Profile, Settings
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
 from jobtracker.filters import classify
-from jobtracker.http import HttpClient, RobotsDisallowedError
+from jobtracker.http import HttpClient, RateLimitedError, RobotsDisallowedError
 from jobtracker.models import (
+    BACKING_OFF,
     BLOCKED,
     ERROR,
+    NOT_ASKED,
     NOT_DUE,
     OK,
+    RATE_LIMITED,
     TIMEOUT,
     Company,
     SourceResult,
@@ -189,7 +192,7 @@ def run(
     # --- board health (shared) ---------------------------------------------------------
     health_report = health.HealthReport()
     for result in report.results:
-        if result.status == NOT_DUE:
+        if result.status in NOT_ASKED:
             continue  # nothing was asked of it, so there is nothing to record
         source = sources.setdefault(result.company.source_key, SourceState())
         if not result.partial:  # a partial fetch says nothing about the board being empty
@@ -389,6 +392,11 @@ def fetch_company(company: Company, http: HttpClient, search: bool = True) -> So
         else:
             result.jobs = adapter(company, http)
             result.polled_kind = company.poll_kind
+    except RateLimitedError as exc:
+        # 429. Either the host said so just now (a failure, counted towards an alert),
+        # or it said so earlier and was not asked at all this run (not a failure).
+        result.status = RATE_LIMITED if exc.answered_now else BACKING_OFF
+        result.error = str(exc)
     except RobotsDisallowedError as exc:
         # Not fetched, on the site owner's instruction. Reported like any failing source,
         # so a board that becomes disallowed is noticed and can be marked unsupported.
@@ -456,8 +464,9 @@ def log_report(report: RunReport) -> None:
     log.event(
         "run_summary",
         sources_ok=sum(result.status == OK for result in report.results),
-        sources_failed=sum(result.status not in (OK, NOT_DUE) for result in report.results),
+        sources_failed=sum(result.status not in (OK, *NOT_ASKED) for result in report.results),
         sources_not_due=sum(result.status == NOT_DUE for result in report.results),
+        sources_backing_off=sum(result.status == BACKING_OFF for result in report.results),
         fetched=sum(len(result.jobs) for result in report.results),
         profiles_ok=sum(profile.status == OK for profile in report.profiles),
         profiles_not_run=sum(profile.status != OK for profile in report.profiles),

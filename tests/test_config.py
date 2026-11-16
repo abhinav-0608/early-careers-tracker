@@ -150,8 +150,9 @@ def test_companies_are_queued_by_the_host_that_serves_them():
     groups = {
         make_company("a", ats="greenhouse").host_group,
         make_company("b", ats="greenhouse").host_group,
-        make_company("c", ats="workday", tenant="acme", board=None).host_group,
-        make_company("d", ats="workday", tenant="other", board=None).host_group,
+        make_company("c", ats="workday", tenant="acme", host="wd5", board=None).host_group,
+        make_company("d", ats="workday", tenant="other", host="wd5", board=None).host_group,
+        make_company("f", ats="workday", tenant="third", host="wd3", board=None).host_group,
         make_company("e", ats="talnet", tenant="acme", board="x").host_group,
         make_company("google", ats="custom", board="google").host_group,
         make_company("google-deepmind", ats="custom", board="google").host_group,
@@ -159,8 +160,8 @@ def test_companies_are_queued_by_the_host_that_serves_them():
     }
     assert groups == {
         "greenhouse",
-        "workday:acme",
-        "workday:other",
+        "workday:wd5",  # tenants of one Workday server share its queue
+        "workday:wd3",
         "talnet:acme",
         "custom:google",
         "custom:jpmorgan",
@@ -217,6 +218,29 @@ def test_wrong_type_is_rejected_with_the_location_of_the_mistake(tmp_path):
     config_dir = _config_with(tmp_path, "settings.yaml", "retries: 2", "retries: lots")
     with pytest.raises(ConfigError, match="http: retries: expected int, got str"):
         load_config(config_dir)
+
+
+def test_shipped_settings_cache_robots_txt_for_a_day_and_wait_longer_on_a_rate_limit(config):
+    assert config.settings.robots_cache_hours == 24
+    assert config.settings.fail_after_consecutive == 2
+    assert config.settings.fail_after_rate_limited == 3
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("robots_cache_hours: 24", "robots_cache_hours: -1", "robots_cache_hours must be 0 or"),
+        ("fail_after_rate_limited: 3", "fail_after_rate_limited: 1", "must be at least"),
+    ],
+)
+def test_a_mistake_in_the_cache_or_rate_limit_settings_is_rejected(tmp_path, old, new, message):
+    shutil.copytree(ROOT / "config", tmp_path / "config")
+    path = tmp_path / "config" / "settings.yaml"
+    text = path.read_text(encoding="utf-8")
+    assert old in text
+    path.write_text(text.replace(old, new), encoding="utf-8")
+    with pytest.raises(ConfigError, match=message):
+        load_config(tmp_path / "config")
 
 
 def test_shipped_polling_intervals_slow_down_only_the_expensive_sources(config):

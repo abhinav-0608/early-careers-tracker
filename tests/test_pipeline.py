@@ -14,11 +14,18 @@ from datetime import timedelta
 import httpx
 import pytest
 
-from conftest import NOW, OWNER, changed_filters, make_company, make_profile
+from conftest import GREENHOUSE, NOW, OWNER, changed_filters, make_company, make_profile
 from jobtracker.http import HttpClient
 from jobtracker.notify import Notifier
 from jobtracker.pipeline import run
-from jobtracker.state import CLOSED, OPEN, load_profile_state, load_sources
+from jobtracker.state import (
+    CLOSED,
+    OPEN,
+    load_hosts,
+    load_profile_state,
+    load_sources,
+    save_hosts,
+)
 
 JOB_TOPIC = "secret-job-topic"
 HEALTH_TOPIC = "secret-health-topic"
@@ -39,13 +46,22 @@ def tracker(config, profile, settings, web, tmp_path):
     test_config = replace(config, settings=settings, companies=companies, profiles=(owner,))
 
     def run_once(now=NOW, config=test_config):
+        # As the command line does: the client's memory of hosts is part of the state.
         http = HttpClient(
-            config.settings, transport=httpx.MockTransport(web.handle), sleep=lambda _: None
+            config.settings,
+            transport=httpx.MockTransport(web.handle),
+            sleep=lambda _: None,
+            hosts=load_hosts(tmp_path),
+            now=now,
         )
         notifier = Notifier(http, config.settings.ntfy_server, {OWNER: JOB_TOPIC}, HEALTH_TOPIC)
-        return run(config, tmp_path, http, notifier, now)
+        try:
+            return run(config, tmp_path, http, notifier, now)
+        finally:
+            save_hosts(http.hosts_state(), tmp_path)
 
     run_once.state = lambda: load_profile_state(tmp_path, OWNER)
+    run_once.state_dir = tmp_path
     run_once.config = test_config
     return run_once
 
@@ -103,7 +119,7 @@ def test_new_job_on_a_later_run_gets_one_alert_and_is_never_repeated(tracker, we
 def test_unchanged_run_leaves_state_files_untouched(tracker, tmp_path):
     tracker()
     before = state_files(tmp_path)
-    assert set(before) == {"sources.json", f"profiles/{OWNER}.json"}
+    assert set(before) == {"hosts.json", "sources.json", f"profiles/{OWNER}.json"}
     tracker(NOW + RUN)
     assert state_files(tmp_path) == before
 
@@ -188,6 +204,113 @@ def test_a_source_robots_txt_disallows_is_reported_as_blocked_and_not_fetched(tr
     (alert,) = web.sent_to(HEALTH_TOPIC)  # reported like any failing source
     assert alert["title"] == "Source failing: Palantir"
     assert "blocked, robots.txt on api.lever.co disallows /v0/postings/palantir" in alert["message"]
+
+
+def test_robots_txt_is_read_once_a_day_not_once_a_run(tracker, web):
+    tracker()
+    assert sorted(web.robots_requests) == ["api.ashbyhq.com", "api.lever.co", GREENHOUSE]
+
+    web.robots_requests.clear()
+    for runs in range(1, 4):
+        tracker(NOW + runs * RUN)
+    assert web.robots_requests == []  # three more runs, no robots.txt request
+
+    tracker(NOW + timedelta(hours=24))
+    assert len(web.robots_requests) == 3  # a day on, each host's file is read again
+
+
+def test_cached_robots_txt_rules_are_still_obeyed(tracker, web):
+    web.robots["api.lever.co"] = "User-agent: *\nDisallow: /v0/postings/\n"
+    tracker()
+    web.robots_requests.clear()
+
+    report = tracker(NOW + RUN)
+
+    assert {r.company.key: r.status for r in report.results}["palantir"] == "blocked"
+    assert not any(fetch.startswith("api.lever.co") for fetch in web.fetches)
+    assert "api.lever.co" not in web.robots_requests
+
+
+def test_a_failed_fetch_has_robots_txt_read_again_on_the_next_run(tracker, web):
+    tracker()
+    web.broken_hosts.add("api.lever.co")
+    tracker(NOW + RUN)  # the board fails: perhaps the site's rules changed
+    web.robots_requests.clear()
+
+    tracker(NOW + 2 * RUN)
+
+    assert web.robots_requests == ["api.lever.co"]  # only the host that failed
+
+
+def test_a_rate_limited_source_is_backed_off_and_alerts_on_the_third_attempt(tracker, web):
+    """429 is treated as passing: the host is left alone for a while, and only three
+    refused attempts in a row (not three runs) raise a health alert."""
+    tracker()
+    web.published.clear()
+    web.rate_limited["api.lever.co"] = {}  # 429 on every path, no Retry-After
+
+    def statuses(report):
+        return {result.company.key: result.status for result in report.results}
+
+    def lever_requests():
+        return [fetch for fetch in web.fetches if fetch.startswith("api.lever.co")]
+
+    web.fetches.clear()
+    first = tracker(NOW + RUN)
+    assert statuses(first) == {"point72": "ok", "palantir": "rate_limited", "openai": "ok"}
+    assert lever_requests() == ["api.lever.co/v0/postings/palantir"]  # asked once, not retried
+
+    # The next run is inside the half-hour back-off: the host is not asked at all, and
+    # not being asked is not a failure.
+    web.fetches.clear()
+    quiet = tracker(NOW + 2 * RUN)
+    assert statuses(quiet)["palantir"] == "backing_off"
+    assert lever_requests() == []
+    assert load_sources(tracker.state_dir)["lever:palantir"].consecutive_failures == 1
+
+    second = tracker(NOW + RUN + timedelta(minutes=30))  # back-off over: second attempt
+    assert statuses(second)["palantir"] == "rate_limited"
+    assert web.published == []  # two refusals: still no alert
+
+    assert statuses(tracker(NOW + RUN + timedelta(minutes=60)))["palantir"] == "backing_off"
+    third = tracker(NOW + RUN + timedelta(minutes=90))  # the back-off doubled to an hour
+    assert statuses(third)["palantir"] == "rate_limited"
+    (alert,) = web.sent_to(HEALTH_TOPIC)
+    assert alert["title"] == "Source failing: Palantir"
+    assert "rate_limited, api.lever.co: HTTP 429, rate limited; next attempt" in alert["message"]
+
+    # It answers again: the source recovers and the back-off is forgotten.
+    del web.rate_limited["api.lever.co"]
+    web.published.clear()
+    recovered = tracker(NOW + RUN + timedelta(minutes=210))
+    assert statuses(recovered)["palantir"] == "ok"
+    assert [message["title"] for message in web.sent_to(HEALTH_TOPIC)] == ["Sources recovered"]
+    assert load_hosts(tracker.state_dir).backoff == {}
+
+
+def test_a_rate_limited_host_is_left_alone_for_as_long_as_it_asks(tracker, web):
+    tracker()
+    web.rate_limited["api.lever.co"] = {"Retry-After": "7200"}
+    tracker(NOW + RUN)
+    web.fetches.clear()
+
+    for minutes in (30, 60, 90, 120):
+        tracker(NOW + timedelta(minutes=minutes))
+    assert not any(fetch.startswith("api.lever.co") for fetch in web.fetches)
+
+    tracker(NOW + RUN + timedelta(minutes=120))
+    assert any(fetch.startswith("api.lever.co") for fetch in web.fetches)
+
+
+def test_a_rate_limited_source_closes_nothing_and_keeps_its_jobs(tracker, web):
+    tracker()
+    before = {key: job.status for key, job in tracker.state().jobs.items()}
+    web.rate_limited["api.lever.co"] = {}
+
+    for runs in range(1, 5):
+        report = tracker(NOW + runs * RUN)
+        assert report.total("closed") == 0
+    assert {key: job.status for key, job in tracker.state().jobs.items()} == before
 
 
 def test_a_source_switched_off_in_settings_is_not_polled_or_reported(tracker, web, tmp_path):
@@ -371,7 +494,7 @@ def test_first_run_on_the_old_state_files_sends_nothing_and_migrates_them(tracke
     # exactly where the single-user tracker stopped.
     assert web.published == []
     assert report.total("new") == report.total("baselined") == 0
-    assert set(state_files(tmp_path)) == {"sources.json", f"profiles/{OWNER}.json"}
+    assert set(state_files(tmp_path)) == {"hosts.json", "sources.json", f"profiles/{OWNER}.json"}
     assert "filters_hash" not in (tmp_path / "sources.json").read_text()
     assert tracker.state().jobs[SPRING_INSIGHT_KEY].notified is True
 

@@ -160,3 +160,18 @@ def test_amazon_jobs_allows_its_search_and_amd_asks_for_five_seconds():
 )
 def test_workday_tenant_lists_the_sites_it_allows(site, allowed):
     assert rules(load_text("robots/workday-lbg.txt")).allows(site) is allowed
+
+
+@pytest.mark.parametrize(
+    "fixture", ["amazon-jobs.txt", "amd.txt", "microsoft-apply.txt", "smartrecruiters-api.txt"]
+)
+def test_rules_survive_being_cached_as_plain_lines(fixture):
+    """The cache in state keeps the rules chosen for this tracker, not the whole file."""
+    rules = robots.parse(load_text(f"robots/{fixture}"), AGENT)
+    restored = robots.RobotsRules.from_lines(rules.to_lines(), rules.crawl_delay)
+
+    assert restored.to_lines() == rules.to_lines()
+    assert restored.crawl_delay == rules.crawl_delay
+    for path in ("/", "/en/search.json?x=1", "/api/jobs", "/api/pcsx/search", "/v1/companies/a"):
+        was, now = rules.rule_for(path), restored.rule_for(path)
+        assert (was and (was.allow, was.pattern)) == (now and (now.allow, now.pattern))

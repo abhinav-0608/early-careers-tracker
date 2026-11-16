@@ -42,10 +42,14 @@ class Company:
     def host_group(self) -> str:
         """Companies with the same value are fetched from the same host.
 
-        Every Greenhouse board is on one host; every Workday or tal.net tenant has its
-        own; a custom company has its own site. Requests to one host are made one at a
+        Every Greenhouse board is on one host; every tal.net tenant has its own; a
+        custom company has its own site. Workday tenants have a hostname each but share
+        a handful of servers ("wd5"), and the client spaces requests per server, so the
+        tenants of one server are one group. Requests to one host are made one at a
         time, so the run fetches each group in a single queue (see pipeline.fetch_all).
         """
+        if self.ats == "workday":
+            return f"{self.ats}:{self.host}"
         own_host = self.tenant or (self.board if self.ats == "custom" else None)
         return f"{self.ats}:{own_host}" if own_host else self.ats
 
@@ -89,6 +93,10 @@ TIMEOUT = "timeout"
 EMPTY = "empty"  # returned 0 jobs after previously returning some
 BLOCKED = "blocked"  # robots.txt disallows the fetch, or could not be read
 NOT_DUE = "not_due"  # skipped this run by its polling interval: neither a failure nor a fetch
+RATE_LIMITED = "rate_limited"  # the host answered 429 this run; it is now backing off
+BACKING_OFF = "backing_off"  # not asked: its host answered 429 earlier and is being left alone
+# Statuses in which nothing was asked of the source, so nothing is recorded about it.
+NOT_ASKED = (NOT_DUE, BACKING_OFF)
 
 
 @dataclass

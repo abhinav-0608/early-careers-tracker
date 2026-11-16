@@ -146,10 +146,13 @@ class FakeWeb:
         self.own_boards: dict[str, dict] = {}  # Greenhouse board id -> payload
         self.broken_hosts: set[str] = set()
         self.robots: dict[str, str] = {}  # host -> robots.txt; hosts not listed have none
+        # host -> the headers of the 429 it gives every request, robots.txt included
+        self.rate_limited: dict[str, dict] = {}
         self.ntfy_down = False
         self.rejected_topics: set[str] = set()  # ntfy fails for these topics only
         self.published: list[dict] = []
         self.fetches: list[str] = []  # every board request, as host + path
+        self.robots_requests: list[str] = []  # hosts asked for their robots.txt, in order
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         host = request.url.host
@@ -159,7 +162,11 @@ class FakeWeb:
                 return httpx.Response(503)
             self.published.append(message)
             return httpx.Response(200, json={})
+        if host in self.rate_limited:
+            self.fetches.append(host + request.url.path)
+            return httpx.Response(429, headers=self.rate_limited[host])
         if request.url.path == "/robots.txt":
+            self.robots_requests.append(host)
             if host in self.robots:
                 return httpx.Response(200, text=self.robots[host])
             return httpx.Response(404)

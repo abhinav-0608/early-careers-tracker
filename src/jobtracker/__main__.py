@@ -26,6 +26,7 @@ from jobtracker.models import Company, Job
 from jobtracker.notify import Notifier
 from jobtracker.pipeline import fetch_company, run
 from jobtracker.sources import adapter_for
+from jobtracker.state import load_hosts, save_hosts
 from jobtracker.text import normalise
 
 
@@ -102,7 +103,9 @@ def command_run(config: Config, args: argparse.Namespace) -> int:
             print(f"No profile has a topic: set {names} (or pass --dry-run).", file=sys.stderr)
             return 2
 
-    http = HttpClient(config.settings)
+    now = datetime.now(UTC)
+    # The client remembers robots.txt rules and back-offs between runs (state/hosts.json).
+    http = HttpClient(config.settings, hosts=load_hosts(args.state_dir), now=now)
     notifier = Notifier(
         http, config.settings.ntfy_server, job_topics, health_topic, dry_run=args.dry_run
     )
@@ -112,13 +115,16 @@ def command_run(config: Config, args: argparse.Namespace) -> int:
             state_dir=args.state_dir,
             http=http,
             notifier=notifier,
-            now=datetime.now(UTC),
+            now=now,
             only=set(args.only) if args.only else None,
             only_profiles=wanted,
             save=not args.dry_run,
         )
     finally:
         http.close()
+        if not args.dry_run:
+            # Saved even if the run crashed: a back-off a host asked for must not be lost.
+            save_hosts(http.hosts_state(), args.state_dir)
     # Source failures are reported through health alerts, not the exit code: a broken
     # careers page should not mark the whole run as failed. Nor does one profile failing
     # while others ran, because their state still has to be committed. Only a run in

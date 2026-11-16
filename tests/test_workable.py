@@ -11,7 +11,7 @@ import httpx
 import pytest
 
 from conftest import load_fixture, make_company, mock_client
-from jobtracker.http import HttpClient, RobotsDisallowedError
+from jobtracker.http import HttpClient, RateLimitedError
 from jobtracker.sources import adapter_for, workable
 
 HUGGING_FACE = make_company("hugging-face", ats="workable", board="huggingface")
@@ -90,10 +90,12 @@ def test_a_rate_limited_workable_is_left_alone_for_the_run(settings):
     transport = httpx.MockTransport(handler)
     http = HttpClient(replace(settings, retries=2), transport=transport, sleep=sleeps.append)
     for _ in range(2):  # two boards in the same run
-        with pytest.raises(RobotsDisallowedError, match="could not be read"):
+        with pytest.raises(RateLimitedError, match="HTTP 429"):
             workable.fetch(HUGGING_FACE, http)
     assert requested == ["/robots.txt"]
     assert sleeps == []
+    # ...and the hours it asked for are remembered for the runs that follow.
+    assert http.hosts_state().backoff["apply.workable.com"]["strikes"] == 1
 
 
 def test_workable_boards_are_spaced_by_the_gap_configured_for_the_host(config):

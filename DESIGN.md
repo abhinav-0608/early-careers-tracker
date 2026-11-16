@@ -74,7 +74,7 @@ src/jobtracker/
   models.py            Company, Job, SourceResult dataclasses
   config.py            YAML loading + validation
   http.py              shared HTTP client: User-Agent, timeouts, retries, per-host delay,
-                       robots.txt and checked redirects
+                       robots.txt (cached for a day), checked redirects, 429 back-off
   robots.py            robots.txt parsing and matching (wildcards, crawl delay)
   text.py              text normalisation shared by filters and dedupe
   filters.py           classification and matching
@@ -95,6 +95,8 @@ src/jobtracker/
     boards/            grad boards / community repos (stage 4, only if permitted)
 state/
   sources.json         per-board health, shared
+  hosts.json           the HTTP client's memory: each host's robots.txt rules (kept a
+                       day) and any back-off a host asked for with a 429
   profiles/<key>.json  one profile's memory: its matching postings (open or recently
                        closed, with notified flags) and its per-board baselines
 tests/
@@ -260,6 +262,32 @@ the filter rules moved without changing (so their hash is the same), which means
 run after the change alerts exactly what a run before it would have: no re-baseline, no
 repeats. A dry run reads the old files the same way without writing anything.
 
+### state/hosts.json
+
+What the HTTP client remembers about hosts between runs (section 5, politeness). It is
+a cache: deleting it costs one robots.txt request per host and forgets the back-offs.
+
+```json
+{
+  "version": 1,
+  "robots": {
+    "nvidia.wd5.myworkdayjobs.com": {
+      "fetched_at": "2026-11-16T00:15:00+00:00",
+      "rules": ["Allow: /NVIDIAExternalCareerSite/", "Disallow: /talentcommunity/"],
+      "crawl_delay": null
+    }
+  },
+  "backoff": {
+    "wd108.myworkdayjobs.com": {"retry_at": "2026-11-16T00:45:00+00:00", "strikes": 1}
+  }
+}
+```
+
+`robots` holds the rules that apply to this tracker's user agent, not the whole file.
+An entry is dropped when a fetch from that host fails (so the file is re-read on the
+next run) and after a week. `backoff` is keyed by server (one entry for all of a Workday
+server's tenants) and is removed when the server answers again.
+
 ### Keeping commit volume sane
 
 A naive design rewrites `last_seen` on every run, producing 96 commits a day (35,000 a year).
@@ -270,6 +298,9 @@ Instead:
 - Per-source values are stored coarsely for the same reason: a "has returned jobs" flag
   rather than a job count, and a failure counter capped at the alert threshold.
 - The workflow commits only if `git diff` is non-empty.
+- `hosts.json` changes when a robots.txt is re-read (once a day per host; they were all
+  first read in the same run, so that is roughly one commit a day) and when a host
+  starts or ends a back-off.
 
 - A poll timestamp is kept only for the sources that have a polling interval, never for the
   every-run ones, and all the hourly sources polled in one run share the same minute.
@@ -288,9 +319,11 @@ state but silently skips an hour whenever that one run is late or lost.
 user_agent: "job-alert-tracker/1.0 (+https://github.com/abhinav-0608/early-careers-tracker)"
 http:
   timeout_seconds: 20
-  retries: 2                 # on 429 / 5xx / timeouts, with backoff; honours Retry-After
+  retries: 2                 # on 5xx / timeouts, with backoff. A 429 is not retried
+                             # blind: see "Rate limits" in section 5
   per_host_delay_seconds: 1.0
   max_workers: 8             # hosts run in parallel; requests to one host are serial
+  robots_cache_hours: 24     # how long a host's robots.txt is trusted before a re-read
   host_delay_seconds:        # a longer gap for the hosts named here
     apply.workable.com: 5.0
   hosts_without_robots_txt:  # checked by hand: /robots.txt redirects to an ordinary page
@@ -321,6 +354,7 @@ state:
   prune_closed_after_days: 90
 health:
   fail_after_consecutive: 2
+  fail_after_rate_limited: 3 # the same threshold when the failure is a 429
   reminder_hours: 24
   accept_empty_after_runs: 8 # a board that stays empty this long is accepted as empty
 ```
@@ -624,21 +658,51 @@ were already covered. Of the 23 dream-tier companies, 17 are polled and 6 are no
 - Honest User-Agent naming the project and linking to the repo.
 - Requests to the same host are serialised with a delay between them. Companies are queued
   by host and each queue gets one thread of a small pool, so every thread is always working
-  on a different host and ~340 companies finish in about four minutes without hammering
+  on a different host and ~350 companies finish in a few minutes without hammering
   anyone.
-- `429` and `Retry-After` are honoured. Retries are capped at 2. A `Retry-After` of more
-  than 30 seconds is not waited out and is not retried sooner either: the request fails
-  for this run (Workable asked for seven hours).
+- **A shared server counts as one host.** Every Workday tenant has its own hostname
+  (`nvidia.wd5.myworkdayjobs.com`) but they are served by a handful of servers (`wd5`),
+  and the limits are the server's. So the queue, the one-second gap and the back-off
+  below are per server (`wd5.myworkdayjobs.com`), not per tenant; robots.txt is still
+  read per hostname. Until 2026-11-16 the gap was per tenant, which let eight tenants of
+  one server be fetched at once. Tenants by server: wd1 22, wd5 19, wd3 16, wd108 3,
+  wd12 2, wd103 2.
+- **Rate limits (429).** Retries are capped at 2 and are for server errors and
+  timeouts. A 429 is handled on its own terms:
+  - A `Retry-After` of up to 30 seconds is waited out and the request tried again.
+  - Otherwise the request is not retried. The host (the server, for Workday) is left
+    alone for the rest of the run, and in later runs until the time `Retry-After` named
+    (capped at 24 hours) or, when it named none, for 30 minutes, doubling with each
+    further 429 in a row up to 6 hours. The back-off is kept in `state/hosts.json`.
+  - The source's status is `rate_limited` in the run that got the 429 (every tenant of
+    that server, asked or not) and `backing_off` in the runs where it was not asked.
+    `backing_off` is not a failure: nothing is recorded, nothing closes. The first
+    success clears the back-off.
+  - A health alert needs **three** `rate_limited` runs in a row
+    (`health.fail_after_rate_limited`), which with the back-off between attempts is at
+    least an hour and a half of being refused. Other failures still alert on the second.
+  - A 429 carrying `cf-mitigated: challenge` is Cloudflare's bot challenge, not a count
+    of requests, and the error text says so. It is backed off the same way; if it
+    persists it is the owner refusing automated clients, and the source should be
+    marked unsupported (decision 12), not waited out forever.
 - A host can be given a longer gap than the default (`http.host_delay_seconds`), for a
   site that publishes no Crawl-delay but is known to rate-limit.
-- **robots.txt, for every adapter.** The client reads each host's `robots.txt` once per run,
-  before the first request to it, and checks every request against it (path and query). A
+- **robots.txt, for every adapter.** The client reads each host's `robots.txt` before the
+  first request to it and checks every request against it (path and query). A
   disallowed path is never requested and the source is reported as `blocked`.
+  - **Read once a day, not once a run.** The rules are kept in `state/hosts.json` for
+    `http.robots_cache_hours` (24, the longest RFC 9309 suggests) and used without a
+    request until then. They are re-read early only after a fetch from that host
+    fails (an error status, a timeout, a 429), in case the failure is the rules having
+    changed. If the re-read itself fails for a passing reason (5xx, timeout), the last
+    copy is used for up to a week; with no copy, nothing is fetched. This removes about
+    80 requests from every run, one per hostname.
   - Parsing is our own (`robots.py`, following RFC 9309) rather than
     `urllib.robotparser`, which ignores the `*` wildcard and would read tal.net's
     `Disallow: /*/ats/` as allowing everything.
-  - A 4xx answer for `robots.txt` means the host has no rules. A 5xx, a 429 or a timeout
-    means the rules are unknown, and then nothing is fetched from that host for the run.
+  - A 4xx answer for `robots.txt` means the host has no rules. A 5xx or a timeout
+    means the rules are unknown, and then nothing is fetched from that host for the run
+    (unless a recent copy is held, above). A 429 starts a back-off like any other 429.
   - `robots.txt` is requested as text (`Accept: text/plain`). Until stage 3b it went out
     with the client's default `Accept: application/json`, which Workday refuses with 406,
     and the 406 was read as "no rules": no Workday tenant's file was actually being read,
@@ -831,16 +895,19 @@ normal usage far below that.
 **Isolation.** Each source runs inside `try/except` in the pipeline and returns a
 `SourceResult(status, jobs, error, duration)`. Statuses: `ok`, `error` (HTTP error, bad JSON,
 schema change), `timeout`, `empty_regression` (0 jobs after previously returning some),
-`blocked` (robots.txt disallow, or a robots.txt that could not be read), `not_due` (skipped
-by its polling interval, which is not a failure). The process exits 0 whenever the pipeline itself completed,
+`blocked` (robots.txt disallow, or a robots.txt that could not be read), `rate_limited` (the
+host answered 429 this run), and two that are not failures: `not_due` (skipped by its
+polling interval) and `backing_off` (not asked, because its host answered 429 in an
+earlier run and is being left alone). The process exits 0 whenever the pipeline itself completed,
 even if every source failed.
 
 **Health alerts** go to `NTFY_HEALTH_TOPIC` only, which belongs to whoever runs the tracker.
 Profiles never receive them, and a board watched by several profiles still produces one
 alert:
 
-- Raised on a **state change**, not every run: a source alerts after 2 consecutive failures,
-  then at most once every 24 hours while it stays broken, then once more on recovery. A
+- Raised on a **state change**, not every run: a source alerts after 2 consecutive failures
+  (3 when the failure is a rate limit, and runs in which a backed-off host was not asked
+  count as neither failure nor success; section 5), then at most once every 24 hours while it stays broken, then once more on recovery. A
   source broken for a week sends about 8 messages, not 672.
 - Multiple sources failing in one run are combined into one message.
 - If the whole run crashes (bug, bad config, failed push), a final `if: failure()` workflow
@@ -966,6 +1033,14 @@ them; which one (the owner's, most likely) is settled when the table is built in
   two locations is merged; the request budget; a board that redirects to the company's
   own site fails instead of being read; the board host is read although its robots.txt
   request redirects, and no other host gets that treatment; the API host is refused.
+- **robots.txt cache, rate limits, shared servers** (`test_http.py`, `test_pipeline.py`,
+  `test_health.py`, `test_state.py`): rules read in one run are used, and still obeyed,
+  in the next, crawl delay included; re-read after a day and after a failed fetch; an
+  old copy used when the re-read fails, but not one over a week old. A 429 is not
+  retried, backs the host off across runs (doubling, or as long as `Retry-After` says),
+  and does not hold up ntfy. Two Workday tenants of one server share its gap and its
+  back-off; another server is untouched. A rate-limited source alerts on the third
+  refusal, not on runs where it was not asked, closes nothing, and recovers.
 - **Switched-off sources and empty baselines** (`test_pipeline.py`): a disabled source
   is not fetched, not reported and raises no health alert, and is baselined when
   switched on; a baseline with no matches sends nothing and later roles still alert.
@@ -1019,8 +1094,29 @@ As you specified, stopping after each for review:
      four new custom sources are 22 (5.7 MB) plus 5 to apple.com for the robots.txt
      redirect. SmartRecruiters adds about 75 requests an hour on its own host (87 s,
      in parallel with the rest). The run is no longer: Greenhouse still sets the floor.
-     In that measurement seven Workday tenants answered 429 for robots.txt (they are
-     healthy from GitHub's runners), so its count is about 100 lower than a clean run's.
+     In that measurement seven Workday tenants answered 429 for robots.txt, so its
+     count is about 100 lower than a clean run's.
+   - **Measured with per-server spacing** (2026-11-16, everything due, no robots.txt
+     cached, development machine): **7 min 55 s**, 1,078 requests of which 77 are
+     robots.txt. The run is now as long as the longest Workday server's queue: wd5 256
+     requests in 474 s, wd1 258 in 434 s, wd3 165 in 280 s (about 1.8 s a request: the
+     one-second gap plus the response). That is the hourly run, when the large-site
+     searches are due; it took 3 min 45 s while tenants of one server ran in parallel.
+     The other three runs of the hour are not affected: summing each server's tenants
+     from a production log gives wd1 152 s, wd3 110 s, wd5 93 s, under Greenhouse's
+     158 s. The workflow's timeout is 12 minutes.
+   - **The Workday 429s of 2026-11-15** (FactSet, Postman, Expedia on wd108; Salesforce,
+     Capital One on wd12; G-Research, IG on wd103; from 23:00 UTC, from GitHub's runners
+     and from the development machine alike). These are every configured tenant on
+     those three servers and no tenant on any other: the 57 tenants on wd1, wd3 and wd5
+     had no 429 at all, although they receive 679 of the 700 Workday requests in a full
+     run and the three affected servers 6 to 9 each. The 429 carries
+     `cf-mitigated: challenge`, no `Retry-After` and no rate-limit headers, and comes
+     and goes (Expedia answered again at 04:15 on the 16th). So this is Cloudflare
+     challenging automated clients on those servers, not this tracker's volume, and
+     there is no header from which to tell how close any server is to a limit. The
+     back-off stops the tracker asking a refusing server every run; it cannot make the
+     server answer. If the challenge stays, those seven belong in `unsupported`.
 4. Grad boards and community repos: terms and robots.txt report first, build only what is
    allowed.
 5. README table, keep-alive, full tests and CI, hardening.
@@ -1094,3 +1190,10 @@ As you specified, stopping after each for review:
     no Disallow line covers its job search.
 16. **Workable ships switched off** (2026-11-15): verify one live board, then enable.
 17. **No baseline notification for zero matches** (2026-11-15).
+18. **robots.txt is cached for 24 hours** in `state/hosts.json` (2026-11-16), re-read
+    early only after a failed fetch from that host.
+19. **A 429 is transient** (2026-11-16): not retried blind, the host backed off (per
+    `Retry-After`, else 30 minutes doubling to 6 hours), and no health alert until three
+    refusals in a row. Prompted by seven Workday tenants (wd12, wd103, wd108) answering
+    429 from GitHub's runners from 23:00 UTC on 2026-11-15.
+20. **Requests are spaced per shared server, not per tenant** (2026-11-16), for Workday.

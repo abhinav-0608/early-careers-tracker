@@ -11,6 +11,8 @@ http:
   retries: 2                    # extra attempts on 429 / 5xx / network errors
   per_host_delay_seconds: 1.0   # minimum gap between two requests to the same host
   max_workers: 8                # hosts fetched in parallel (one request per host at a time)
+  robots_cache_hours: 24        # a host's robots.txt is re-read this often (kept in
+                                # state/hosts.json), or sooner after a failed fetch from it
   # A longer gap for particular hosts. (A host's own Crawl-delay is honoured without
   # being listed here.)
   host_delay_seconds:
@@ -66,5 +68,8 @@ state:
 
 health:
   fail_after_consecutive: 2     # failed runs in a row before a health alert is sent
+  fail_after_rate_limited: 3    # the same, for a source whose host answers 429 (rate
+                                # limit): the host is backed off between attempts, so
+                                # this is three attempts spread over hours
   reminder_hours: 24            # repeat the alert this often while the source stays broken
   accept_empty_after_runs: 8    # a board that stays empty this many runs is accepted as empty

@@ -1,6 +1,8 @@
 """The tracker's memory: JSON files committed back to the repo.
 
     state/sources.json          per-board health, shared by every profile
+    state/hosts.json            per-host memory of the HTTP client: each host's robots.txt
+                                rules (kept for a day) and any back-off a host asked for
     state/profiles/<key>.json   one profile's memory: the matching postings it has seen
                                 (open or recently closed, each with its notified flag)
                                 and which boards it has been baselined against
@@ -108,6 +110,43 @@ def save_sources(sources: dict[str, SourceState], state_dir: Path | str) -> None
         if source.interval_polled_at is None:
             del data[key]["interval_polled_at"]
     _write(Path(state_dir) / "sources.json", {"version": VERSION, "sources": data})
+
+
+# --- hosts -----------------------------------------------------------------------------
+
+HOSTS_VERSION = 1
+
+
+@dataclass
+class HostsState:
+    """What the HTTP client remembers about hosts between runs.
+
+    robots:  hostname -> {"fetched_at": ISO time, "rules": ["Disallow: /x", ...],
+             "crawl_delay": seconds or null}. The rules this tracker was given, so a
+             host's robots.txt is fetched once a day instead of on every run.
+    backoff: host -> {"retry_at": ISO time, "strikes": n}. A host that answered 429 is
+             left alone until retry_at; strikes counts the 429s in a row.
+    """
+
+    robots: dict[str, dict] = field(default_factory=dict)
+    backoff: dict[str, dict] = field(default_factory=dict)
+
+
+def load_hosts(state_dir: Path | str) -> HostsState:
+    """Load the client's host memory. A missing or unreadable file means an empty one:
+    it is only a cache, and losing it costs one robots.txt request per host."""
+    try:
+        data = _read(Path(state_dir) / "hosts.json")
+        return HostsState(
+            robots=dict(data.get("robots", {})), backoff=dict(data.get("backoff", {}))
+        )
+    except (ValueError, AttributeError, TypeError):
+        return HostsState()
+
+
+def save_hosts(hosts: HostsState, state_dir: Path | str) -> None:
+    data = {"version": HOSTS_VERSION, "robots": hosts.robots, "backoff": hosts.backoff}
+    _write(Path(state_dir) / "hosts.json", data)
 
 
 # --- per profile -----------------------------------------------------------------------

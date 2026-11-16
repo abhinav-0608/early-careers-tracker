@@ -1,10 +1,18 @@
 from dataclasses import replace
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
 
 from conftest import mock_client
-from jobtracker.http import BlockedHostError, HttpClient, RobotsDisallowedError
+from jobtracker.http import (
+    BlockedHostError,
+    HttpClient,
+    RateLimitedError,
+    RobotsDisallowedError,
+    shared_host,
+)
+from jobtracker.state import HostsState
 
 # What every tal.net tenant publishes, and the reason these rules exist.
 TALNET_ROBOTS = """
@@ -20,7 +28,12 @@ Disallow: /
 """
 
 
-def client_with(settings, handler, sleeps=None, clock=None, robots_txt=None, **overrides):
+NOW = datetime(2026, 11, 16, 0, 0, tzinfo=UTC)
+
+
+def client_with(
+    settings, handler, sleeps=None, clock=None, robots_txt=None, hosts=None, now=None, **overrides
+):
     """A client whose robots.txt requests are answered apart from `handler`."""
     sleeps = sleeps if sleeps is not None else []
     return mock_client(
@@ -28,6 +41,8 @@ def client_with(settings, handler, sleeps=None, clock=None, robots_txt=None, **o
         handler,
         robots_txt=robots_txt,
         sleep=sleeps.append,
+        hosts=hosts,
+        now=now,
         **({"clock": clock} if clock else {}),
     )
 
@@ -90,6 +105,7 @@ def test_honours_retry_after(settings):
 
     client.get_json("https://example.com/jobs")
     assert sleeps == [7.0, 30.0]
+    assert client.hosts_state().backoff == {}  # waited out inside the run: no back-off
 
 
 def test_does_not_retry_when_asked_to_stay_away_longer_than_a_run_can_wait(settings):
@@ -100,11 +116,14 @@ def test_does_not_retry_when_asked_to_stay_away_longer_than_a_run_can_wait(setti
         calls.append(request.url.path)
         return httpx.Response(429, headers={"Retry-After": "3600"})
 
-    client = client_with(settings, handler, sleeps, retries=2)
-    with pytest.raises(httpx.HTTPStatusError):
+    client = client_with(settings, handler, sleeps, retries=2, now=NOW)
+    with pytest.raises(RateLimitedError, match="next attempt after 2026-11-16 01:00 UTC"):
         client.get_json("https://example.com/jobs")
     assert calls == ["/jobs"]
     assert sleeps == []
+    assert client.hosts_state().backoff == {
+        "example.com": {"retry_at": "2026-11-16T01:00:00+00:00", "strikes": 1}
+    }
 
 
 def test_retries_a_timeout_then_raises_it(settings):
@@ -342,7 +361,7 @@ def test_a_missing_robots_txt_means_no_rules(settings, status):
     assert client.get_json("https://example.com/jobs") == {"ok": True}
 
 
-@pytest.mark.parametrize("status", [429, 500, 503])
+@pytest.mark.parametrize("status", [500, 503])
 def test_an_unreadable_robots_txt_means_nothing_is_fetched(settings, status):
     requested = []
 
@@ -522,7 +541,7 @@ def test_an_unreadable_robots_txt_is_not_retried_when_the_host_asks_for_hours(se
         replace(settings, retries=2), transport=httpx.MockTransport(handler), sleep=lambda s: None
     )
     for _ in range(2):
-        with pytest.raises(RobotsDisallowedError, match="HTTP 429"):
+        with pytest.raises(RateLimitedError, match="HTTP 429"):
             client.get_json("https://example.com/api/jobs")
     assert requested == ["/robots.txt"]
 
@@ -589,3 +608,329 @@ def test_the_notifier_can_post_without_a_robots_check(settings):
     client = HttpClient(settings, transport=httpx.MockTransport(handler))
     client.post_json("https://ntfy.sh/", {"topic": "t"}, check_robots=False)
     assert requested == ["/"]
+
+
+# --- robots.txt remembered between runs ---------------------------------------------------
+
+
+def run_with(settings, hosts, now, handler, robots_txt="User-agent: *\nDisallow: /private/\n"):
+    """One run's client over the memory `hosts`; returns it and the paths it requested."""
+    requested = []
+
+    def handle(request):
+        requested.append(request.url.path)
+        if request.url.path == "/robots.txt":
+            if isinstance(robots_txt, int):
+                return httpx.Response(robots_txt)
+            return httpx.Response(200, text=robots_txt)
+        return handler(request)
+
+    client = HttpClient(
+        settings,
+        transport=httpx.MockTransport(handle),
+        sleep=lambda seconds: None,
+        hosts=hosts,
+        now=now,
+    )
+    return client, requested
+
+
+def ok(request):
+    return httpx.Response(200, json={})
+
+
+def test_robots_txt_read_in_one_run_is_not_fetched_again_in_the_next(settings):
+    hosts = HostsState()
+    first, requested = run_with(settings, hosts, NOW, ok)
+    first.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt", "/jobs"]
+    hosts = first.hosts_state()
+
+    second, requested = run_with(settings, hosts, NOW + timedelta(hours=23), ok)
+    second.get_json("https://example.com/jobs")
+    with pytest.raises(RobotsDisallowedError, match="Disallow: /private/"):
+        second.get_json("https://example.com/private/x")  # the remembered rules still bind
+    assert requested == ["/jobs"]
+
+
+def test_a_remembered_crawl_delay_is_still_honoured(settings):
+    hosts = HostsState()
+    first, _ = run_with(settings, hosts, NOW, ok, robots_txt="User-agent: *\nCrawl-delay: 10\n")
+    first.get_json("https://example.com/a")
+
+    sleeps = []
+    second = HttpClient(
+        replace(settings, per_host_delay_seconds=1.0),
+        transport=httpx.MockTransport(ok),
+        sleep=sleeps.append,
+        clock=lambda: 100.0,
+        hosts=first.hosts_state(),
+        now=NOW + timedelta(hours=1),
+    )
+    second.get_json("https://example.com/a")
+    second.get_json("https://example.com/b")
+    assert sleeps == [10.0]
+
+
+def test_robots_txt_is_read_again_once_it_is_a_day_old(settings):
+    first, _ = run_with(settings, HostsState(), NOW, ok)
+    first.get_json("https://example.com/jobs")
+
+    later = NOW + timedelta(hours=24)
+    second, requested = run_with(settings, first.hosts_state(), later, ok, robots_txt="")
+    second.get_json("https://example.com/private/x")  # the new file allows it
+    assert requested == ["/robots.txt", "/private/x"]
+    assert second.hosts_state().robots["example.com"] == {
+        "fetched_at": later.isoformat(),
+        "rules": [],
+        "crawl_delay": None,
+    }
+
+
+@pytest.mark.parametrize("failure", [500, 404, "timeout"])
+def test_a_failed_fetch_means_robots_txt_is_read_again_next_run(settings, failure):
+    def failing(request):
+        if failure == "timeout":
+            raise httpx.ReadTimeout("slow", request=request)
+        return httpx.Response(failure)
+
+    first, _ = run_with(settings, HostsState(), NOW, failing)
+    with pytest.raises(httpx.HTTPError):
+        first.get_json("https://example.com/jobs")
+    assert "example.com" not in first.hosts_state().robots
+
+    second, requested = run_with(settings, first.hosts_state(), NOW + timedelta(minutes=15), ok)
+    second.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt", "/jobs"]
+
+
+def test_an_old_copy_is_used_when_robots_txt_cannot_be_re_read(settings):
+    """RFC 9309: when the file is unreachable a crawler may keep using its last copy."""
+    first, _ = run_with(settings, HostsState(), NOW, ok)
+    first.get_json("https://example.com/jobs")
+    hosts = first.hosts_state()
+
+    second, requested = run_with(settings, hosts, NOW + timedelta(days=2), ok, robots_txt=503)
+    second.get_json("https://example.com/jobs")
+    with pytest.raises(RobotsDisallowedError, match="Disallow: /private/"):
+        second.get_json("https://example.com/private/x")
+    assert requested == ["/robots.txt", "/jobs"]
+
+
+def test_a_copy_more_than_a_week_old_is_not_trusted(settings):
+    first, _ = run_with(settings, HostsState(), NOW, ok)
+    first.get_json("https://example.com/jobs")
+    hosts = first.hosts_state()
+
+    second, requested = run_with(settings, hosts, NOW + timedelta(days=8), ok, robots_txt=503)
+    with pytest.raises(RobotsDisallowedError, match="could not be read"):
+        second.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt"]
+    assert second.hosts_state().robots == {}
+
+
+def test_a_cache_of_zero_hours_reads_robots_txt_every_run(settings):
+    settings = replace(settings, robots_cache_hours=0)
+    first, _ = run_with(settings, HostsState(), NOW, ok)
+    first.get_json("https://example.com/jobs")
+    second, requested = run_with(settings, first.hosts_state(), NOW + timedelta(minutes=15), ok)
+    second.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt", "/jobs"]
+
+
+def test_a_damaged_cache_entry_is_only_a_cache_miss(settings):
+    hosts = HostsState(robots={"example.com": {"fetched_at": "yesterday", "rules": "x"}})
+    client, requested = run_with(settings, hosts, NOW, ok)
+    client.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt", "/jobs"]
+
+
+# --- 429: back off, do not hammer ---------------------------------------------------------
+
+
+def limited(headers=None):
+    return lambda request: httpx.Response(429, headers=headers or {})
+
+
+def test_a_429_without_retry_after_is_not_retried_and_backs_the_host_off(settings):
+    client, requested = run_with(replace(settings, retries=2), HostsState(), NOW, limited())
+    for _ in range(2):  # the second request in the same run is not sent either
+        with pytest.raises(RateLimitedError) as caught:
+            client.get_json("https://example.com/jobs")
+        assert caught.value.answered_now
+    assert requested == ["/robots.txt", "/jobs"]
+    assert client.hosts_state().backoff == {
+        "example.com": {"retry_at": "2026-11-16T00:30:00+00:00", "strikes": 1}
+    }
+
+
+def test_the_back_off_holds_across_runs_and_doubles_while_the_429s_continue(settings):
+    hosts = HostsState()
+    waits = []
+    now = NOW
+    for _ in range(6):
+        client, requested = run_with(settings, hosts, now, limited(), robots_txt=429)
+        with pytest.raises(RateLimitedError):
+            client.get_json("https://example.com/jobs")
+        assert requested == ["/robots.txt"]
+        hosts = client.hosts_state()
+        retry_at = datetime.fromisoformat(hosts.backoff["example.com"]["retry_at"])
+        waits.append(int((retry_at - now).total_seconds() // 60))
+
+        # A run a quarter of an hour later is inside the back-off: nothing is requested.
+        early, requested = run_with(settings, hosts, now + timedelta(minutes=15), ok)
+        with pytest.raises(RateLimitedError) as caught:
+            early.get_json("https://example.com/jobs")
+        assert requested == [] and not caught.value.answered_now
+        now = retry_at
+    assert waits == [30, 60, 120, 240, 360, 360]  # doubling, capped at six hours
+
+
+def test_retry_after_sets_the_back_off_when_the_host_names_a_time(settings):
+    client, _ = run_with(settings, HostsState(), NOW, limited({"Retry-After": "25028"}))
+    with pytest.raises(RateLimitedError, match="next attempt after 2026-11-16 06:57 UTC"):
+        client.get_json("https://example.com/jobs")
+    hosts = client.hosts_state()
+
+    for hours, asked in ((6, False), (7, True)):
+        later, requested = run_with(settings, hosts, NOW + timedelta(hours=hours), ok)
+        if asked:
+            later.get_json("https://example.com/jobs")
+        else:
+            with pytest.raises(RateLimitedError):
+                later.get_json("https://example.com/jobs")
+        assert bool(requested) is asked
+
+
+def test_a_run_that_starts_a_minute_early_does_not_miss_the_end_of_a_back_off(settings):
+    hosts = HostsState(backoff={"example.com": {"retry_at": NOW.isoformat(), "strikes": 1}})
+    client, requested = run_with(settings, hosts, NOW - timedelta(seconds=45), ok)
+    client.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt", "/jobs"]
+
+
+def test_an_answer_after_a_back_off_forgets_it(settings):
+    hosts = HostsState(backoff={"example.com": {"retry_at": NOW.isoformat(), "strikes": 3}})
+    client, _ = run_with(settings, hosts, NOW, ok)
+    client.get_json("https://example.com/jobs")
+    assert client.hosts_state().backoff == {}
+
+
+def test_a_cloudflare_challenge_is_named_as_one(settings):
+    """What wd103, wd108 and wd12 answered on 2026-11-15: a 429 that is a bot challenge."""
+    client, _ = run_with(settings, HostsState(), NOW, limited({"cf-mitigated": "challenge"}))
+    with pytest.raises(RateLimitedError, match="HTTP 429, a Cloudflare challenge"):
+        client.get_json("https://example.com/jobs")
+
+
+def test_require_allowed_does_not_ask_a_host_that_is_backing_off(settings):
+    until = (NOW + timedelta(hours=1)).isoformat()
+    hosts = HostsState(backoff={"example.com": {"retry_at": until, "strikes": 1}})
+    client, requested = run_with(settings, hosts, NOW, ok)
+    with pytest.raises(RateLimitedError):
+        client.require_allowed("https://example.com/jobs")
+    assert requested == []
+
+
+def test_publishing_a_notification_is_not_held_up_by_a_back_off(settings):
+    """ntfy is published to, not crawled: retried as before, and never backed off."""
+    until = (NOW + timedelta(hours=1)).isoformat()
+    hosts = HostsState(backoff={"ntfy.example": {"retry_at": until, "strikes": 1}})
+    responses = [httpx.Response(429), httpx.Response(200, json={})]
+    client, requested = run_with(
+        replace(settings, retries=2), hosts, NOW, lambda request: responses.pop(0)
+    )
+    client.post_json("https://ntfy.example/", {"topic": "t"}, check_robots=False)
+    assert requested == ["/", "/"]
+    assert client.hosts_state().backoff == hosts.backoff
+
+
+def test_old_memory_is_dropped_when_the_state_is_saved(settings):
+    hosts = HostsState(
+        robots={
+            "gone.example": {
+                "fetched_at": (NOW - timedelta(days=9)).isoformat(),
+                "rules": [],
+                "crawl_delay": None,
+            }
+        },
+        backoff={
+            "gone.example": {"retry_at": (NOW - timedelta(days=2)).isoformat(), "strikes": 4},
+            "recent.example": {"retry_at": (NOW - timedelta(hours=2)).isoformat(), "strikes": 2},
+        },
+    )
+    client, _ = run_with(settings, hosts, NOW, ok)
+    state = client.hosts_state()
+    assert state.robots == {}
+    assert list(state.backoff) == ["recent.example"]  # its strikes still count
+
+
+# --- tenants of one shared server ---------------------------------------------------------
+
+
+def test_workday_tenants_are_mapped_to_the_server_they_share():
+    assert shared_host("acme.wd5.myworkdayjobs.com") == "wd5.myworkdayjobs.com"
+    assert shared_host("other.wd5.myworkdayjobs.com") == "wd5.myworkdayjobs.com"
+    assert shared_host("acme.wd108.myworkdayjobs.com") == "wd108.myworkdayjobs.com"
+    assert shared_host("wd5.myworkdayjobs.com") == "wd5.myworkdayjobs.com"
+    assert shared_host("boards-api.greenhouse.io") == "boards-api.greenhouse.io"
+    assert shared_host("notmyworkdayjobs.com") == "notmyworkdayjobs.com"
+
+
+def test_requests_to_two_tenants_of_one_server_are_spaced_like_one_host(settings):
+    sleeps = []
+    client = client_with(settings, ok, sleeps, clock=lambda: 100.0, per_host_delay_seconds=1.0)
+    client.get_json("https://acme.wd5.myworkdayjobs.com/a")  # robots.txt, then the page
+    client.get_json("https://other.wd5.myworkdayjobs.com/a")  # likewise, on the same server
+    client.get_json("https://third.wd3.myworkdayjobs.com/a")  # another server: its own clock
+    assert sleeps == [1.0, 1.0, 1.0, 1.0]
+
+
+def test_each_tenant_still_has_its_own_robots_txt(settings):
+    def handle(request):
+        if request.url.path == "/robots.txt":
+            closed = request.url.host.startswith("closed.")
+            return httpx.Response(200, text="User-agent: *\nDisallow: /\n" if closed else "")
+        return httpx.Response(200, json={})
+
+    client = HttpClient(settings, transport=httpx.MockTransport(handle))
+    client.get_json("https://open.wd5.myworkdayjobs.com/jobs")
+    with pytest.raises(RobotsDisallowedError):
+        client.get_json("https://closed.wd5.myworkdayjobs.com/jobs")
+    assert set(client.hosts_state().robots) == {
+        "open.wd5.myworkdayjobs.com",
+        "closed.wd5.myworkdayjobs.com",
+    }
+
+
+def test_a_429_from_one_tenant_backs_off_the_whole_server_and_no_other(settings):
+    requested = []
+
+    def handle(request):
+        requested.append(request.url.host)
+        if request.url.path == "/robots.txt":
+            return httpx.Response(404)
+        limited_server = ".wd108." in request.url.host
+        return httpx.Response(429) if limited_server else httpx.Response(200, json={})
+
+    def client_at(now, hosts):
+        return HttpClient(settings, transport=httpx.MockTransport(handle), hosts=hosts, now=now)
+
+    first = client_at(NOW, HostsState())
+    with pytest.raises(RateLimitedError):
+        first.get_json("https://factset.wd108.myworkdayjobs.com/jobs")
+    requested.clear()
+    with pytest.raises(RateLimitedError) as caught:
+        first.get_json("https://expedia.wd108.myworkdayjobs.com/jobs")
+    assert caught.value.answered_now  # the server refused this run: a failure for both
+    first.get_json("https://nvidia.wd5.myworkdayjobs.com/jobs")
+    assert set(requested) == {"nvidia.wd5.myworkdayjobs.com"}
+    assert list(first.hosts_state().backoff) == ["wd108.myworkdayjobs.com"]
+
+    requested.clear()
+    second = client_at(NOW + timedelta(minutes=15), first.hosts_state())
+    for tenant in ("factset", "expedia", "postman"):
+        with pytest.raises(RateLimitedError) as caught:
+            second.get_json(f"https://{tenant}.wd108.myworkdayjobs.com/jobs")
+        assert not caught.value.answered_now
+    assert requested == []
