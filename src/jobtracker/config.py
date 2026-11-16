@@ -2,7 +2,7 @@
 
     config/settings.yaml                 run-level knobs, shared
     config/companies.yaml                the company list, shared
-    config/profiles/<key>/profile.yaml   one person's company scope and dream tier
+    config/profiles/<key>/profile.yaml   one person's company scope and FAANG+
     config/profiles/<key>/filters.yaml   that person's role types, fields and locations
 
 Validation is hand-written so that a mistake in a config file produces a message naming
@@ -64,7 +64,7 @@ class Settings:
     # notify
     ntfy_server: str
     batch_threshold: int
-    priority_dream: int
+    priority_faang_plus: int
     priority_normal: int
     # state
     close_after_missing_runs: int
@@ -82,6 +82,10 @@ class Settings:
     hosts_without_robots_txt: frozenset[str] = frozenset()
     # polling: kinds of source that are switched off (same names as poll_every_minutes)
     disabled_sources: frozenset[str] = frozenset()
+    # http: the most posting descriptions read in one run, for the eligibility check
+    descriptions_per_run: int = 60
+    # readme: whose open roles the README table shows (None = no table is written)
+    readme_profile: str | None = None
 
     def poll_interval(self, kind: str | None) -> int:
         """Minimum minutes between polls of this kind of source; 0 means every run."""
@@ -97,6 +101,24 @@ class RoleType:
     include: KeywordSet
     exclude: KeywordSet
     ntfy_tags: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class EligibilityRules:
+    """Who may apply: the first-year check a profile can switch on (eligibility.py).
+
+    Each list names role types. A role type in none of them is not checked at all.
+    """
+
+    by_title: frozenset[str] = frozenset()  # the role type itself means first years
+    unless_restricted: frozenset[str] = frozenset()  # eligible unless the posting says not
+    explicit_only: frozenset[str] = frozenset()  # alert only if the posting says so
+    first_year: KeywordSet = KeywordSet()  # phrases that offer it to first years
+    later_years_only: KeywordSet = KeywordSet()  # phrases that restrict it to later years
+    hash: str = ""  # changes with the rules; remembered verdicts are then made afresh
+
+    def applies_to(self, role_type: str) -> bool:
+        return role_type in self.by_title | self.unless_restricted | self.explicit_only
 
 
 @dataclass(frozen=True)
@@ -126,6 +148,7 @@ class Filters:
     other_locations: KeywordSet
     remote_keywords: KeywordSet
     hash: str  # changes whenever the rules change; used to trigger a re-baseline
+    eligibility: EligibilityRules = EligibilityRules()
 
     def role_type(self, name: str) -> RoleType | None:
         return next((role for role in self.role_types if role.name == name), None)
@@ -139,7 +162,7 @@ class Profile:
     """One person's view of the tracker: what they watch and how it is filtered.
 
     Profiles share the company list and the fetched jobs, and nothing else. Each has
-    its own filters, scope, dream tier, ntfy topic and state file.
+    its own filters, scope, FAANG+, ntfy topic and state file.
     """
 
     key: str  # the folder name under config/profiles
@@ -147,7 +170,7 @@ class Profile:
     filters: Filters
     industries: frozenset[str]  # scope: every company in these industries ...
     companies: frozenset[str]  # ... plus these company keys
-    dream: frozenset[str]  # company keys that are dream tier for this person
+    faang_plus: frozenset[str]  # company keys that are FAANG+ for this person
 
     @property
     def topic_env(self) -> str:
@@ -168,8 +191,8 @@ class Profile:
             return True
         return company.industry in self.industries and not company.opt_in
 
-    def is_dream(self, company_key: str) -> bool:
-        return company_key in self.dream
+    def is_faang_plus(self, company_key: str) -> bool:
+        return company_key in self.faang_plus
 
 
 @dataclass(frozen=True)
@@ -198,6 +221,12 @@ def load_config(config_dir: Path | str = "config") -> Config:
         # With nobody to alert there is nothing useful a run could do.
         problems = "; ".join(errors.values()) or f"{config_dir / 'profiles'}: no profiles found"
         raise ConfigError(problems)
+    known = {profile.key for profile in profiles} | set(errors)
+    if settings.readme_profile is not None and settings.readme_profile not in known:
+        raise ConfigError(
+            f"{config_dir / 'settings.yaml'}: readme.profile: no profile called "
+            f"'{settings.readme_profile}'"
+        )
     return Config(settings=settings, companies=companies, profiles=profiles, profile_errors=errors)
 
 
@@ -232,6 +261,8 @@ def load_settings(path: Path) -> Settings:
     priority = _get(notify, "priority", dict, f"{path}: notify")
     state = _get(data, "state", dict, path)
     health = _get(data, "health", dict, path)
+    readme = _get(data, "readme", dict, path, default={})
+    _only_keys(readme, {"profile"}, f"{path}: readme")
     host_delays = _get(http, "host_delay_seconds", dict, f"{path}: http", default={})
     for host, seconds in host_delays.items():
         _expect(seconds, (int, float), f"{path}: http.host_delay_seconds.{host}")
@@ -270,7 +301,7 @@ def load_settings(path: Path) -> Settings:
         robots_cache_hours=_get(http, "robots_cache_hours", int, f"{path}: http"),
         ntfy_server=_get(notify, "server", str, f"{path}: notify").rstrip("/"),
         batch_threshold=_get(notify, "batch_threshold", int, f"{path}: notify"),
-        priority_dream=_get(priority, "dream", int, f"{path}: notify.priority"),
+        priority_faang_plus=_get(priority, "faang_plus", int, f"{path}: notify.priority"),
         priority_normal=_get(priority, "normal", int, f"{path}: notify.priority"),
         close_after_missing_runs=_get(state, "close_after_missing_runs", int, f"{path}: state"),
         repost_window_days=_get(state, "repost_window_days", int, f"{path}: state"),
@@ -283,8 +314,14 @@ def load_settings(path: Path) -> Settings:
         host_delay_seconds={str(host): float(seconds) for host, seconds in host_delays.items()},
         hosts_without_robots_txt=frozenset(no_robots),
         disabled_sources=frozenset(disabled),
+        descriptions_per_run=_get(http, "descriptions_per_run", int, f"{path}: http", default=60),
+        readme_profile=(
+            _get(readme, "profile", str, f"{path}: readme") if "profile" in readme else None
+        ),
     )
 
+    if settings.descriptions_per_run < 0:
+        raise ConfigError(f"{path}: http.descriptions_per_run must be 0 or more")
     if settings.max_workers < 1:
         raise ConfigError(f"{path}: http.max_workers must be at least 1")
     if settings.close_after_missing_runs < 1:
@@ -297,7 +334,7 @@ def load_settings(path: Path) -> Settings:
         )
     if settings.robots_cache_hours < 0:
         raise ConfigError(f"{path}: http.robots_cache_hours must be 0 or more")
-    for name in ("priority_dream", "priority_normal"):
+    for name in ("priority_faang_plus", "priority_normal"):
         if not 1 <= getattr(settings, name) <= 5:
             raise ConfigError(f"{path}: notify.priority values must be between 1 and 5")
     if settings.prune_closed_after_days < settings.repost_window_days:
@@ -335,14 +372,16 @@ def load_profiles(
 
 
 def load_profile(path: Path, companies: tuple[Company, ...]) -> Profile:
-    """Load one profile folder, checking its scope and dream list against the companies."""
+    """Load one profile folder, checking its scope and FAANG+ list against the companies."""
     if not PROFILE_KEY.fullmatch(path.name):
         raise ConfigError(
             f"{path}: a profile folder name may only use lowercase letters, digits and hyphens"
         )
     file = path / "profile.yaml"
     data = _read_yaml(file, dict)
-    _only_keys(data, {"name", "scope", "dream"}, file)
+    if isinstance(data, dict) and "dream" in data:
+        raise ConfigError(f"{file}: 'dream' is now called 'faang_plus'")
+    _only_keys(data, {"name", "scope", "faang_plus"}, file)
     scope = _get(data, "scope", dict, file)
     _only_keys(scope, {"industries", "companies"}, f"{file}: scope")
 
@@ -352,7 +391,7 @@ def load_profile(path: Path, companies: tuple[Company, ...]) -> Profile:
         filters=load_filters(path / "filters.yaml"),
         industries=frozenset(_strings(scope, "industries", f"{file}: scope")),
         companies=frozenset(_strings(scope, "companies", f"{file}: scope")),
-        dream=frozenset(_strings(data, "dream", file)),
+        faang_plus=frozenset(_strings(data, "faang_plus", file)),
     )
 
     # A misspelt industry or company key would otherwise just quietly watch nothing.
@@ -365,11 +404,11 @@ def load_profile(path: Path, companies: tuple[Company, ...]) -> Profile:
         raise ConfigError(f"{file}: scope.companies: no company with key '{unknown[0]}'")
     if not any(profile.watches(company) for company in companies):
         raise ConfigError(f"{file}: scope does not include any company")
-    for key in sorted(profile.dream):
+    for key in sorted(profile.faang_plus):
         if key not in by_key:
-            raise ConfigError(f"{file}: dream: no company with key '{key}'")
+            raise ConfigError(f"{file}: faang_plus: no company with key '{key}'")
         if not profile.watches(by_key[key]):
-            raise ConfigError(f"{file}: dream: '{key}' is outside this profile's scope")
+            raise ConfigError(f"{file}: faang_plus: '{key}' is outside this profile's scope")
     return profile
 
 
@@ -439,6 +478,31 @@ def load_filters(path: Path) -> Filters:
         other_locations=_keywords(data, "other_locations", path),
         remote_keywords=_keywords(data, "remote_keywords", path),
         hash=_content_hash(data),
+        eligibility=_eligibility(data, path, {role.name for role in role_types}),
+    )
+
+
+def _eligibility(data: dict, path: Path, role_names: set[str]) -> EligibilityRules:
+    if data.get("eligibility") is None:
+        return EligibilityRules()  # no section: nothing is checked
+    raw = _get(data, "eligibility", dict, path)
+    where = f"{path}: eligibility"
+    lists = {}
+    for name in ("by_title", "unless_restricted", "explicit_only"):
+        lists[name] = frozenset(_get(raw, name, list, where, default=[]))
+        unknown = sorted(lists[name] - role_names)
+        if unknown:
+            raise ConfigError(f"{where}: {name}: no role type called {', '.join(unknown)}")
+    seen: set[str] = set()
+    for name, values in lists.items():
+        if seen & values:
+            raise ConfigError(f"{where}: {name}: {sorted(seen & values)[0]} is in two lists")
+        seen |= values
+    return EligibilityRules(
+        hash=_content_hash(raw),
+        **lists,
+        first_year=_keywords(raw, "first_year", where, required=True),
+        later_years_only=_keywords(raw, "later_years_only", where),
     )
 
 
@@ -476,12 +540,12 @@ def load_companies(path: Path) -> tuple[Company, ...]:
         seen_keys.add(key)
 
         if "tier" in raw:
-            # Dream tier is personal, so it moved out of the shared list. Rejected
+            # FAANG+ is personal, so it moved out of the shared list. Rejected
             # rather than ignored: a "tier: dream" that silently did nothing would be
             # a missed priority alert.
             raise ConfigError(
                 f"{where}: 'tier' is not set here any more; "
-                "list the company under 'dream' in a profile.yaml instead"
+                "list the company under 'faang_plus' in a profile.yaml instead"
             )
 
         ats = _get(raw, "ats", str, where)
@@ -566,7 +630,7 @@ def _strings(mapping: dict, key: str, where: Any) -> list[str]:
 
 
 def _only_keys(mapping: dict, allowed: set[str], where: Any) -> None:
-    """Reject unknown keys, so a typo ("dreams:") cannot be silently ignored."""
+    """Reject unknown keys, so a typo ("faang:") cannot be silently ignored."""
     unknown = sorted(str(key) for key in set(mapping) - allowed)
     if unknown:
         raise ConfigError(f"{where}: unknown key '{unknown[0]}' (expected {sorted(allowed)})")

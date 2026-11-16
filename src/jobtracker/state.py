@@ -27,11 +27,6 @@ VERSION = 2
 OPEN = "open"
 CLOSED = "closed"
 
-# Before profiles existed (version 1) there was a single state/jobs.json, and the
-# baseline hashes sat inside state/sources.json. That state belonged to this profile.
-# Only used by the migration below; delete both once state/jobs.json is gone from main.
-LEGACY_OWNER = "abhinav"
-
 
 @dataclass
 class StoredJob:
@@ -53,6 +48,9 @@ class StoredJob:
     status: str = OPEN
     closed_at: str | None = None  # ISO date
     notified: bool = False
+    # Why a first-year student may apply, e.g. 'title: "First Year"'. "" when the
+    # profile does not check eligibility for this role type.
+    eligibility: str = ""
 
     @property
     def source_key(self) -> str:
@@ -85,6 +83,12 @@ class ProfileState:
     # rules: the first time the profile sees the board, and after any change to the
     # profile's filters.yaml.
     baselines: dict[str, str] = field(default_factory=dict)
+    # Job key -> what reading its description settled: {"status": "eligible", "basis":
+    # ...}, {"status": "unclear"}, {"status": "ineligible"}, or {"status": "unknown",
+    # "tries": n} while the description cannot be read. Kept so that a description is
+    # read once per posting, not once per run; cleared when the eligibility rules change.
+    eligibility: dict[str, dict] = field(default_factory=dict)
+    eligibility_rules: str = ""  # hash of the rules the verdicts above were made with
 
 
 def profile_path(state_dir: Path | str, profile_key: str) -> Path:
@@ -98,7 +102,6 @@ def load_sources(state_dir: Path | str) -> dict[str, SourceState]:
     data = _read(Path(state_dir) / "sources.json").get("sources", {})
     sources = {}
     for key, value in data.items():
-        value = {name: item for name, item in value.items() if name != "filters_hash"}  # v1
         sources[key] = SourceState(**value)
     return sources
 
@@ -153,21 +156,16 @@ def save_hosts(hosts: HostsState, state_dir: Path | str) -> None:
 
 
 def load_profile_state(state_dir: Path | str, profile_key: str) -> ProfileState:
-    """Load one profile's state. A profile with no file yet starts empty.
-
-    The exception is the owner of the pre-profile state files, who inherits them until
-    migrate_legacy() has turned them into a profile file. Reading them here as well
-    means a dry run before the migration shows the truth, not a pretend first run.
-    """
+    """Load one profile's state. A profile with no file yet starts empty."""
     path = profile_path(state_dir, profile_key)
     if not path.exists():
-        if profile_key == LEGACY_OWNER:
-            return _load_legacy(Path(state_dir))
         return ProfileState()
     data = _read(path)
     return ProfileState(
         jobs={key: StoredJob(key=key, **value) for key, value in data.get("jobs", {}).items()},
         baselines=dict(data.get("baselines", {})),
+        eligibility=dict(data.get("eligibility", {})),
+        eligibility_rules=data.get("eligibility_rules", ""),
     )
 
 
@@ -177,42 +175,11 @@ def save_profile_state(state: ProfileState, state_dir: Path | str, profile_key: 
         record = asdict(job)
         del record["key"]  # already the dictionary key
         jobs[key] = record
-    _write(
-        profile_path(state_dir, profile_key),
-        {"version": VERSION, "jobs": jobs, "baselines": state.baselines},
-    )
-
-
-# --- migration from the single-user layout ---------------------------------------------
-
-
-def migrate_legacy(state_dir: Path | str) -> bool:
-    """Turn the version 1 files into the owner's profile file. Returns True if it did.
-
-    Nothing is lost or reinterpreted: every job keeps its notified flag and every board
-    keeps its baseline hash, so the first run after the migration alerts exactly what a
-    run before it would have. Safe to repeat; a run that dies half-way simply migrates
-    again next time.
-    """
-    state_dir = Path(state_dir)
-    legacy_jobs = state_dir / "jobs.json"
-    if not legacy_jobs.exists():
-        return False
-    if not profile_path(state_dir, LEGACY_OWNER).exists():
-        save_profile_state(_load_legacy(state_dir), state_dir, LEGACY_OWNER)
-    save_sources(load_sources(state_dir), state_dir)  # rewrites it without the hashes
-    legacy_jobs.unlink()
-    return True
-
-
-def _load_legacy(state_dir: Path) -> ProfileState:
-    jobs = _read(state_dir / "jobs.json").get("jobs", {})
-    sources = _read(state_dir / "sources.json").get("sources", {})
-    hashes = {key: value.get("filters_hash") for key, value in sources.items()}
-    return ProfileState(
-        jobs={key: StoredJob(key=key, **value) for key, value in jobs.items()},
-        baselines={key: value for key, value in hashes.items() if value},
-    )
+    data = {"version": VERSION, "jobs": jobs, "baselines": state.baselines}
+    if state.eligibility_rules:
+        data["eligibility"] = state.eligibility
+        data["eligibility_rules"] = state.eligibility_rules
+    _write(profile_path(state_dir, profile_key), data)
 
 
 # --- files -----------------------------------------------------------------------------

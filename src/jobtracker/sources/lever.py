@@ -40,6 +40,16 @@ def parse(company: Company, payload: list[dict[str, Any]]) -> list[Job]:
                 department=" / ".join(department) or None,
                 posted_at=parse_epoch_ms(item.get("createdAt")),
                 remote_hint=_REMOTE_HINTS.get((item.get("workplaceType") or "").lower()),
+                description=_description(item),
             )
         )
     return jobs
+
+
+def _description(item: dict) -> str | None:
+    """The posting's text: the description, its requirement lists and the closing notes."""
+    parts = [item.get("descriptionPlain")]
+    for section in item.get("lists") or []:
+        parts += [section.get("text"), section.get("content")]
+    parts.append(item.get("additionalPlain"))
+    return "\n".join(part for part in parts if part) or None

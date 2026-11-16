@@ -45,6 +45,7 @@ def parse(company: Company, payload: dict[str, Any]) -> list[Job]:
                 department=" / ".join(department) or None,
                 posted_at=parse_iso_date(item.get("publishedAt")),
                 remote_hint=_REMOTE_HINTS.get((item.get("workplaceType") or "").lower()),
+                description=item.get("descriptionPlain") or item.get("descriptionHtml") or None,
             )
         )
     return jobs

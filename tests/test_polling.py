@@ -28,6 +28,13 @@ RUN = timedelta(minutes=15)
 SPRING_INSIGHT = "greenhouse:point72:8845395002"  # the fixture board's matching role
 
 
+POSTING_PAGE = (
+    '<html><script type="application/ld+json">'
+    '{"@type": "JobPosting", "description": "<p>Join our team for the summer.</p>"}'
+    "</script><body>Apply now</body></html>"
+)
+
+
 class WorkdayWeb(FakeWeb):
     """FakeWeb plus one Workday tenant with a small campus site and a large main site.
 
@@ -43,6 +50,11 @@ class WorkdayWeb(FakeWeb):
         self.calls: list[tuple[str, str]] = []  # (site, search text)
 
     def handle(self, request: httpx.Request) -> httpx.Response:
+        if request.url.host.endswith("myworkdayjobs.com") and request.method == "GET":
+            if request.url.path != "/robots.txt":
+                # A posting's own page, read by the eligibility check. It says nothing
+                # about years of study.
+                return httpx.Response(200, text=POSTING_PAGE)
         if not request.url.host.endswith("myworkdayjobs.com") or request.method != "POST":
             return super().handle(request)
         site = request.url.path.split("/")[-2]

@@ -66,8 +66,6 @@ def test_title_variants_that_must_match(filters, title, role_type):
         ("Spring Week – Finance", "field: 'finance' is not one of your fields"),
         ("Insight Day: Human Resources", "field"),
         # Role types defined but not enabled yet.
-        ("Software Engineer Intern", "role: 'summer_internship' is disabled"),
-        ("Software Engineer Intern, Spring 2027", "role: 'summer_internship' is disabled"),
         ("Graduate Software Engineer", "role: 'graduate' is disabled"),
         ("Industrial Placement - Software Engineering", "role: 'placement' is disabled"),
     ],

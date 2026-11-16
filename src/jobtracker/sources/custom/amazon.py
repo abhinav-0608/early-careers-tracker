@@ -87,6 +87,12 @@ def parse(company: Company, payload: dict[str, Any]) -> list[Job]:
                 posted_at=_long_date(item.get("posted_date")),
                 # "VIRTUAL" is the site's word for a remote role.
                 remote_hint=True if any(p.get("type") == "VIRTUAL" for p in places) else None,
+                description="\n".join(
+                    item[name]
+                    for name in ("description", "basic_qualifications", "preferred_qualifications")
+                    if item.get(name)
+                )
+                or None,
             )
         )
     return jobs

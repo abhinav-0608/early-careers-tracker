@@ -3,7 +3,7 @@
 # variable its ntfy topic is read from (NTFY_TOPIC_ABHINAV).
 #
 # Everything a person can tune lives in this folder and nowhere else:
-#   profile.yaml   which companies are watched, and which of them are dream tier
+#   profile.yaml   which companies are watched, and which of them are FAANG+ 🔥
 #   filters.yaml   role types, fields and locations
 # Editing either file changes this profile's alerts only.
 
@@ -26,9 +26,9 @@ scope:
     - startup
   companies: []
 
-# Dream tier: priority 5 alerts with a star, and never rolled into a batch summary.
-# Every company not listed here is normal tier. Takes effect on the next run.
-dream:
+# FAANG+ 🔥: priority 5 alerts marked 🔥, sent before the others and never rolled into a
+# batch summary. Every company not listed here is normal. Takes effect on the next run.
+faang_plus:
   # Big tech
   - apple
   - nvidia

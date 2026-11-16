@@ -17,7 +17,7 @@ def test_shipped_config_is_valid(config):
         assert company.ats in KNOWN_ATS
 
 
-def test_confirmed_dream_tier_companies_are_on_the_owners_dream_list(profile):
+def test_confirmed_faang_plus_companies_are_on_the_owners_list(profile):
     confirmed = {
         "apple", "nvidia", "microsoft", "google", "amazon", "meta", "tesla", "amd", "palantir",
         "anthropic", "openai", "google-deepmind",
@@ -25,7 +25,7 @@ def test_confirmed_dream_tier_companies_are_on_the_owners_dream_list(profile):
         "citadel-securities",
         "goldman-sachs", "jpmorgan-chase", "morgan-stanley", "stripe", "revolut",
     }  # fmt: skip
-    assert profile.dream == confirmed
+    assert profile.faang_plus == confirmed
 
 
 def test_owner_scope_is_the_seven_industries_the_list_was_built_from(config, profile):
@@ -51,8 +51,10 @@ def test_excluded_companies_are_not_in_the_list(config):
 def test_role_types_requested_now_are_enabled_and_later_ones_are_defined_but_off(filters):
     enabled = {role.name for role in filters.role_types if role.enabled}
     disabled = {role.name for role in filters.role_types if not role.enabled}
-    assert enabled == {"spring_week", "insight", "first_year"}
-    assert disabled == {"summer_internship", "placement", "graduate"}
+    assert enabled == {"spring_week", "insight", "first_year", "summer_internship"}
+    assert disabled == {"placement", "graduate"}
+    # Internships are on, but only alert when the posting says first years can apply.
+    assert filters.eligibility.explicit_only == {"summer_internship"}
 
 
 def test_filters_hash_ignores_comments_but_not_rule_changes(tmp_path):
@@ -182,7 +184,7 @@ def test_every_polled_company_has_what_its_adapter_needs(config):
             assert company.host, company.key
         else:
             assert company.board, company.key
-    # The dream-tier companies this stage set out to cover, and the ones it could not.
+    # The FAANG+ companies this stage set out to cover, and the ones it could not.
     by_key = {company.key: company for company in config.companies}
     for key in ("morgan-stanley", "jpmorgan-chase", "google", "google-deepmind"):
         assert adapter_for(by_key[key]) is not None, key
@@ -334,7 +336,7 @@ def _summary(profile):
         profile.filters.hash,
         profile.industries,
         profile.companies,
-        profile.dream,
+        profile.faang_plus,
         profile.topic_env,
     )
 
@@ -344,14 +346,14 @@ def test_second_profile_loads_alongside_the_first(tmp_path, config, profile):
     _add_profile(
         tmp_path / "config",
         "friend",
-        "name: Friend\nscope: {industries: [quant], companies: [stripe]}\ndream: [stripe]\n",
+        "name: Friend\nscope: {industries: [quant], companies: [stripe]}\nfaang_plus: [stripe]\n",
     )
     loaded = load_config(tmp_path / "config")
 
     assert [p.key for p in loaded.profiles] == [OWNER, "friend"]
     assert loaded.profile_errors == {}
     friend = loaded.profile("friend")
-    assert friend.dream == {"stripe"}
+    assert friend.faang_plus == {"stripe"}
     assert friend.topic_env == "NTFY_TOPIC_FRIEND"
     watched = {company.key for company in loaded.companies if friend.watches(company)}
     quant = {company.key for company in loaded.companies if company.industry == "quant"}
@@ -373,13 +375,13 @@ BROKEN_PROFILES = {
         "name: Friend\nscope: {companies: [no-such-co]}\n",
         "scope.companies: no company with key 'no-such-co'",
     ),
-    "unknown dream company": (
-        "name: Friend\nscope: {industries: [quant]}\ndream: [no-such-co]\n",
-        "dream: no company with key 'no-such-co'",
+    "unknown FAANG+ company": (
+        "name: Friend\nscope: {industries: [quant]}\nfaang_plus: [no-such-co]\n",
+        "faang_plus: no company with key 'no-such-co'",
     ),
-    "dream outside scope": (
-        "name: Friend\nscope: {industries: [quant]}\ndream: [stripe]\n",
-        "dream: 'stripe' is outside this profile's scope",
+    "faang_plus outside scope": (
+        "name: Friend\nscope: {industries: [quant]}\nfaang_plus: [stripe]\n",
+        "faang_plus: 'stripe' is outside this profile's scope",
     ),
     "misspelt key": (
         "name: Friend\nscope: {industries: [quant]}\ndreams: [optiver]\n",
@@ -438,3 +440,65 @@ def test_config_with_no_usable_profile_is_an_error(tmp_path):
     shutil.rmtree(config_dir / "profiles" / OWNER)
     with pytest.raises(ConfigError, match="no profiles found"):
         load_config(config_dir)
+
+
+# --- eligibility and the new settings ---------------------------------------------------
+
+
+def test_eligibility_rules_load_and_their_hash_follows_the_rules(tmp_path, filters):
+    rules = filters.eligibility
+    assert rules.by_title == {"first_year"}
+    assert rules.unless_restricted == {"spring_week", "insight"}
+    assert rules.applies_to("summer_internship") and not rules.applies_to("graduate")
+    assert rules.hash
+
+    config_dir = _config_with(tmp_path, OWNER_FILTERS, "    - no matter what year\n", "")
+    changed = load_config(config_dir).profile(OWNER).filters
+    assert changed.eligibility.hash != rules.hash
+    assert changed.hash != filters.hash
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        (
+            "  explicit_only: [summer_internship]",
+            "  explicit_only: [summer_internship, apprenticeship]",
+            "explicit_only: no role type called apprenticeship",
+        ),
+        (
+            "  explicit_only: [summer_internship]",
+            "  explicit_only: [summer_internship, insight]",
+            "insight is in two lists",
+        ),
+    ],
+)
+def test_eligibility_mistakes_disable_the_profile(tmp_path, old, new, message):
+    config_dir = _config_with(tmp_path, OWNER_FILTERS, old, new)
+    # With only one profile, a broken one leaves nothing to run: the config is an error.
+    with pytest.raises(ConfigError, match=message):
+        load_config(config_dir)
+
+
+def test_filters_without_an_eligibility_section_check_nothing(tmp_path):
+    config_dir = _config_with(tmp_path, OWNER_FILTERS, "\neligibility:\n", "\nnot_eligibility:\n")
+    text = (config_dir / OWNER_FILTERS).read_text()
+    (config_dir / OWNER_FILTERS).write_text(text.split("\nnot_eligibility:\n")[0] + "\n")
+    rules = load_config(config_dir).profile(OWNER).filters.eligibility
+    assert not rules.applies_to("summer_internship") and rules.hash == ""
+
+
+def test_readme_profile_and_description_budget_are_read_and_checked(tmp_path, config):
+    assert config.settings.readme_profile == OWNER
+    assert config.settings.descriptions_per_run == 60
+
+    config_dir = _config_with(tmp_path, "settings.yaml", "profile: abhinav", "profile: nobody")
+    with pytest.raises(ConfigError, match="readme.profile: no profile called 'nobody'"):
+        load_config(config_dir)
+
+
+def test_settings_without_a_readme_section_write_no_table(tmp_path):
+    config_dir = _config_with(
+        tmp_path, "settings.yaml", "readme:\n  profile: abhinav", "readme: {}"
+    )
+    assert load_config(config_dir).settings.readme_profile is None

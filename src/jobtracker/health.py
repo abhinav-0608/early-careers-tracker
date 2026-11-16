@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 
 from jobtracker.config import Settings
 from jobtracker.models import EMPTY, OK, RATE_LIMITED, SourceResult
-from jobtracker.notify import Notification
+from jobtracker.notify import Notification, fit_lines
 from jobtracker.state import SourceState
 
 MAX_ERROR_LENGTH = 160
@@ -123,7 +123,7 @@ def health_notification(report: HealthReport, sources: dict[str, SourceState]) -
             if count == 1
             else f"{count} sources failing"
         )
-        return Notification(title=title, message="\n".join(lines), priority=4, tags=("warning",))
+        return Notification(title=title, message=fit_lines(lines), priority=4, tags=("warning",))
     return Notification(
-        title="Sources recovered", message="\n".join(lines), priority=2, tags=("white_check_mark",)
+        title="Sources recovered", message=fit_lines(lines), priority=2, tags=("white_check_mark",)
     )

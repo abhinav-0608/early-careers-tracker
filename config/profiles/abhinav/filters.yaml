@@ -90,6 +90,9 @@ role_types:
       - freshmen
       - sophomore*
       - underclass*
+      - year 1
+      - year one
+      - pre penultimate
       - pre intern*
       - externship*
       - discovery program*
@@ -138,9 +141,11 @@ role_types:
       - campus hire*
       - entry level
 
+  # Enabled, but an internship only alerts when its posting says first years (or
+  # students of any year) can apply: see "eligibility" at the end of this file.
   summer_internship:
     label: Internship
-    enabled: false
+    enabled: true
     field_match: strict
     ntfy_tags: [sunny]
     include:
@@ -643,3 +648,97 @@ remote_keywords:
   - anywhere
   - virtual
   - telecommute
+
+# ---------------------------------------------------------------------------------------
+# 4. First-year eligibility
+#
+# After a job has passed the three checks above, this decides whether a first-year
+# student may apply, and every alert says why: "✅ First-year eligible (title: ...)".
+# The title is checked first. If it does not settle the matter, the posting's
+# description is read (one request, once per posting, only for jobs that got this far).
+#
+#   by_title           the role type is a first-year scheme: eligible on the title alone,
+#                      unless the title itself names later years.
+#   unless_restricted  programmes aimed at first years anyway: eligible unless the posting
+#                      restricts itself to later years and never offers first years.
+#   explicit_only      alert ONLY if the title or description says first years, or students
+#                      of any year, can apply. Unclear postings are dropped.
+#
+# A role type in none of the three lists is not checked and gets no mark.
+#
+# Phrases are matched like every other keyword here, one sentence at a time. A first_year
+# phrase is ignored when the sentence negates it shortly before ("not open to first year
+# students"). When a posting has both kinds of phrase, first_year wins ("open to first and
+# penultimate year students").
+# ---------------------------------------------------------------------------------------
+eligibility:
+  by_title: [first_year]
+  unless_restricted: [spring_week, insight]
+  explicit_only: [summer_internship]
+
+  first_year:
+    - first year student*
+    - first year undergrad*
+    - first year universit*
+    - first year college
+    - first year bachelor*
+    - first year of
+    - first years
+    - first or second year*
+    - first and second year*
+    - first second               # "first, second or penultimate year"
+    - first or penultimate
+    - first year or
+    - first year and
+    - in their first year
+    - currently in your first year
+    - be in your first year
+    - 1st year*
+    - 1st or 2nd year*
+    - 1st and 2nd year*
+    - year 1 student*
+    - year 1 undergrad*
+    - year one student*
+    - year 1 or
+    - freshman
+    - freshmen
+    - sophomore*
+    - underclass*
+    - pre penultimate
+    - any year of
+    - any year group
+    - any academic year
+    - any stage of your degree
+    - any stage of their degree
+    - any stage of your studies
+    - all year groups
+    - all years of study
+    - all years are welcome
+    - all academic years
+    - students of any year
+    - students in any year
+    - students from any year
+    - students of all years
+    - students from all years
+    - regardless of year
+    - regardless of your year
+    - no matter what year
+    # If you want graduation years to count, add yours here, for example:
+    # - graduating in 2029
+    # - class of 2029
+
+  later_years_only:
+    - penultimate
+    - final year*
+    - second year of a three
+    - second year of a 3
+    - third year of a four
+    - third year of a 4
+    - junior year
+    - rising junior*
+    - rising senior*
+    - juniors
+    - one year of study remaining
+    - one year remaining
+    - returning to full time education for
+    - returning to university for

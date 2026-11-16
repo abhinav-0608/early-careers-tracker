@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -11,7 +12,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from jobtracker.config import Config, Filters, Profile, load_config
+from jobtracker.config import Config, EligibilityRules, Filters, Profile, load_config
 from jobtracker.filters import Decision
 from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
@@ -82,7 +83,7 @@ def make_profile(
     key: str,
     industries: tuple[str, ...] = (),
     companies: tuple[str, ...] = (),
-    dream: tuple[str, ...] = (),
+    faang_plus: tuple[str, ...] = (),
     filters: Filters | None = None,
 ) -> Profile:
     """A profile for a test, borrowing the shipped filters unless given its own."""
@@ -92,7 +93,7 @@ def make_profile(
         filters=filters or base.filters,
         industries=frozenset(industries),
         companies=frozenset(companies),
-        dream=frozenset(dream),
+        faang_plus=frozenset(faang_plus),
     )
 
 
@@ -101,8 +102,9 @@ def enable_all_role_types(filters: Filters) -> Filters:
 
 
 def changed_filters(filters: Filters, hash: str = "changed") -> Filters:
-    """What editing filters.yaml to switch every role type on produces: new rules, new hash."""
-    return replace(enable_all_role_types(filters), hash=hash)
+    """What editing filters.yaml to switch every role type on, and the first-year check
+    off, produces: new rules, new hash. Every internship on a board then matches."""
+    return replace(enable_all_role_types(filters), eligibility=EligibilityRules(), hash=hash)
 
 
 @pytest.fixture(scope="session")
@@ -128,6 +130,7 @@ def settings(config: Config):
 
 
 GREENHOUSE = "boards-api.greenhouse.io"
+_GREENHOUSE_JOB = re.compile(r"/v1/boards/[^/]+/jobs/\d+")
 
 
 class FakeWeb:
@@ -152,6 +155,10 @@ class FakeWeb:
         self.rejected_topics: set[str] = set()  # ntfy fails for these topics only
         self.published: list[dict] = []
         self.fetches: list[str] = []  # every board request, as host + path
+        # Greenhouse job id -> the description its job endpoint returns ("" if not given)
+        self.descriptions: dict[str, str] = {}
+        self.description_fetches: list[str] = []  # job endpoints asked, as host + path
+        self.descriptions_down = False  # job endpoints answer 500; boards still work
         self.robots_requests: list[str] = []  # hosts asked for their robots.txt, in order
 
     def handle(self, request: httpx.Request) -> httpx.Response:
@@ -170,6 +177,13 @@ class FakeWeb:
             if host in self.robots:
                 return httpx.Response(200, text=self.robots[host])
             return httpx.Response(404)
+        if host == GREENHOUSE and _GREENHOUSE_JOB.fullmatch(request.url.path):
+            # One posting, asked for its description by the eligibility check.
+            self.description_fetches.append(host + request.url.path)
+            if host in self.broken_hosts or self.descriptions_down:
+                return httpx.Response(500)
+            job_id = request.url.path.rsplit("/", 1)[1]
+            return httpx.Response(200, json={"content": self.descriptions.get(job_id, "")})
         self.fetches.append(host + request.url.path)
         if host in self.broken_hosts:
             return httpx.Response(500)

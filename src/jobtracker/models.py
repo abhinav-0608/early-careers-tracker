@@ -10,7 +10,7 @@ from datetime import date
 class Company:
     """One entry from config/companies.yaml, the list shared by every profile.
 
-    Nothing here is personal. Whether a company is "dream tier" is a property of a
+    Nothing here is personal. Whether a company is "FAANG+" is a property of a
     profile, not of the company.
     """
 
@@ -79,6 +79,10 @@ class Job:
     department: str | None = None
     posted_at: date | None = None
     remote_hint: bool | None = None  # explicit remote flag, when the source has one
+    # The posting's text, only when the source's list response already carries it
+    # (Lever, Ashby, Amazon). Other sources are asked for it per job, and only for jobs
+    # that have passed the title and location filters (sources/descriptions.py).
+    description: str | None = field(default=None, compare=False, repr=False)
 
     @property
     def key(self) -> str:

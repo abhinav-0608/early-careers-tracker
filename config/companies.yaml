@@ -2,7 +2,7 @@
 #
 # This is the one list shared by every profile. Each company is fetched once per run;
 # a profile (config/profiles/<key>/profile.yaml) then sees only the companies in its own
-# scope. Nothing personal lives here: which companies are "dream tier" is set per profile.
+# scope. Nothing personal lives here: which companies are "FAANG+" is set per profile.
 #
 #   key          stable id used in state and job keys (never rename once in use)
 #   industry     big_tech | ai_lab | quant | finance | fintech | cybersecurity | startup

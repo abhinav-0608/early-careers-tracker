@@ -16,14 +16,18 @@ from datetime import date, datetime
 
 import httpx
 
-from jobtracker import log
+from jobtracker import eligibility, log
 from jobtracker.config import Config, Profile
 from jobtracker.filters import UNCLEAR
 from jobtracker.http import HttpClient
 from jobtracker.state import StoredJob
 
-MAX_SUMMARY_LINES = 10
-MAX_BASELINE_LINES = 25
+# ntfy accepts a message of up to 4,096 bytes; a longer one is refused or turned into an
+# attachment. Lists are cut to fit under this with room to spare, ending "+N more".
+MAX_MESSAGE_BYTES = 3800
+OPEN_ROLES_ANCHOR = "#open-roles"  # the README table that a summary opens when tapped
+FIRE = "🔥"
+TICK = "✅"
 
 
 @dataclass(frozen=True)
@@ -120,26 +124,39 @@ def plan_job_notifications(
     """Decide how to announce one profile's jobs that are awaiting an alert.
 
     Up to `batch_threshold` jobs get one alert each. Beyond that, the profile's
-    dream-tier jobs still get their own alert and the rest are rolled into a single
-    summary.
+    FAANG+ jobs still get their own alert and the rest are rolled into a single
+    summary. FAANG+ alerts go first.
     """
-    pending = sorted(pending, key=lambda job: (job.company, job.title, job.key))
+    pending = in_order(pending, profile, config)
     if len(pending) <= config.settings.batch_threshold:
         return [job_notification(job, profile, config) for job in pending]
 
-    dream = [job for job in pending if profile.is_dream(job.company)]
-    normal = [job for job in pending if not profile.is_dream(job.company)]
-    notifications = [job_notification(job, profile, config) for job in dream]
+    faang_plus = [job for job in pending if profile.is_faang_plus(job.company)]
+    normal = [job for job in pending if not profile.is_faang_plus(job.company)]
+    notifications = [job_notification(job, profile, config) for job in faang_plus]
     if len(normal) == 1:
         notifications.append(job_notification(normal[0], profile, config))
     elif normal:
-        notifications.append(summary_notification(normal, config))
+        notifications.append(summary_notification(normal, profile, config))
     return notifications
+
+
+def in_order(jobs: list[StoredJob], profile: Profile, config: Config) -> list[StoredJob]:
+    """FAANG+ roles first, then the rest, each by company name and title."""
+    return sorted(
+        jobs,
+        key=lambda job: (
+            not profile.is_faang_plus(job.company),
+            _company_name(job, config).lower(),
+            job.title.lower(),
+            job.key,
+        ),
+    )
 
 
 def job_notification(job: StoredJob, profile: Profile, config: Config) -> Notification:
     role = profile.filters.role_type(job.role_type)
-    is_dream = profile.is_dream(job.company)
+    is_faang_plus = profile.is_faang_plus(job.company)
     settings = config.settings
 
     if job.posted_at:
@@ -147,46 +164,72 @@ def job_notification(job: StoredJob, profile: Profile, config: Config) -> Notifi
     else:
         when = f"First seen {_format_date(datetime.fromisoformat(job.first_seen).date())}"
 
+    lines = [_location_text(job), f"{role.label if role else job.role_type} · {when}"]
+    if job.eligibility:
+        lines.append(eligibility.label(job.eligibility))
     return Notification(
-        title=f"{_company_name(job, config)} – {job.title}",
-        message=f"{_location_text(job)}\n{role.label if role else job.role_type} · {when}",
-        priority=settings.priority_dream if is_dream else settings.priority_normal,
-        tags=(*(role.ntfy_tags if role else ()), *(("star",) if is_dream else ())),
+        title=f"{FIRE + ' ' if is_faang_plus else ''}{_company_name(job, config)} – {job.title}",
+        message="\n".join(lines),
+        priority=settings.priority_faang_plus if is_faang_plus else settings.priority_normal,
+        tags=(*(role.ntfy_tags if role else ()), *(("fire",) if is_faang_plus else ())),
         click=job.url,
         job_keys=(job.key,),
     )
 
 
-def summary_notification(jobs: list[StoredJob], config: Config) -> Notification:
-    lines = [
-        f"{_company_name(job, config)} – {job.title} ({_location_text(job)})"
-        for job in jobs[:MAX_SUMMARY_LINES]
-    ]
-    if len(jobs) > MAX_SUMMARY_LINES:
-        lines.append(f"...and {len(jobs) - MAX_SUMMARY_LINES} more")
+def role_line(job: StoredJob, profile: Profile, config: Config) -> str:
+    """One role on one line: "🔥 Morgan Stanley — Spring Insight Programme · London · ✅"."""
+    parts = [f"{_company_name(job, config)} — {job.title}", _short_location(job)]
+    if job.eligibility:
+        parts.append(TICK)
+    return (f"{FIRE} " if profile.is_faang_plus(job.company) else "") + " · ".join(parts)
+
+
+def fit_lines(lines: list[str], limit: int = MAX_MESSAGE_BYTES) -> str:
+    """As many whole lines as fit in `limit` bytes, then "+N more" for the rest."""
+    kept: list[str] = []
+    used = 0
+    for index, line in enumerate(lines):
+        remaining = len(lines) - index
+        size = len(line.encode()) + 1
+        # Leave room for the "+N more" line unless this is the last line and it fits.
+        reserve = 0 if remaining == 1 else len(f"+{remaining} more".encode()) + 1
+        if used + size + reserve > limit:
+            kept.append(f"+{remaining} more")
+            break
+        kept.append(line)
+        used += size
+    return "\n".join(kept)
+
+
+def summary_notification(
+    jobs: list[StoredJob], profile: Profile, config: Config
+) -> Notification | None:
+    """One notification listing several new roles. None if there are no roles to list."""
+    if not jobs:
+        return None
+    jobs = in_order(jobs, profile, config)
     return Notification(
-        title=f"{len(jobs)} new roles",
-        message="\n".join(lines),
+        title=f"{len(jobs)} new {'role' if len(jobs) == 1 else 'roles'}",
+        message=fit_lines([role_line(job, profile, config) for job in jobs]),
         priority=config.settings.priority_normal,
         tags=("bell",),
-        click=config.settings.repo_url,
+        click=config.settings.repo_url + OPEN_ROLES_ANCHOR,
         job_keys=tuple(job.key for job in jobs),
     )
 
 
 def baseline_notification(
-    jobs: list[StoredJob], config: Config, filters_changed: bool
-) -> Notification:
-    """The single summary sent instead of individual alerts when baselining."""
-    counts: dict[str, int] = {}
-    for job in jobs:
-        name = _company_name(job, config)
-        counts[name] = counts.get(name, 0) + 1
-    lines = [f"{name}: {count}" for name, count in sorted(counts.items())]
-    if len(lines) > MAX_BASELINE_LINES:
-        extra = len(lines) - MAX_BASELINE_LINES
-        lines = lines[:MAX_BASELINE_LINES] + [f"...and {extra} more companies"]
+    jobs: list[StoredJob], profile: Profile, config: Config, filters_changed: bool
+) -> Notification | None:
+    """The single summary sent instead of individual alerts when baselining.
 
+    Lists every role, one line each. None if there are no roles: a summary of nothing
+    is never sent.
+    """
+    if not jobs:
+        return None
+    jobs = in_order(jobs, profile, config)
     noun = "role" if len(jobs) == 1 else "roles"
     if filters_changed:
         title = f"Baseline: {len(jobs)} {noun} newly match your filters"
@@ -194,16 +237,37 @@ def baseline_notification(
         title = f"Baseline: {len(jobs)} matching {noun} currently open"
     return Notification(
         title=title,
-        message="\n".join(lines),
+        message=fit_lines([role_line(job, profile, config) for job in jobs]),
         priority=config.settings.priority_normal,
         tags=("clipboard",),
-        click=config.settings.repo_url,
+        click=config.settings.repo_url + OPEN_ROLES_ANCHOR,
+    )
+
+
+def health_test_notification(now: datetime) -> Notification:
+    """What `python -m jobtracker test-alert` sends to the health topic."""
+    return Notification(
+        title="Test health alert",
+        message=(
+            f"Sent by hand at {now:%Y-%m-%d %H:%M} UTC. If you can read this, health "
+            "alerts are reaching this device. Nothing is wrong."
+        ),
+        priority=4,
+        tags=("test_tube",),
     )
 
 
 def _company_name(job: StoredJob, config: Config) -> str:
     company = config.company(job.company)
     return company.name if company else job.company
+
+
+def _short_location(job: StoredJob) -> str:
+    """The first location, for a one-line listing."""
+    if not job.locations:
+        return "Location unclear"
+    extra = f" +{len(job.locations) - 1}" if len(job.locations) > 1 else ""
+    return job.locations[0] + extra
 
 
 def _location_text(job: StoredJob) -> str:

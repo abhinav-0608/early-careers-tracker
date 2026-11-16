@@ -53,5 +53,14 @@ class KeywordSet:
                 return keyword
         return None
 
+    def search(self, normalised_text: str) -> tuple[str, int] | None:
+        """Return the earliest keyword in the text and where it starts, or None."""
+        best: tuple[str, int] | None = None
+        for keyword, pattern in self._patterns:
+            match = pattern.search(normalised_text)
+            if match and (best is None or match.start() < best[1]):
+                best = (keyword, match.start())
+        return best
+
     def __bool__(self) -> bool:
         return bool(self.keywords)

@@ -7,7 +7,6 @@ several profiles is covered in test_profiles.py.
 
 from __future__ import annotations
 
-import json
 from dataclasses import replace
 from datetime import timedelta
 
@@ -42,7 +41,7 @@ def tracker(config, profile, settings, web, tmp_path):
         make_company("palantir", name="Palantir", ats="lever"),
         make_company("openai", name="OpenAI", ats="ashby"),
     )
-    owner = make_profile(profile, OWNER, industries=("quant",), dream=("palantir", "openai"))
+    owner = make_profile(profile, OWNER, industries=("quant",), faang_plus=("palantir", "openai"))
     test_config = replace(config, settings=settings, companies=companies, profiles=(owner,))
 
     def run_once(now=NOW, config=test_config):
@@ -82,7 +81,9 @@ def test_first_run_baselines_without_individual_alerts(tracker, web, tmp_path):
     assert [message["title"] for message in web.published] == [
         "Baseline: 1 matching role currently open"
     ]
-    assert web.published[0]["message"] == "Point72: 1"
+    assert web.published[0]["message"] == (
+        "Point72 — 2027 Point72 Academy Spring Insight Programme – UK · London, UK · ✅"
+    )
     assert report.total("baselined") == 1
     assert report.total("new") == 0
 
@@ -105,7 +106,10 @@ def test_new_job_on_a_later_run_gets_one_alert_and_is_never_repeated(tracker, we
     assert alert == {
         "topic": JOB_TOPIC,
         "title": "Point72 – Spring Week 2027 - Technology",
-        "message": "London, UK\nSpring week · Posted 15 Nov 2026",
+        "message": (
+            "London, UK\nSpring week · Posted 15 Nov 2026\n"
+            "✅ First-year eligible (spring week; the posting does not say otherwise)"
+        ),
         "priority": 3,
         "tags": ["cherry_blossom"],
         "click": "https://boards.greenhouse.io/point72/jobs/9000001",
@@ -446,68 +450,220 @@ def test_actions_run_page_gets_a_profile_table_and_a_source_table(tracker, monke
     assert any(line.endswith(f"| {OWNER} 1 |") for line in lines)  # who matched what
 
 
-# --- moving from the single-user state files to a profile ------------------------------
+# --- first-year eligibility -------------------------------------------------------------
+
+INTERN_ID = 9000500
+INTERN_KEY = f"greenhouse:point72:{INTERN_ID}"
+INTERN_PATH = f"boards-api.greenhouse.io/v1/boards/point72/jobs/{INTERN_ID}"
 
 
-def write_legacy_state(state_dir, filters_hash: str, notified: bool = True):
-    """The version 1 files as the single-user tracker left them."""
-    job = {
-        "aliases": [],
-        "closed_at": None,
-        "company": "point72",
-        "fields": [],
-        "fingerprint": "point72|2027 point72 academy spring insight programme uk|london uk",
-        "first_seen": "2026-11-15T01:46:12+00:00",
-        "last_seen": "2026-11-15",
-        "locations": ["London, UK"],
-        "missing_runs": 0,
-        "notified": notified,
-        "posted_at": "2026-09-29",
-        "region": "uk",
-        "role_type": "spring_week",
-        "source": "greenhouse",
-        "status": "open",
-        "title": "2027 Point72 Academy Spring Insight Programme – UK",
-        "url": "https://boards.greenhouse.io/point72/jobs/8845395002?gh_jid=8845395002",
-    }
-    source = {
-        "alerted": False,
-        "consecutive_failures": 0,
-        "empty_runs": 0,
-        "failing_since": None,
-        "filters_hash": filters_hash,
-        "has_returned_jobs": True,
-        "last_alert_at": None,
-    }
-    sources = {key: source for key in ("greenhouse:point72", "lever:palantir", "ashby:openai")}
-    jobs = {"version": 1, "jobs": {SPRING_INSIGHT_KEY: job}}
-    (state_dir / "jobs.json").write_text(json.dumps(jobs))
-    (state_dir / "sources.json").write_text(json.dumps({"version": 1, "sources": sources}))
-
-
-def test_first_run_on_the_old_state_files_sends_nothing_and_migrates_them(tracker, web, tmp_path):
-    write_legacy_state(tmp_path, filters_hash=tracker.config.profiles[0].filters.hash)
-
-    report = tracker()
-
-    # Nothing is re-announced and nothing is baselined again: the owner carries on
-    # exactly where the single-user tracker stopped.
-    assert web.published == []
-    assert report.total("new") == report.total("baselined") == 0
-    assert set(state_files(tmp_path)) == {"hosts.json", "sources.json", f"profiles/{OWNER}.json"}
-    assert "filters_hash" not in (tmp_path / "sources.json").read_text()
-    assert tracker.state().jobs[SPRING_INSIGHT_KEY].notified is True
-
-    # ...and from then on behaves like any other run.
-    web.add_greenhouse_job(9000001, "Spring Week 2027")
-    tracker(NOW + RUN)
-    assert [message["title"] for message in web.published] == ["Point72 – Spring Week 2027"]
-
-
-def test_an_alert_still_owed_under_the_old_files_is_sent_after_migrating(tracker, web, tmp_path):
-    hash_ = tracker.config.profiles[0].filters.hash
-    write_legacy_state(tmp_path, filters_hash=hash_, notified=False)
+def test_internship_open_to_first_years_is_alerted_with_the_reason(tracker, web):
     tracker()
-    assert [message["title"] for message in web.published] == [
-        "Point72 – 2027 Point72 Academy Spring Insight Programme – UK"
-    ]
+    web.published.clear()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "<p>Open to first and second year students.</p>"
+
+    report = tracker(NOW + RUN)
+    (alert,) = web.published
+    assert alert["title"] == "Point72 – Software Engineer Intern"
+    assert alert["message"].splitlines()[-1] == (
+        '✅ First-year eligible (description: "Open to first and second year students")'
+    )
+    assert web.description_fetches.count(INTERN_PATH) == 1
+    assert report.profiles[0].descriptions_read == 1
+
+    # Settled: never read again, never alerted again.
+    tracker(NOW + 2 * RUN)
+    assert web.description_fetches.count(INTERN_PATH) == 1
+    assert len(web.published) == 1
+
+
+def test_internship_that_does_not_say_is_dropped_and_its_description_read_once(tracker, web):
+    tracker()
+    web.published.clear()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "<p>Join us for the summer.</p>"
+
+    report = tracker(NOW + RUN)
+    assert web.published == []
+    assert INTERN_KEY not in tracker.state().jobs
+    assert (
+        "point72",
+        "Software Engineer Intern",
+        "the posting does not say first years can apply",
+    ) in report.profiles[0].dropped
+    assert tracker.state().eligibility[INTERN_KEY] == {"status": "unclear"}
+
+    tracker(NOW + 2 * RUN)
+    assert web.description_fetches.count(INTERN_PATH) == 1
+
+
+def test_spring_week_restricted_to_later_years_is_dropped(tracker, web):
+    tracker()
+    web.published.clear()
+    web.add_greenhouse_job(INTERN_ID, "Spring Week 2027")
+    web.descriptions[str(INTERN_ID)] = "Open to penultimate year students only."
+    tracker(NOW + RUN)
+    assert web.published == []
+    assert tracker.state().eligibility[INTERN_KEY]["status"] == "ineligible"
+
+
+def test_unreadable_description_is_retried_then_given_up_on(tracker, web):
+    tracker()
+    web.published.clear()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "Open to first year students."
+    web.descriptions_down = True
+
+    for run_number in range(1, 4):
+        tracker(NOW + run_number * RUN)
+    # Three failed reads: it is now treated as not saying, and not asked for again.
+    assert web.description_fetches.count(INTERN_PATH) == 3
+    assert tracker.state().eligibility[INTERN_KEY] == {"status": "unclear"}
+    web.descriptions_down = False
+    tracker(NOW + 4 * RUN)
+    assert web.description_fetches.count(INTERN_PATH) == 3
+    assert web.published == []
+
+
+def test_a_description_read_late_still_alerts(tracker, web):
+    tracker()
+    web.published.clear()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "Open to first year students."
+    web.descriptions_down = True
+    tracker(NOW + RUN)
+    assert web.published == []
+    assert tracker.state().eligibility[INTERN_KEY] == {"status": "unknown", "tries": 1}
+
+    web.descriptions_down = False
+    tracker(NOW + 2 * RUN)
+    assert [m["title"] for m in web.published] == ["Point72 – Software Engineer Intern"]
+
+
+def test_a_first_baseline_waits_while_a_description_cannot_be_read(tracker, web):
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "Open to first year students."
+    web.descriptions_down = True
+    tracker()
+    # The other boards are baselined; Point72's waits rather than baselining half a board.
+    assert set(tracker.state().baselines) == {"lever:palantir", "ashby:openai"}
+    assert tracker.state().jobs == {}
+
+    web.descriptions_down = False
+    report = tracker(NOW + RUN)
+    assert "greenhouse:point72" in tracker.state().baselines
+    assert INTERN_KEY in tracker.state().jobs and report.total("new") == 0
+
+
+def test_changing_the_eligibility_rules_reads_descriptions_again(tracker, web):
+    tracker()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "Join us for the summer."
+    tracker(NOW + RUN)
+    assert web.description_fetches.count(INTERN_PATH) == 1
+
+    (owner,) = tracker.config.profiles
+    rules = replace(owner.filters.eligibility, hash="new-rules")
+    owner = replace(owner, filters=replace(owner.filters, eligibility=rules))
+    tracker(NOW + 2 * RUN, config=replace(tracker.config, profiles=(owner,)))
+    assert web.description_fetches.count(INTERN_PATH) == 2
+    assert tracker.state().eligibility_rules == "new-rules"
+
+
+def test_descriptions_beyond_the_run_budget_wait_for_the_next_run(tracker, web):
+    tracker()
+    web.published.clear()
+    for number in range(3):
+        web.add_greenhouse_job(INTERN_ID + number, f"Software Engineer Intern {number}")
+        web.descriptions[str(INTERN_ID + number)] = "Open to first year students."
+    config = replace(
+        tracker.config, settings=replace(tracker.config.settings, descriptions_per_run=2)
+    )
+    tracker(NOW + RUN, config=config)
+    assert len(web.published) == 2
+    tracker(NOW + 2 * RUN, config=config)
+    assert len(web.published) == 3
+
+
+def test_two_profiles_needing_one_description_cost_one_request(tracker, web):
+    tracker()
+    (owner,) = tracker.config.profiles
+    twin = replace(owner, key="twin")
+    config = replace(tracker.config, profiles=(owner, twin))
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "Open to first year students."
+    tracker(NOW + RUN, config=config)
+    assert web.description_fetches.count(INTERN_PATH) == 1
+
+
+def test_readme_table_is_written_for_the_readme_profile_only_when_saving(
+    config, profile, settings, web, tmp_path
+):
+    companies = (make_company("point72", name="Point72"),)
+    owner = make_profile(profile, OWNER, industries=("quant",))
+    other = make_profile(profile, "other", industries=("quant",))
+    test_config = replace(
+        config,
+        settings=replace(settings, readme_profile=OWNER),
+        companies=companies,
+        profiles=(other, owner),
+    )
+    readme_path = tmp_path / "README.md"
+    readme_path.write_text("# Tracker\n")
+
+    def run_once(save):
+        http = HttpClient(
+            test_config.settings, transport=httpx.MockTransport(web.handle), sleep=lambda _: None
+        )
+        topics = {OWNER: JOB_TOPIC, "other": "other-topic"}
+        notifier = Notifier(http, test_config.settings.ntfy_server, topics, HEALTH_TOPIC)
+        state_dir = tmp_path / "state"
+        run(test_config, state_dir, http, notifier, NOW, save=save, readme_path=readme_path)
+
+    run_once(save=False)  # a dry run writes nothing
+    assert readme_path.read_text() == "# Tracker\n"
+    run_once(save=True)
+    text = readme_path.read_text()
+    assert "## Open roles" in text and "2027 Point72 Academy Spring Insight Programme" in text
+    assert text.count("## Open roles") == 1
+
+
+def test_the_description_budget_is_shared_by_every_profile_in_a_run(tracker, web):
+    tracker()
+    (owner,) = tracker.config.profiles
+    other = replace(owner, key="other", filters=replace(owner.filters, hash="other-rules"))
+    config = replace(
+        tracker.config,
+        settings=replace(tracker.config.settings, descriptions_per_run=2),
+        profiles=(owner, other),
+    )
+    for number in range(3):
+        web.add_greenhouse_job(INTERN_ID + number, f"Software Engineer Intern {number}")
+        web.descriptions[str(INTERN_ID + number)] = "Open to first year students."
+    web.description_fetches.clear()
+    tracker(NOW + RUN, config=config)
+    assert len(web.description_fetches) == 2
+
+
+def test_a_dropped_posting_is_logged_once_with_its_reason(tracker, web, caplog):
+    caplog.set_level("INFO")
+    tracker()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "Join us for the summer."
+
+    def drops():
+        return [
+            record.fields
+            for record in caplog.records
+            if record.getMessage() == "eligibility_dropped"
+            and record.fields["title"] == "Software Engineer Intern"
+        ]
+
+    caplog.clear()
+    tracker(NOW + RUN)
+    (fields,) = drops()
+    assert fields["why"] == "the posting does not say first years can apply"
+    caplog.clear()
+    tracker(NOW + 2 * RUN)
+    assert drops() == []

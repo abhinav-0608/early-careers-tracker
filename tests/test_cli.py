@@ -1,5 +1,6 @@
 from conftest import OWNER, ROOT
 from jobtracker.__main__ import main
+from jobtracker.notify import Notifier
 
 CONFIG = ["--config-dir", str(ROOT / "config")]
 
@@ -11,6 +12,7 @@ def test_explain_title_shows_the_decision_and_the_reason(capsys):
     assert capsys.readouterr().out.splitlines() == [
         "MATCH  Technology Spring Week  [London, UK]",
         "       role: spring_week | fields: software | location: uk (onsite)",
+        "       first years: eligible unless the description says later years only",
         "skip   Spring Week – Finance  [London, UK]",
         "       field: 'finance' is not one of your fields",
     ]
@@ -52,3 +54,28 @@ def test_run_rejects_an_unknown_profile(capsys):
 def test_bad_config_is_reported_cleanly(tmp_path, capsys):
     assert main(["--config-dir", str(tmp_path), "explain", "--title", "x"]) == 2
     assert "Config error" in capsys.readouterr().err
+
+
+def test_explain_title_shows_what_the_first_year_check_makes_of_it(capsys):
+    titles = ["First Year Software Engineering Programme", "Software Engineer Intern"]
+    assert main([*CONFIG, "explain", *(arg for t in titles for arg in ("--title", t))]) == 0
+    out = capsys.readouterr().out
+    assert 'first years: eligible (title: "First Year")' in out
+    assert "first years: only if the description says first years can apply" in out
+
+
+def test_test_alert_needs_the_health_topic(monkeypatch, capsys):
+    monkeypatch.delenv("NTFY_HEALTH_TOPIC", raising=False)
+    assert main([*CONFIG, "test-alert"]) == 2
+    assert "NTFY_HEALTH_TOPIC must be set" in capsys.readouterr().err
+
+
+def test_test_alert_sends_one_message_and_never_prints_the_topic(monkeypatch, capsys):
+    sent = []
+    monkeypatch.setenv("NTFY_HEALTH_TOPIC", "secret-health-topic")
+    monkeypatch.setattr(Notifier, "send_health", lambda self, n: sent.append(n) or True)
+    assert main([*CONFIG, "test-alert"]) == 0
+    assert [n.title for n in sent] == ["Test health alert"]
+    out = capsys.readouterr()
+    assert "Test alert sent" in out.out
+    assert "secret-health-topic" not in out.out + out.err

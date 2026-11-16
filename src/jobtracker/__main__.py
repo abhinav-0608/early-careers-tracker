@@ -6,6 +6,7 @@ python -m jobtracker run --profile KEY   evaluate just this profile (repeatable)
 python -m jobtracker explain <company>   show why each live job did or did not match
 python -m jobtracker explain --title "Spring Week - Technology"
                                          test the filters on a title, without fetching
+python -m jobtracker test-alert          send a test message to the health topic
 
 explain uses one profile's filters: the only profile if there is just one, otherwise
 the one named with --profile.
@@ -18,14 +19,14 @@ import os
 import sys
 from datetime import UTC, datetime
 
-from jobtracker import log
+from jobtracker import eligibility, log
 from jobtracker.config import Config, ConfigError, Profile, load_config
 from jobtracker.filters import classify, match_role_type
 from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
-from jobtracker.notify import Notifier
+from jobtracker.notify import Notifier, health_test_notification
 from jobtracker.pipeline import fetch_company, run
-from jobtracker.sources import adapter_for
+from jobtracker.sources import adapter_for, descriptions
 from jobtracker.state import load_hosts, save_hosts
 from jobtracker.text import normalise
 
@@ -47,6 +48,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     run_parser.add_argument(
         "--profile", action="append", metavar="KEY", help="run just this profile (repeatable)"
+    )
+    run_parser.add_argument(
+        "--readme",
+        default="README.md",
+        help="the README whose open-roles table is regenerated (not written in a dry run)",
+    )
+
+    commands.add_parser(
+        "test-alert", help="send a test message to the health topic (NTFY_HEALTH_TOPIC)"
     )
 
     explain_parser = commands.add_parser("explain", help="show how jobs classify, and why")
@@ -79,7 +89,26 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "run":
         return command_run(config, args)
+    if args.command == "test-alert":
+        return command_test_alert(config)
     return command_explain(config, args)
+
+
+def command_test_alert(config: Config) -> int:
+    """Send one message to the health topic, to check that alerts reach the phone."""
+    topic = os.environ.get("NTFY_HEALTH_TOPIC")
+    if not topic:
+        print("NTFY_HEALTH_TOPIC must be set.", file=sys.stderr)
+        return 2
+    http = HttpClient(config.settings)
+    try:
+        notifier = Notifier(http, config.settings.ntfy_server, {}, topic)
+        sent = notifier.send_health(health_test_notification(datetime.now(UTC)))
+    finally:
+        http.close()
+    # The topic is never printed: it is a secret, and this may run in a public log.
+    print("Test alert sent to the health topic." if sent else "Test alert could not be sent.")
+    return 0 if sent else 1
 
 
 def command_run(config: Config, args: argparse.Namespace) -> int:
@@ -119,6 +148,7 @@ def command_run(config: Config, args: argparse.Namespace) -> int:
             only=set(args.only) if args.only else None,
             only_profiles=wanted,
             save=not args.dry_run,
+            readme_path=args.readme,
         )
     finally:
         http.close()
@@ -200,25 +230,59 @@ def explain_company(config: Config, profile: Profile, args: argparse.Namespace) 
         return 1
 
     shown = 0
-    for job in result.jobs:
-        decision = classify(job, company, profile.filters)
-        near_miss = match_role_type(normalise(job.title), profile.filters) is not None
-        if decision.matched or near_miss or args.all:
-            shown += 1
-            print_decision(job, company, profile)
+    http = HttpClient(config.settings)  # for descriptions the eligibility check needs
+    try:
+        for job in result.jobs:
+            decision = classify(job, company, profile.filters)
+            near_miss = match_role_type(normalise(job.title), profile.filters) is not None
+            if decision.matched or near_miss or args.all:
+                shown += 1
+                print_decision(job, company, profile, http)
+    finally:
+        http.close()
     print(f"\n{len(result.jobs)} jobs fetched, {shown} shown. Use --all to list every job.")
     return 0
 
 
-def print_decision(job: Job, company: Company, profile: Profile) -> None:
+def print_decision(
+    job: Job, company: Company, profile: Profile, http: HttpClient | None = None
+) -> None:
+    """One job's classification. With `http`, a description the verdict needs is read."""
     decision = classify(job, company, profile.filters)
     mark = "MATCH" if decision.matched else "skip "
     print(f"{mark}  {job.title}  [{'; '.join(job.locations) or 'no location'}]")
-    if decision.matched:
-        fields = ", ".join(decision.fields) or "none named"
-        print(f"       role: {decision.role_type} | fields: {fields} | {decision.reason}")
-    else:
+    if not decision.matched:
         print(f"       {decision.reason}")
+        return
+    fields = ", ".join(decision.fields) or "none named"
+    print(f"       role: {decision.role_type} | fields: {fields} | {decision.reason}")
+    line = explain_eligibility(job, company, profile, decision.role_type, http)
+    if line:
+        print(f"       first years: {line}")
+
+
+def explain_eligibility(
+    job: Job, company: Company, profile: Profile, role_type: str | None, http: HttpClient | None
+) -> str:
+    """The eligibility verdict as `explain` prints it; "" when it is not checked."""
+    filters = profile.filters
+    role = filters.role_type(role_type or "")
+    if role is None or not filters.eligibility.applies_to(role.name):
+        return ""
+    text = None
+    if eligibility.needs_description(role, job.title, filters):
+        if http is None:  # --title: nothing is fetched
+            if role.name in filters.eligibility.explicit_only:
+                return "only if the description says first years can apply"
+            return "eligible unless the description says later years only"
+        try:
+            text = descriptions.describe(company, job, http)
+        except Exception as exc:  # noqa: BLE001 - explain must keep going
+            return f"description could not be read ({type(exc).__name__})"
+    verdict = eligibility.assess(role, job.title, text, filters)
+    if verdict.eligible:
+        return f"eligible ({verdict.basis})"
+    return f"dropped: {verdict.reason}"
 
 
 if __name__ == "__main__":

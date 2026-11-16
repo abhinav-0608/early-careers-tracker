@@ -162,22 +162,22 @@ def new_world(config, settings, tmp_path):
 
 @pytest.fixture
 def alice(profile):
-    """Watches three industries with the shipped filters. Palantir is her dream company."""
+    """Watches three industries with the shipped filters. Palantir is her FAANG+ company."""
     return make_profile(
-        profile, "alice", industries=("quant", "big_tech", "ai_lab"), dream=("palantir",)
+        profile, "alice", industries=("quant", "big_tech", "ai_lab"), faang_plus=("palantir",)
     )
 
 
 @pytest.fixture
 def bob(profile):
     """Overlaps Alice on Point72 and differs everywhere else: every role type switched on,
-    two companies she does not watch, and his own dream list."""
+    two companies she does not watch, and his own FAANG+ list."""
     return make_profile(
         profile,
         "bob",
         industries=("quant", "consulting"),
         companies=("privateco",),
-        dream=("point72",),
+        faang_plus=("point72",),
         filters=changed_filters(profile.filters, hash="bob-rules"),
     )
 
@@ -213,10 +213,10 @@ def test_and_gives_bob_something_different(new_world, alice, bob):
     assert world.titles("bob") == [
         # Run 0. His filters also match an internship on Point72's board that Alice's ignore.
         "Baseline: 2 matching roles currently open",
-        "Point72 – Spring Week 2027 - Technology",
-        # Run 2. Point72 is his dream company, so its jobs are never batched...
-        *(f"Point72 – Insight Day {number}" for number in range(6)),
-        "Point72 – Software Engineer Intern",
+        "🔥 Point72 – Spring Week 2027 - Technology",
+        # Run 2. Point72 is his FAANG+ company, so its jobs are never batched...
+        *(f"🔥 Point72 – Insight Day {number}" for number in range(6)),
+        "🔥 Point72 – Software Engineer Intern",
         # ...and the rest are: ConsultCo and PrivateCo, which Alice never hears about.
         "2 new roles",
         "PrivateCo – Insight Day",
@@ -235,7 +235,7 @@ def casts(alice, bob, base_profile):
     zoe = replace(bob, key="zoe", industries=frozenset({"quant", "big_tech", "ai_lab"}))
     bob_new_filters = replace(bob, filters=changed_filters(base_profile.filters, hash="bob-v2"))
     bob_new_scope = replace(bob_new_filters, industries=frozenset({"consulting", "big_tech"}))
-    bob_new_dream = replace(bob_new_scope, dream=frozenset({"palantir", "consultco"}))
+    bob_new_faang_plus = replace(bob_new_scope, faang_plus=frozenset({"palantir", "consultco"}))
     bob_off = replace(bob, filters=replace(base_profile.filters, role_types=(), hash="nothing"))
 
     def changing_bob(run):
@@ -245,11 +245,11 @@ def casts(alice, bob, base_profile):
             return (alice, bob_new_filters)
         if run < 6:
             return (alice, bob_new_scope)
-        return (alice, bob_new_dream)
+        return (alice, bob_new_faang_plus)
 
     return {
         "an identical twin": lambda run: (alice, twin),
-        "different filters, scope and dream list": lambda run: (alice, bob),
+        "different filters, scope and FAANG+ list": lambda run: (alice, bob),
         "a profile that runs before hers": lambda run: (aaron, alice),
         "profiles before and after hers": lambda run: (aaron, alice, bob, zoe),
         "added part-way through": lambda run: (alice, bob) if run >= 3 else (alice,),
@@ -262,7 +262,7 @@ def casts(alice, bob, base_profile):
 
 CAST_NAMES = [
     "an identical twin",
-    "different filters, scope and dream list",
+    "different filters, scope and FAANG+ list",
     "a profile that runs before hers",
     "profiles before and after hers",
     "added part-way through",
@@ -465,7 +465,7 @@ def test_alice_gets_the_company_once_she_opts_in_and_bob_notices_nothing(new_wor
         "PrivateCo – Insight Day",
     ]
     baseline = world.web.sent_to(TOPICS["alice"])[-2]
-    assert baseline["message"] == "PrivateCo: 1"
+    assert baseline["message"] == "PrivateCo — Spring Week 2027 · London, UK · ✅"
 
     bob_without_her_opting_in = new_world().play(lambda run: (alice, bob), watching="bob")
     assert world.view("bob") == bob_without_her_opting_in[-1]
@@ -487,7 +487,7 @@ def test_company_leaving_one_profiles_scope_closes_its_jobs_for_that_profile_onl
     assert world.state("alice").jobs[SPRING_INSIGHT].status == OPEN
 
 
-# --- dedupe, notified-state and dream tier are per profile -----------------------------
+# --- dedupe, notified-state and FAANG+ are per profile -----------------------------
 
 
 def test_same_job_is_alerted_to_each_profile_once_at_that_profiles_priority(new_world, alice, bob):
@@ -501,10 +501,11 @@ def test_same_job_is_alerted_to_each_profile_once_at_that_profiles_priority(new_
 
     (to_alice,) = world.web.sent_to(TOPICS["alice"])
     (to_bob,) = world.web.sent_to(TOPICS["bob"])
-    assert to_alice["title"] == to_bob["title"] == "Point72 – Spring Week 2027"
-    # Point72 is on Bob's dream list and not on Alice's.
+    assert to_alice["title"] == "Point72 – Spring Week 2027"
+    assert to_bob["title"] == "🔥 Point72 – Spring Week 2027"
+    # Point72 is on Bob's FAANG+ list and not on Alice's.
     assert (to_alice["priority"], to_alice["tags"]) == (3, ["cherry_blossom"])
-    assert (to_bob["priority"], to_bob["tags"]) == (5, ["cherry_blossom", "star"])
+    assert (to_bob["priority"], to_bob["tags"]) == (5, ["cherry_blossom", "fire"])
 
 
 def test_alert_one_profile_missed_is_retried_for_that_profile_alone(new_world, alice, bob):
@@ -522,7 +523,7 @@ def test_alert_one_profile_missed_is_retried_for_that_profile_alone(new_world, a
     world.web.rejected_topics.clear()
     world.run((alice, bob), NOW + 2 * RUN)
     assert world.titles("alice") == ["Point72 – Spring Week 2027"]  # once, not twice
-    assert world.titles("bob") == ["Point72 – Spring Week 2027"]
+    assert world.titles("bob") == ["🔥 Point72 – Spring Week 2027"]
     assert world.state("bob").jobs[key].notified is True
 
 

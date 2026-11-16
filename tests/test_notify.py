@@ -4,14 +4,19 @@ from dataclasses import replace
 import httpx
 import pytest
 
-from conftest import make_company, make_profile
+from conftest import NOW, make_company, make_profile
 from jobtracker.http import HttpClient
 from jobtracker.notify import (
+    MAX_MESSAGE_BYTES,
     Notification,
     Notifier,
     baseline_notification,
+    fit_lines,
+    health_test_notification,
     job_notification,
     plan_job_notifications,
+    role_line,
+    summary_notification,
 )
 from jobtracker.state import StoredJob
 
@@ -41,15 +46,15 @@ def stored_job(number: int, company: str = "normalco", **overrides) -> StoredJob
 def with_companies(config):
     companies = (
         make_company("normalco", name="Normal Co"),
-        make_company("dreamco", name="Dream Co"),
+        make_company("fireco", name="Fire Co"),
     )
     return replace(config, companies=companies)
 
 
 @pytest.fixture
 def me(profile):
-    """A profile watching both test companies, for whom Dream Co is dream tier."""
-    return make_profile(profile, "me", industries=("quant",), dream=("dreamco",))
+    """A profile watching both test companies, for whom Fire Co is FAANG+."""
+    return make_profile(profile, "me", industries=("quant",), faang_plus=("fireco",))
 
 
 # --- what gets sent --------------------------------------------------------------------
@@ -66,10 +71,10 @@ def test_job_notification_has_the_requested_shape(config, me):
     assert notification.job_keys == ("greenhouse:normalco:1",)
 
 
-def test_dream_tier_is_high_priority_and_starred(config, me):
-    notification = job_notification(stored_job(1, company="dreamco"), me, with_companies(config))
+def test_faang_plus_is_high_priority_and_marked_with_fire(config, me):
+    notification = job_notification(stored_job(1, company="fireco"), me, with_companies(config))
     assert notification.priority == 5
-    assert notification.tags == ("cherry_blossom", "star")
+    assert notification.tags == ("cherry_blossom", "fire")
 
 
 def test_message_falls_back_to_first_seen_and_flags_unclear_locations(config, me):
@@ -80,15 +85,15 @@ def test_message_falls_back_to_first_seen_and_flags_unclear_locations(config, me
     )
 
 
-def test_dream_tier_belongs_to_the_profile_not_the_company(config, me, profile):
-    # The same posting, for someone who has not put Dream Co on their dream list.
+def test_faang_plus_belongs_to_the_profile_not_the_company(config, me, profile):
+    # The same posting, for someone who has not put Fire Co on their FAANG+ list.
     someone_else = make_profile(profile, "someone-else", industries=("quant",))
-    job = stored_job(1, company="dreamco")
+    job = stored_job(1, company="fireco")
 
     mine = job_notification(job, me, with_companies(config))
     theirs = job_notification(job, someone_else, with_companies(config))
 
-    assert (mine.priority, mine.tags) == (5, ("cherry_blossom", "star"))
+    assert (mine.priority, mine.tags) == (5, ("cherry_blossom", "fire"))
     assert (theirs.priority, theirs.tags) == (3, ("cherry_blossom",))
 
 
@@ -115,21 +120,21 @@ def test_six_new_jobs_become_one_summary(config, me):
     (summary,) = plan_job_notifications(pending, me, config)
 
     assert summary.title == "6 new roles"
-    assert summary.click == config.settings.repo_url
+    assert summary.click == config.settings.repo_url + "#open-roles"
     assert len(summary.job_keys) == 6
-    assert "Normal Co – Spring Week 0 (London, UK)" in summary.message
+    assert "Normal Co — Spring Week 0 · London, UK" in summary.message.splitlines()
 
 
-def test_dream_jobs_get_their_own_alert_even_within_a_batch(config, me):
+def test_faang_plus_jobs_get_their_own_alert_even_within_a_batch(config, me):
     pending = [stored_job(number) for number in range(6)]
-    pending += [stored_job(number, company="dreamco") for number in (100, 101)]
+    pending += [stored_job(number, company="fireco") for number in (100, 101)]
     notifications = plan_job_notifications(pending, me, with_companies(config))
 
     individual = [n for n in notifications if len(n.job_keys) == 1]
     summaries = [n for n in notifications if len(n.job_keys) > 1]
     assert [n.title for n in individual] == [
-        "Dream Co – Spring Week 100",
-        "Dream Co – Spring Week 101",
+        "🔥 Fire Co – Spring Week 100",
+        "🔥 Fire Co – Spring Week 101",
     ]
     assert all(n.priority == 5 for n in individual)
     assert len(summaries) == 1
@@ -139,20 +144,69 @@ def test_dream_jobs_get_their_own_alert_even_within_a_batch(config, me):
     assert sorted(covered) == sorted(job.key for job in pending)
 
 
-def test_summary_lists_at_most_ten_jobs(config, me):
+def test_summary_lists_every_job_while_it_fits(config, me):
     pending = [stored_job(number) for number in range(14)]
     (summary,) = plan_job_notifications(pending, me, with_companies(config))
-    assert summary.message.count("\n") == 10
-    assert summary.message.endswith("...and 4 more")
+    assert len(summary.message.splitlines()) == 14
+    assert "more" not in summary.message
 
 
-def test_baseline_summary_counts_roles_per_company(config):
-    jobs = [stored_job(1), stored_job(2), stored_job(3, company="dreamco")]
-    notification = baseline_notification(jobs, with_companies(config), filters_changed=False)
+def test_a_summary_too_long_for_ntfy_is_cut_to_whole_lines_and_says_how_many_are_left(config, me):
+    padding = "x" * 80
+    pending = [stored_job(n, title=f"Spring Week {n} {padding}") for n in range(80)]
+    (summary,) = plan_job_notifications(pending, me, with_companies(config))
+    lines = summary.message.splitlines()
+    assert len(summary.message.encode()) <= MAX_MESSAGE_BYTES
+    assert lines[-1] == f"+{80 - (len(lines) - 1)} more"
+    assert all(line.startswith("Normal Co — Spring Week") for line in lines[:-1])
+    assert len(summary.job_keys) == 80  # every job is still marked as announced
+
+
+def test_fit_lines_keeps_everything_that_fits_including_a_last_line_without_reserve():
+    ten = ["a" * 10, "b" * 10, "c" * 10]
+    assert fit_lines(["a", "b"], limit=20) == "a\nb"
+    assert fit_lines(ten, limit=20) == "a" * 10 + "\n+2 more"
+    assert len(fit_lines(ten, limit=20).encode()) <= 20
+    assert fit_lines(ten[:2], limit=22) == "a" * 10 + "\n" + "b" * 10  # last line needs no reserve
+    assert fit_lines([], limit=20) == ""
+
+
+def test_baseline_summary_lists_each_role_faang_plus_first(config, me):
+    jobs = [stored_job(1), stored_job(2), stored_job(3, company="fireco")]
+    notification = baseline_notification(jobs, me, with_companies(config), filters_changed=False)
 
     assert notification.title == "Baseline: 3 matching roles currently open"
-    assert notification.message == "Dream Co: 1\nNormal Co: 2"
+    assert notification.message.splitlines() == [
+        "🔥 Fire Co — Spring Week 3 · London, UK",
+        "Normal Co — Spring Week 1 · London, UK",
+        "Normal Co — Spring Week 2 · London, UK",
+    ]
+    assert notification.click.endswith("#open-roles")
     assert notification.job_keys == ()
+
+
+def test_a_baseline_or_summary_of_nothing_is_not_built(config, me):
+    assert baseline_notification([], me, with_companies(config), filters_changed=True) is None
+    assert summary_notification([], me, with_companies(config)) is None
+
+
+def test_eligibility_is_its_own_line_on_an_alert_and_a_tick_in_a_summary(config, me):
+    config = with_companies(config)
+    job = stored_job(1)
+    job.eligibility = 'title: "First Year"'
+    alert = job_notification(job, me, config)
+    assert alert.message.splitlines()[-1] == '✅ First-year eligible (title: "First Year")'
+    assert role_line(job, me, config) == "Normal Co — Spring Week 1 · London, UK · ✅"
+
+    job.eligibility = ""
+    assert "First-year" not in job_notification(job, me, config).message
+
+
+def test_test_alert_says_nothing_is_wrong():
+    notification = health_test_notification(NOW)
+    assert notification.title == "Test health alert"
+    assert "Nothing is wrong" in notification.message
+    assert "2026-11-15 12:00" in notification.message
 
 
 # --- sending ---------------------------------------------------------------------------
@@ -168,7 +222,7 @@ def make_notifier(settings, handler, **kwargs):
 
 
 NOTIFICATION = Notification(
-    title="Acme – Spring Week", message="London", priority=5, tags=("star",), click="https://x/1"
+    title="Acme – Spring Week", message="London", priority=5, tags=("fire",), click="https://x/1"
 )
 
 
@@ -190,7 +244,7 @@ def test_publishes_json_with_the_topic_in_the_body_not_the_url(settings):
         "title": "Acme – Spring Week",
         "message": "London",
         "priority": 5,
-        "tags": ["star"],
+        "tags": ["fire"],
         "click": "https://x/1",
     }
 

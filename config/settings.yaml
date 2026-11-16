@@ -23,6 +23,10 @@ http:
   # rules as unreadable and fetch nothing. A real robots.txt appearing there is obeyed.
   hosts_without_robots_txt:
     - careers.smartrecruiters.com   # redirects to the job-board home page (2026-11-15)
+  # The most posting descriptions read in one run, for the first-year eligibility check
+  # (only postings that passed a profile's filters and whose title does not settle it,
+  # once each). The rest wait for the next run.
+  descriptions_per_run: 60
 
 polling:
   # Kinds of source that are switched off: not polled at all, and not reported as failing.
@@ -52,11 +56,14 @@ polling:
     amd: 60               # four requests, five seconds apart (the site's Crawl-delay)
     microsoft: 0          # five small requests (10 roles each); raise it if that grows
 
+readme:
+  profile: abhinav              # whose open roles the README table shows
+
 notify:
   server: "https://ntfy.sh"
   batch_threshold: 5            # more than this many new jobs in one run -> one summary
   priority:
-    dream: 5
+    faang_plus: 5
     normal: 3
 
 state:

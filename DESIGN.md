@@ -1,8 +1,9 @@
 # Job Alert Tracker — Design
 
-Status: **approved 2026-11-15**. Stages 1 and 2 are built, the tracker is profile-ready
-(section 2a), and stage 3 is built, including stage 3b (section 13); sections below are
-kept in step with the code.
+Status: **approved 2026-11-15**. Stages 1, 2, 3 (with 3b) and 5 are built, stage 4 was
+skipped, and the tracker is profile-ready (section 2a). Stage 5 also brought the
+first-year eligibility check (section 6a) and the new alert format (section 8). Sections
+below are kept in step with the code.
 
 ## 1. Goals and constraints
 
@@ -47,6 +48,8 @@ config/*.yaml ──► load + validate (a broken profile is left out, the rest 
             │  keep only the companies in the profile's scope                 │
             │  filters.classify(job)    the profile's role types, fields,     │
             │                           regions → match / no match            │
+            │  eligibility.assess       may a first year apply? (title, then  │
+            │                           the description, read once per post)  │
             │  dedupe.reconcile         against the profile's own state:      │
             │                           new / open / reposted / closed        │
             │  notify                   to the profile's own ntfy topic       │
@@ -54,7 +57,7 @@ config/*.yaml ──► load + validate (a broken profile is left out, the rest 
             └─────────────────────────────────────────────────────────────────┘
                       │
                       ▼
-          write state/sources.json, render README.md
+          write state/sources.json; README.md table (one chosen profile)
                       →  git commit + push (only if something changed)
 ```
 
@@ -66,7 +69,7 @@ config/
   companies.yaml       the one company list, shared: ATS type, board id, industry, tags
   profiles/
     <key>/             one folder per person; the folder name is the profile key
-      profile.yaml     company scope and dream-tier list
+      profile.yaml     company scope and FAANG+ 🔥 list
       filters.yaml     role types, fields, locations: keyword rules
 src/jobtracker/
   __main__.py          entry point: python -m jobtracker
@@ -78,21 +81,22 @@ src/jobtracker/
   robots.py            robots.txt parsing and matching (wildcards, crawl delay)
   text.py              text normalisation shared by filters and dedupe
   filters.py           classification and matching
+  eligibility.py       may a first-year student apply? (section 6a)
   state.py             StoredJob, ProfileState, SourceState; load/save the JSON state files
   dedupe.py            reconcile a run with one profile's state: new, repost, closed
   notify.py            ntfy job alerts (per profile topic), batching
   health.py            source health tracking + health alerts
-  readme.py            README table generation
+  readme.py            README table of open roles (section 11)
   log.py               structured (JSON lines) logging
   sources/
     __init__.py        adapter registry
     common.py          date / list parsing helpers shared by adapters
+    descriptions.py    reads one posting's description, for the eligibility check
     greenhouse.py  lever.py  ashby.py  smartrecruiters.py  workable.py
     workday.py         one generic adapter, configured per company
     talnet.py          one generic adapter for tal.net (Oleeo) campus boards
     custom/            one module per company with its own careers site
       amazon.py  amd.py  apple.py  google.py  jpmorgan.py  microsoft.py
-    boards/            grad boards / community repos (stage 4, only if permitted)
 state/
   sources.json         per-board health, shared
   hosts.json           the HTTP client's memory: each host's robots.txt rules (kept a
@@ -102,6 +106,8 @@ state/
 tests/
   fixtures/<source>/   recorded responses
   test_<module>.py
+GAP_REPORT.md          employers worth adding, and what each would take (stage 4's
+                       replacement)
 .github/workflows/
   poll.yml             the 15-minute cron
   ci.yml               pytest on push / PR
@@ -114,7 +120,7 @@ tests/
 (tal.net) uses the standard library's `html.parser`, so no HTML library was added. Config
 validation is hand-written in `config.py` rather than using
 pydantic: it is about 100 lines, gives clearer error messages, and is one less thing to
-explain. No headless browser is planned; if a dream-tier site cannot be read without one, it
+explain. No headless browser is planned; if a FAANG+ 🔥 site cannot be read without one, it
 is marked `unsupported` and reported to you rather than adding Playwright quietly.
 
 ## 2a. Profiles
@@ -126,7 +132,7 @@ jobs fetched from it, and nothing else:
 |---|---|
 | `companies.yaml`, `settings.yaml` | `filters.yaml`: role types, fields, locations |
 | Fetching: each company once per run | Company scope: industries and/or named companies |
-| Board health and health alerts | Dream-tier list |
+| Board health and health alerts | FAANG+ 🔥 list |
 | | ntfy topic (its own secret) |
 | | Dedupe and notified-state (its own state file) |
 
@@ -162,7 +168,7 @@ profile's filters, scope and matched jobs are readable by anyone. Only topics ar
 **A profile that cannot run** shows as a warning on the Actions run page and in the logs,
 and the run still succeeds so that the other profiles' state is committed. The run fails
 (exit 1, which triggers the existing failure alert) only when no profile got through. A
-proper health alert for a skipped profile is part of stage 6; until then there is only one
+proper health alert for a skipped profile is a later idea (section 13a); today there is one
 profile, for which "skipped" and "no profile got through" are the same thing.
 
 ## 3. Data model
@@ -181,7 +187,12 @@ class Job:
     department: str | None  # team / department / category when the source provides it
     posted_at: date | None  # as published by the source; None if not provided
     remote_hint: bool | None  # explicit remote flag from the source, when there is one
+    description: str | None  # only when the list response already carries it
 ```
+
+`description` is filled only by the adapters whose list response already includes it
+(Lever, Ashby, Amazon); it is left out of equality and `repr`. Every other posting's
+description is read separately, and only when the eligibility check needs it (section 6a).
 
 Adapters do no filtering and no interpretation. They translate one source's shape into `Job`
 and nothing else, which keeps them short and makes fixture tests exact.
@@ -216,11 +227,26 @@ in section 7).
       "missing_runs": 0,
       "status": "open",
       "closed_at": null,
-      "notified": true
+      "notified": true,
+      "eligibility": "spring week; the posting does not say otherwise"
     }
+  },
+  "eligibility_rules": "4b1e09c2d7a3f518",
+  "eligibility": {
+    "greenhouse:jane-street:7654321": {"status": "eligible", "basis": "spring week; ..."},
+    "greenhouse:jane-street:7654400": {"status": "unclear"},
+    "workday:nvidia:JR1999":          {"status": "unknown", "tries": 1}
   }
 }
 ```
+
+`eligibility` on a job is why a first year may apply, shown on its alert and in the README
+("" when the role type is not checked). The top-level `eligibility` map remembers what each
+posting's description settled, so a description is read once per posting rather than once
+per run, including for postings that were dropped. It is cleared whenever the eligibility
+rules change (`eligibility_rules` is their hash), so a rule change is applied to every open
+posting; a verdict is forgotten when its posting leaves the board. Both keys are written
+only for a profile that has eligibility rules.
 
 ### state/sources.json
 
@@ -250,8 +276,8 @@ everyone.
 `interval_polled_at` is written only for a source that has a polling interval (section 5),
 when the interval-limited part of it last ran, to the minute.
 
-Dream tier and company name are not stored with a job: the name is looked up from
-`companies.yaml` and the tier from the profile's `dream` list when needed, so changing either
+FAANG+ 🔥 and company name are not stored with a job: the name is looked up from
+`companies.yaml` and the tier from the profile's `faang_plus` list when needed, so changing either
 takes effect immediately.
 
 **Migration from version 1.** Before profiles there was a single `state/jobs.json`, and each
@@ -328,6 +354,9 @@ http:
     apply.workable.com: 5.0
   hosts_without_robots_txt:  # checked by hand: /robots.txt redirects to an ordinary page
     - careers.smartrecruiters.com
+  descriptions_per_run: 60   # most posting descriptions read in one run (section 6a)
+readme:
+  profile: abhinav           # whose open roles the README table shows (section 11)
 polling:
   disabled: []               # kinds of source switched off: not polled, not reported
   every_minutes:             # minimum minutes between polls of a source; 0 = every run
@@ -347,7 +376,7 @@ polling:
     microsoft: 0
 notify:
   batch_threshold: 5         # more than this many new jobs in one run → one summary
-  priority: {dream: 5, normal: 3}
+  priority: {faang_plus: 5, normal: 3}
 state:
   close_after_missing_runs: 2
   repost_window_days: 30     # a closed job reappearing within this window is a repost
@@ -369,15 +398,15 @@ scope:
   companies: []            # plus these company keys, whatever their industry;
                            # also how a profile opts in to an opt_in company
 
-dream:                     # dream tier for this person; everyone else is normal tier
+faang_plus:                     # FAANG+ 🔥 for this person; everyone else is normal
   - jane-street
   - anthropic
 ```
 
 The folder name is the profile key (lowercase letters, digits, hyphens). It names the state
 file and the topic variable (`abhinav` → `NTFY_TOPIC_ABHINAV`). Validation rejects an unknown
-industry or company key, a dream company outside the scope, a scope that matches nothing, and
-any unknown key (so `dreams:` cannot be silently ignored). A rejected profile is skipped; the
+industry or company key, a FAANG+ 🔥 company outside the scope, a scope that matches nothing, and
+any unknown key (so `faang:` cannot be silently ignored). A rejected profile is skipped; the
 others still run.
 
 ### config/profiles/<key>/filters.yaml
@@ -412,7 +441,7 @@ role_types:
     include: ["first year", "1st year", "first-year", "freshman", "sophomore",
               "discovery", "explore", "step intern", "underclassmen"]
   summer_internship:
-    enabled: false
+    enabled: true               # but only alerts if open to first years (eligibility)
     field_match: strict
     include: ["summer intern", "summer analyst", "internship", "intern"]
     exclude: ["internal", "international"]
@@ -443,6 +472,13 @@ locations:
   india: {match: ["india", "bengaluru", "bangalore", "hyderabad", ...],
           allow: [onsite, remote], require_company_tags: [big_tech, vc_backed, yc]}
 remote_keywords: ["remote", "work from home", "distributed", "anywhere"]
+
+eligibility:                  # section 6a
+  by_title: [first_year]                  # the title alone means first years
+  unless_restricted: [spring_week, insight]  # eligible unless the posting says later years
+  explicit_only: [summer_internship]      # alert only if the posting says first years
+  first_year: ["first year student*", "first or second year*", "any year of", ...]
+  later_years_only: ["penultimate", "final year*", "rising junior*", ...]
 ```
 
 (Lists above are abbreviated; the real file is exhaustive and commented.) The role types are
@@ -487,7 +523,7 @@ One tenant often runs separate sites for experienced hires, campus and graduates
 early-careers programmes this tracker exists for live on the campus ones, so a company lists
 every site worth polling.
 
-The list is shared by every profile and holds nothing personal. Dream tier used to be a
+The list is shared by every profile and holds nothing personal. FAANG+ 🔥 used to be a
 `tier:` field here; it now lives in each profile, and validation rejects a leftover `tier:`
 rather than ignoring it.
 
@@ -502,7 +538,7 @@ not written yet, is loaded and validated like any other and simply not polled.
 
 A company has one `ats`. Where a firm's campus roles and experienced roles live on different
 systems it gets two entries: `morgan-stanley` is the tal.net campus boards (and the one on
-the dream list), `morgan-stanley-experienced` its Workday board.
+the FAANG+ 🔥 list), `morgan-stanley-experienced` its Workday board.
 
 **Tags** drive the India location rule, so validation rejects any tag outside this set:
 
@@ -630,7 +666,7 @@ with no results section (a login page, an error, a redesign) raises instead of l
 an empty board. A tenant's root URL redirects to `/ats/login`, which is disallowed; the
 adapter never requests the root, and the client would refuse the redirect if it did.
 
-**Custom scrapers (stage 3).** What was found for each dream-tier company investigated so
+**Custom scrapers (stage 3).** What was found for each FAANG+ 🔥 company investigated so
 far (2026-11-15). A site that needs a headless browser, or whose robots.txt disallows the
 pages that list roles, is `unsupported` with the reason in its `note`.
 
@@ -651,7 +687,7 @@ pages that list roles, is `unsupported` with the reason in its `note`.
 | Tesla | Unsupported | `www.tesla.com` answers every request, robots.txt included, with an Akamai "Access Denied" (403) unless it comes from a browser |
 
 Counts are from 2026-11-15. Anthropic (Greenhouse), OpenAI (Ashby) and Palantir (Lever)
-were already covered. Of the 23 dream-tier companies, 17 are polled and 6 are not
+were already covered. Of the 23 FAANG+ 🔥 companies, 17 are polled and 6 are not
 (Goldman Sachs, Citadel, Citadel Securities, Revolut, Meta, Tesla).
 
 **Politeness, enforced in `http.py` so no adapter can skip it:**
@@ -765,7 +801,8 @@ so `"spring week"` matches `Spring-Week 2027 (Technology)` and `"intern"` does n
 programmes).
 
 1. **Role type** is decided from the **title** only. Descriptions mention "internship" and
-   "graduate" in boilerplate too often to be usable.
+   "graduate" in boilerplate too often to be usable. (They are read for one narrower
+   question, who may apply: section 6a.)
 2. **Field** is decided from title plus department.
    - `strict` (internships, placements, grad roles): at least one field must match.
    - `lenient` (spring weeks, insight, first-year): pass unless a `field_exclude` term
@@ -792,6 +829,61 @@ Programme") is how some UK firms title a spring week, so it maps to `spring_week
 spring-semester roles are usually titled "Intern, Spring 2027", which does not contain that
 phrase and maps to `summer_internship`; any that do match are in-person US roles and fail the
 location rule anyway.
+
+## 6a. First-year eligibility
+
+Who may apply is the one thing a title often does not say, and for a first-year student it
+decides whether an alert is worth anything. Internships are the clearest case: most are for
+penultimate years, so switching them on without a check would bury the few open to first
+years. The check runs after a job has passed the three filters above, and only for role
+types the profile lists under `eligibility` in its `filters.yaml`:
+
+| List | Role types (shipped) | Rule |
+|---|---|---|
+| `by_title` | first_year | Eligible on the title alone, unless the title names later years |
+| `unless_restricted` | spring_week, insight | Eligible unless the posting restricts itself to later years and never offers first years |
+| `explicit_only` | summer_internship | Alerted **only** if the title or description says first years (or any year) can apply. A posting that does not say is dropped |
+
+A role type in none of the lists (placements, graduate roles) is not checked and gets no mark.
+
+**How a posting is read.** The title first: a `first_year` phrase in it settles the matter
+with no request. Otherwise the description, split into sentences: a `first_year` phrase wins
+(unless a negation such as "not" or "unless" comes within eight words before it in the same
+sentence), then a `later_years_only` phrase ("penultimate", "final year", "rising junior").
+When both appear, first years win: "open to first and penultimate year students" is an offer.
+
+**Where the description comes from** (`sources/descriptions.py`), through the same
+`HttpClient` as everything else, so robots.txt, crawl delays and back-off all apply:
+
+1. Lever, Ashby and Amazon already include it in the list response: no request.
+2. Greenhouse: its job endpoint, `GET boards-api.greenhouse.io/v1/boards/{board}/jobs/{id}`
+   (the list is fetched without `content=true`, section 5).
+3. Everything else: the posting's own page. The schema.org `JobPosting` description that
+   most job pages embed as JSON-LD if there is one, otherwise the page's visible text.
+
+**Cost and safety.** A description is requested only for a posting that passed a profile's
+filters and whose title does not settle it, once per posting (the verdict is kept in the
+profile's state, section 3), shared between profiles within a run, and at most
+`http.descriptions_per_run` (60) in a run; the rest wait for the next run. A page robots.txt
+disallows, or that is gone (404, 410), counts as saying nothing. A read that fails for a
+passing reason is retried on the next two runs; after the third failure the posting counts
+as saying nothing. Until then it is `unknown`: not alerted, not dropped for good, and a
+board's **baseline waits** while any of its postings is unknown, for the same reason a
+baseline waits for a complete fetch (section 7).
+
+**What the alert says.** Every eligible alert carries its reason on its own line:
+`✅ First-year eligible (title: "First Year")`, `(description: "Open to first and second
+year students")`, or `(spring week; the posting does not say otherwise)`. Dropped postings
+are counted (`ineligible` in `profile_source_summary`) and each is logged once, as
+`eligibility_dropped` with its reason, in the run its verdict is reached; and
+`python -m jobtracker explain` prints the verdict for each match.
+
+**Known limits.** Keyword matching cannot read every phrasing: a posting that offers places
+to "students graduating in 2029" says nothing a keyword list can tell is first-year (the
+config shows where a graduation year can be added). A description edited after it was read
+is not read again unless the rules change. A page that renders its text with JavaScript
+and publishes no JSON-LD reads as saying nothing, which drops an `explicit_only` posting:
+the cost of the rule falls on internships, where it was meant to.
 
 ## 7. Dedupe and state reconciliation
 
@@ -825,6 +917,8 @@ For jobs in state that were **not** returned:
   hiccups and brief unpublish/republish edits.
 - A source skipped by its polling interval, or fetched only in part (section 5), counts as
   not fetched here: nothing is marked missing because of it.
+- A posting whose eligibility is still `unknown` (its description could not be read yet,
+  section 6a) is neither alerted nor counted as missing.
 - If the source returned zero jobs after previously returning some, nothing is closed and a
   health alert is raised instead (section 9). If it stays empty for `accept_empty_after_runs`
   runs (about two hours) it is accepted as genuinely empty and its jobs close normally.
@@ -859,11 +953,12 @@ rules, which covers every case with one mechanism:
   flag would fire hundreds of alerts. The open roles are still visible in the README table.
 - The hash is only stored after a **successful** fetch, so a company that errors during its
   first run or during a filter change is baselined on its next good fetch rather than
-  flooding you.
+  flooding you. Likewise it waits while any of the board's postings has an `unknown`
+  eligibility (section 6a): a baseline missing those postings would alert them later.
 
 The hash is taken over the parsed rules, so editing comments or formatting in `filters.yaml`
-does not trigger a baseline. Scope and dream list are not part of it: a scope change is
-handled board by board as above, and the dream list only changes priority.
+does not trigger a baseline. Scope and FAANG+ 🔥 list are not part of it: a scope change is
+handled board by board as above, and the FAANG+ 🔥 list only changes priority.
 
 ## 8. Notifications
 
@@ -873,15 +968,28 @@ message or request log. It also avoids header-encoding problems with "–" in ti
 
 | Field | Value |
 |---|---|
-| Title | `Company – Role` |
-| Body | location · role type · posted date (or "first seen today" if the source gives none) |
+| Title | `Company – Role`, starting `🔥 ` for a company on the profile's FAANG+ 🔥 list |
+| Body | line 1: location(s); line 2: role type · posted date (or "First seen <date>"); line 3, when checked: `✅ First-year eligible (<why>)` (section 6a) |
 | Click | apply URL |
-| Tags | from the role type's `ntfy_tags`, plus `star` if the company is on the profile's dream list |
-| Priority | dream 5, normal 3 |
+| Tags | from the role type's `ntfy_tags`, plus `fire` if the company is on the profile's FAANG+ 🔥 list |
+| Priority | FAANG+ 🔥 5, normal 3 |
 
-**Batching.** If a run has more than 5 new jobs: every dream-tier job still gets its own
-alert, and the remaining normal-tier jobs are sent as one summary (count, first few titles,
-Click → README table). At 5 or fewer, everything is individual.
+**Order.** Within a run, FAANG+ 🔥 roles are sent first, then the rest, each by company name
+and title, so the ones that matter most are at the top of the phone's list.
+
+**Batching.** If a run has more than 5 new jobs: every FAANG+ 🔥 job still gets its own
+alert, and the remaining normal jobs are sent as one summary, "N new roles". At 5 or fewer,
+everything is individual.
+
+**Summaries list every role**, one line each: `🔥 Company — Role · Location · ✅` (the 🔥
+and ✅ only where they apply; a second location shows as "+1"). That holds for the "N new
+roles" summary and for a baseline, which used to give a count per company. ntfy refuses a
+message over 4,096 bytes, so a list is cut at 3,800 bytes on a whole line and ends
+"+N more"; the click opens the README's open-roles table (`#open-roles`), which has them
+all. A summary with no roles in it is never built. Health alerts use the same cut.
+
+**Testing alerts.** `python -m jobtracker test-alert` sends one message to the health topic
+(`NTFY_HEALTH_TOPIC`), to check that alerts reach the phone without waiting for a failure.
 
 **Delivery guarantee: at-least-once, per profile.** A job is flagged `notified: true` in a
 profile's state only after ntfy returns 2xx for that profile's topic. If a send fails, the job stays `notified: false` and is retried on the next run.
@@ -984,8 +1092,8 @@ something matched or closed, one per profile, and one for the run:
 
 ```json
 {"event":"source_summary","source":"greenhouse","company":"jane-street","status":"ok","fetched":41,"duration_ms":412}
-{"event":"profile_source_summary","profile":"abhinav","source":"greenhouse:jane-street","matched":3,"new":1,"baselined":0,"reposts":0,"closed":0}
-{"event":"profile_summary","profile":"abhinav","status":"ok","companies":269,"matched":57,"new":1,"closed":0,"job_alerts_sent":1}
+{"event":"profile_source_summary","profile":"abhinav","source":"greenhouse:jane-street","matched":3,"ineligible":2,"new":1,"baselined":0,"reposts":0,"closed":0}
+{"event":"profile_summary","profile":"abhinav","status":"ok","companies":269,"matched":57,"ineligible":40,"descriptions_read":3,"new":1,"closed":0,"job_alerts_sent":1}
 {"event":"run_summary","sources_ok":336,"sources_failed":2,"sources_not_due":2,"fetched":33900,"profiles_ok":1,"profiles_not_run":0,"matched":57,"new":1,"closed":0}
 ```
 
@@ -994,12 +1102,20 @@ sources). Profile keys appear in these public logs; topics never do.
 
 ## 11. README generation
 
-Regenerated each run between marker comments, so the hand-written description at the top is
-never touched. Open matching roles grouped by region, then role type; columns: company, role,
-location, first seen, apply link. Dream-tier rows are marked with ⭐ and bold company names.
-A footer lists unsupported companies and the last successful run time (date granularity, to
-avoid a commit every run). With several profiles the table still has to come from one of
-them; which one (the owner's, most likely) is settled when the table is built in stage 5.
+Regenerated each run (`readme.py`) between two marker comments, so the hand-written
+description at the top is never touched; if the markers are missing they are added at the
+end. Open matching roles grouped by region, then role type; columns: company, role,
+location, first seen, apply link. FAANG+ 🔥 rows come first in each group, marked 🔥 with
+bold company names, and a role a first year may apply to ends with ✅. A footer gives the
+date of the last run (date granularity, to avoid a commit every run) and, collapsed, the
+companies in scope that cannot be polled, each with its reason. The heading "Open roles"
+is the `#open-roles` anchor that alert summaries link to.
+
+The README is one file and there may be several profiles, so the table shows one of them,
+named in `settings.yaml` (`readme.profile`, validated against the profile folders). It is
+written after that profile's state is saved, and only then: a dry run writes nothing, and
+a README that cannot be written is logged and costs the table one run, never the profile
+its alerts. `poll.yml` commits `README.md` together with `state/`.
 
 ## 12. Testing
 
@@ -1019,7 +1135,9 @@ them; which one (the owner's, most likely) is settled when the table is built in
   Audit"). Location rules including US-onsite rejection and the India tag gate.
 - **Dedupe/state:** new, repeat, repost under a new ID, edit, disappear → close after 2 runs,
   reopen, failed source closes nothing, empty regression, baseline, filter-change baseline.
-- **Notify:** batching threshold, dream tier always individual, failed send is retried.
+- **Notify:** batching threshold, FAANG+ 🔥 always individual and first, 🔥 in the title, a
+  summary or baseline lists every role and is cut on a whole line under ntfy's limit with
+  "+N more", no summary of nothing, the ✅ line, failed send is retried.
 - **Pipeline:** one end-to-end test with fake sources where one raises, proving isolation.
 - **Stage 3b adapters** (`test_workable.py`, `test_custom_bigtech.py`): for each of
   Amazon, Apple, Microsoft and AMD, a trimmed live response mapped field by field, an
@@ -1055,11 +1173,30 @@ them; which one (the owner's, most likely) is settled when the table is built in
 - **Profiles** (`test_profiles.py`): the same eight-run story is played on two separate fake
   installations, once with one profile alone and once with others alongside it, and that
   profile's notifications and state file must be identical byte for byte. The "others" cover
-  an identical twin, different filters/scope/dream list, profiles sorting before and after,
+  an identical twin, different filters/scope/FAANG+ 🔥 list, profiles sorting before and after,
   a profile added, removed and edited between runs, and every way of being broken (invalid
   config, no topic, a topic that rejects messages, a crash at three different points, a
   corrupt state file). Plus: each company fetched once, opt-in companies, per-profile
-  dedupe, retries and dream priority, and the version 1 state migration.
+  dedupe, retries and FAANG+ 🔥 priority, and the version 1 state migration.
+
+- **First-year eligibility** (`test_eligibility.py`, `test_pipeline.py`): titles that
+  settle it; descriptions that offer it to first years, restrict it to later years
+  (including a negated offer), or do not say; the rule per list; then in the pipeline: an
+  internship open to first years alerts with its reason and its description is read once;
+  one that does not say is dropped and never re-read; an unreadable description is retried
+  on two more runs and then given up on, or alerts if it becomes readable; a first baseline
+  waits while a description is unknown; a rule change re-reads; the per-run budget; two
+  profiles needing one description cost one request.
+- **Descriptions** (`test_descriptions.py`): HTML to text, JSON-LD preferred over visible
+  text (escaped or not), no request when the list carried it, Greenhouse's job endpoint,
+  a posting page robots.txt disallows is never requested, the Lever, Ashby and Amazon
+  fields.
+- **README** (`test_readme.py`, `test_pipeline.py`): grouping and order, 🔥 and ✅, closed
+  roles left out, unsupported companies in scope only, only the marked part replaced, an
+  unchanged table leaves the file alone, written for the chosen profile and never in a
+  dry run.
+- **Commands** (`test_cli.py`): `explain` shows the eligibility verdict; `test-alert`
+  needs the health topic, sends one message and never prints the topic.
 
 No live network anywhere in the test suite. `ci.yml` runs pytest and ruff on push and PR.
 
@@ -1070,9 +1207,9 @@ As you specified, stopping after each for review:
 0. This document.
 1. Core pipeline: Job schema, Greenhouse/Lever/Ashby, filters, dedupe/state, ntfy job and
    health alerts, cron workflow. End-to-end with ~5 companies.
-2. Research and verify `companies.yaml`; propose dream-tier picks for the non-big-tech
+2. Research and verify `companies.yaml`; propose FAANG+ 🔥 picks for the non-big-tech
    industries for you to confirm. (Built: 421 companies, 269 polled today.)
-3. SmartRecruiters, Workable, Workday, and custom scrapers for dream-tier companies,
+3. SmartRecruiters, Workable, Workday, and custom scrapers for FAANG+ 🔥 companies,
    prioritising those running UK spring weeks and insight programmes. Also tal.net (Oleeo)
    as a generic adapter, since several UK banks host their spring weeks there.
    - **Built:** robots.txt, checked redirects and crawl delay in the shared client; the
@@ -1119,23 +1256,56 @@ As you specified, stopping after each for review:
      there is no header from which to tell how close any server is to a limit. The
      back-off stops the tracker asking a refusing server every run; it cannot make the
      server answer. If the challenge stays, those seven belong in `unsupported`.
-4. Grad boards and community repos: terms and robots.txt report first, build only what is
-   allowed.
-5. README table, keep-alive, full tests and CI, hardening.
-6. Profiles for friends + setup guide. The system is already profile-ready (section 2a);
-   this stage is the onboarding around it:
-   - a setup guide: copy a profile folder, pick a topic, add the secret and the one line in
-     `poll.yml`, dry-run just that profile (`run --dry-run --profile <key>`);
-   - a starting-point `filters.yaml` to copy, and a decision on how friends submit changes
-     (pull request, or sending the file);
-   - a health alert, throttled like source alerts, when a profile is skipped (invalid config,
-     missing topic, crash), so that it is not only a warning on the run page;
-   - whether friends get any health or "your profile is broken" messages on their own topic;
-   - a check that two profiles have not been given the same topic value;
-   - a note for friends that the repo is public: their filters, scope and matched jobs are
-     visible to anyone, and the profile key should be a name they are happy to publish.
+4. Grad boards and community repos: **skipped** (decided 2026-11-16, after the terms and
+   robots.txt report). Nothing was built, and nothing will be:
+   - **Trackr:** robots.txt allows crawling, but its Terms of Use (11.3a) forbid scraping,
+     crawling or extracting content "by automated or systematic means without our written
+     permission".
+   - **Gradcracker:** robots.txt allows crawling, but its terms say "you're not allowed to
+     download, distribute or scrape any part of this website".
+   - **Bright Network:** answers even `robots.txt` with a Cloudflare bot challenge.
+   - **Higherin** (formerly RateMyPlacement) does not disallow reading its insights
+     listing, but of its 66 listings 6 were at companies already polled and none of the
+     rest were in software, ML, quant, security or data (mostly accountancy and law).
+   - **Community GitHub repos** (SimplifyJobs, vanshb03, workopia, mehek-builds,
+     NovaIMario): readable, but every spring week, insight or first-year programme in
+     them was at a company already polled.
+   For the first three the way to get their listings is their own email alerts.
+   Coverage is widened instead by adding employers directly (`GAP_REPORT.md`).
+5. Cleanup (built 2026-11-16):
+   - The README table of open roles (section 11), committed by `poll.yml` with the state.
+   - `python -m jobtracker test-alert`, a test health alert.
+   - `keepalive.yml`, re-enabling the poll weekly against GitHub's 60-day inactivity
+     rule; and `ci.yml` (tests and ruff), both listed in section 2 since stage 1 but not
+     written until now.
+   - The one-off version 1 state migration removed, and FAANG+ 🔥 renamed throughout
+     (`tier` → `faang_plus` in config, settings and code).
+   - First-year eligibility (section 6a), which let internships be switched on.
+   - The alert format (section 8): 🔥 titles, FAANG+ 🔥 first, every role listed in
+     summaries and baselines within ntfy's size limit, taps opening the README table.
+   - `GAP_REPORT.md`: the employers worth adding directly, in place of stage 4.
 
-(Your stage list did not place SmartRecruiters and Workable; I have put them in stage 3.)
+## 13a. Later ideas (not built, not planned)
+
+The tracker is intentionally minimal: its only job is to notify when a relevant posting
+appears. These have come up and are parked here so they are not lost. None is built, and
+none should be without a decision to grow the scope.
+
+- **Job detail pages:** a page per role with the full description and history.
+- **Web view:** a browsable site of open roles beyond the README table.
+- **Applied tracking:** marking roles as saved, applied, interviewing, rejected.
+- **Programme calendar:** expected opening dates per company from previous years, with
+  a reminder when a programme that opened by now last year has not appeared.
+- **ATS drift audit:** a periodic check that each company is still on the ATS and board
+  it is configured with, beyond what a failing source already shows.
+- **Anomaly detection:** flagging a board whose posting count moves sharply.
+- **Age column and archive:** how long each role has been open, and a list of closed ones.
+- **Friend profiles UX:** the system is already profile-ready (section 2a); what is not
+  built is the onboarding around it: a setup guide, a starter `filters.yaml`, a health
+  alert when a profile is skipped, a check that two profiles do not share a topic, and
+  a note that the repo, and so each profile's filters and matches, is public.
+- **Company request form:** a way for someone to ask for a company to be added.
+- **Company discovery:** finding new employers automatically rather than by hand.
 
 ## 14. Decisions (confirmed 2026-11-15)
 
@@ -1146,7 +1316,7 @@ As you specified, stopping after each for review:
 4. **Enabling a role type later** baselines the existing matches with one summary.
 5. **Repo:** public, named `early-careers-tracker`. Nothing is created or pushed without
    asking first.
-6. **Dream tier** (confirmed after stage 2; held in `config/profiles/abhinav/profile.yaml`
+6. **FAANG+ 🔥** (confirmed after stage 2; held in `config/profiles/abhinav/profile.yaml`
    since profiles were introduced). Big tech: Apple, NVIDIA, Microsoft, Google,
    Amazon, Meta, Tesla, AMD, Palantir. AI labs: Anthropic, OpenAI, Google DeepMind. Quant:
    Jane Street, Hudson River Trading, Optiver, G-Research, Citadel, Citadel Securities. Banks:
@@ -1156,14 +1326,14 @@ As you specified, stopping after each for review:
 8. **xAI is included** as a normal-tier AI lab, although its board is now named "SpaceXSI"
    and SpaceX itself stays excluded.
 9. **Profiles** (2026-11-15, before stage 3). One shared company list fetched once per run;
-   filters, scope, dream list, topic and state per profile; a profile can never change what
+   filters, scope, FAANG+ 🔥 list, topic and state per profile; a profile can never change what
    another receives (section 2a). The existing configuration became the first profile,
-   `abhinav`. Friend onboarding is stage 6.
+   `abhinav`. Friend onboarding is parked (section 13a).
 10. **robots.txt is binding** (2026-11-15, stage 3). No adapter follows a redirect into a
     disallowed path, every host's Crawl-delay is honoured, and a source that needs a
     headless browser or that robots.txt disallows is marked `unsupported` with the reason
     rather than worked around. This is why Goldman Sachs, Citadel, Citadel Securities and
-    Revolut are not polled although all four are on the dream list, and why Google is
+    Revolut are not polled although all four are on the FAANG+ 🔥 list, and why Google is
     limited to the first page of each search.
 11. **Polling intervals** (2026-11-15). Per-source, in `settings.yaml`. ATS APIs, tal.net and
     JPMorgan every run; Google and the Workday large-site searches at most every 60
@@ -1200,3 +1370,15 @@ As you specified, stopping after each for review:
     refusals in a row. Prompted by seven Workday tenants (wd12, wd103, wd108) answering
     429 from GitHub's runners from 23:00 UTC on 2026-11-15.
 20. **Requests are spaced per shared server, not per tenant** (2026-11-16), for Workday.
+21. **Grad boards and community repos are not used** (2026-11-16, stage 4 skipped). Trackr
+    and Gradcracker forbid scraping in their terms, Bright Network challenges every
+    request; their own email alerts are the way to get them. Coverage grows by adding
+    employers directly (`GAP_REPORT.md`).
+22. **Internships are on, for first years only** (2026-11-16). A posting is checked for who
+    may apply (section 6a): spring weeks and insight programmes unless restricted,
+    internships only when the posting says first years can apply, and every alert says
+    why. Descriptions are read for this alone, once per posting, through the same polite
+    client.
+23. **Alerts list every role** (2026-11-16): FAANG+ 🔥 marked and first, summaries and
+    baselines one line per role within ntfy's 4 KB, the README table one tap away.
+24. **The README table shows one profile**, named by `readme.profile` (2026-11-16).

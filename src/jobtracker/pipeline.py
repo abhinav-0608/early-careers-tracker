@@ -3,6 +3,7 @@
     fetch every watched company once  ->  record board health, send health alerts
         ->  then, for each profile separately:
               classify the jobs of the companies in its scope with its own filters
+              ->  read the descriptions its eligibility check needs (new postings only)
               ->  reconcile with its own state  ->  send its alerts  ->  save its state
 
 Two kinds of isolation hold the run together:
@@ -11,7 +12,7 @@ Two kinds of isolation hold the run together:
              produces a failed SourceResult and a health alert while every other source
              carries on.
   Profiles.  The fetched jobs are shared and read-only. Everything after that (filters,
-             scope, dream tier, dedupe state, notified flags, ntfy topic) belongs to one
+             scope, FAANG+, dedupe state, notified flags, ntfy topic) belongs to one
              profile and is handled inside that profile's own error boundary. A profile
              that is misconfigured, has no topic, or crashes is reported and left out;
              what the other profiles receive does not change.
@@ -29,10 +30,10 @@ from pathlib import Path
 
 import httpx
 
-from jobtracker import health, log
-from jobtracker.config import WORKDAY_SEARCH, Config, Profile, Settings
+from jobtracker import eligibility, health, log, readme
+from jobtracker.config import WORKDAY_SEARCH, Config, Filters, Profile, Settings
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
-from jobtracker.filters import classify
+from jobtracker.filters import Decision, classify
 from jobtracker.http import HttpClient, RateLimitedError, RobotsDisallowedError
 from jobtracker.models import (
     BACKING_OFF,
@@ -44,18 +45,18 @@ from jobtracker.models import (
     RATE_LIMITED,
     TIMEOUT,
     Company,
+    Job,
     SourceResult,
 )
 from jobtracker.notify import Notifier, baseline_notification, plan_job_notifications
-from jobtracker.sources import adapter_for, workday
+from jobtracker.sources import adapter_for, descriptions, workday
 from jobtracker.state import (
-    LEGACY_OWNER,
     OPEN,
+    ProfileState,
     SourceState,
     StoredJob,
     load_profile_state,
     load_sources,
-    migrate_legacy,
     save_profile_state,
     save_sources,
 )
@@ -63,6 +64,10 @@ from jobtracker.state import (
 # A run that starts a little early must not push an hourly source back a whole run, so
 # an interval counts as elapsed this long before it strictly has.
 POLL_TOLERANCE = timedelta(minutes=2)
+
+# A description that cannot be read is tried again on this many runs before the posting
+# is treated as not saying who may apply.
+DESCRIPTION_TRIES = 3
 
 # Why a profile took no part in a run (ProfileReport.status), besides OK and ERROR.
 INVALID = "invalid"  # its config files failed validation
@@ -74,6 +79,7 @@ class SourceCounts:
     """What one profile made of one board in this run."""
 
     matched: int = 0
+    ineligible: int = 0  # passed the filters, but not open (or not clearly) to first years
     new: int = 0
     baselined: int = 0
     reposts: int = 0
@@ -90,6 +96,9 @@ class ProfileReport:
     job_alerts_sent: int = 0
     job_alerts_failed: int = 0
     baseline_sent: bool = False
+    descriptions_read: int = 0  # requests made for the eligibility check
+    # (company key, title, why) for every posting the eligibility check dropped.
+    dropped: list[tuple[str, str, str]] = field(default_factory=list)
 
     def total(self, attribute: str) -> int:
         return sum(getattr(counts, attribute) for counts in self.sources.values())
@@ -134,11 +143,10 @@ def run(
     only: set[str] | None = None,
     only_profiles: set[str] | None = None,
     save: bool = True,
+    readme_path: Path | str | None = None,
 ) -> RunReport:
     settings = config.settings
     report = RunReport()
-    if save and migrate_legacy(state_dir):
-        log.event("state_migrated", profile=LEGACY_OWNER)
 
     # --- who takes part ----------------------------------------------------------------
     for key, error in config.profile_errors.items():
@@ -211,10 +219,21 @@ def run(
             report.health_alert_sent = True
 
     # --- each profile, on its own ------------------------------------------------------
+    read: dict[str, str | None] = {}  # descriptions read this run, shared by the profiles
     for profile in active:
         try:
             profile_report = run_profile(
-                profile, config, report.results, pollable, state_dir, notifier, now, save
+                profile,
+                config,
+                report.results,
+                pollable,
+                state_dir,
+                notifier,
+                now,
+                save,
+                http=http,
+                read=read,
+                readme_path=readme_path,
             )
         except Exception as exc:  # noqa: BLE001 - one profile must never stop another
             # Its state file was not written, so nothing half-done is kept: the next run
@@ -242,17 +261,61 @@ def run_profile(
     notifier: Notifier,
     now: datetime,
     save: bool,
+    http: HttpClient | None = None,
+    read: dict[str, str | None] | None = None,
+    readme_path: Path | str | None = None,
 ) -> ProfileReport:
     """Evaluate one profile against this run's fetched jobs, alert it, save its state.
 
     Reads the shared results and writes only this profile's state, report and topic.
+    `read` holds the descriptions already read in this run, so two profiles that need
+    the same one cost one request.
     """
     settings, filters = config.settings, profile.filters
     state = load_profile_state(state_dir, profile.key)
     in_scope = {company.source_key for company in pollable if profile.watches(company)}
     report = ProfileReport(profile=profile.key, companies=len(in_scope))
+    read = {} if read is None else read
 
-    # --- classify and reconcile --------------------------------------------------------
+    # --- classify ----------------------------------------------------------------------
+    # Title, field and location first, for every board. Only what passes goes on.
+    matches: dict[str, list[tuple[Job, Decision]]] = {}
+    for result in results:
+        company = result.company
+        # A failed fetch, or a source its polling interval skipped this run, is left
+        # exactly as it was: nothing new, nothing counted as missing, nothing closed.
+        if result.status != OK or not profile.watches(company):
+            continue
+        matches[company.key] = [
+            (job, decision)
+            for job in result.jobs
+            if (decision := classify(job, company, filters)).matched
+        ]
+
+    # --- who may apply -----------------------------------------------------------------
+    # Verdicts made under other rules are forgotten, so a change to the eligibility
+    # keywords is applied to every open posting, not just to new ones.
+    if state.eligibility_rules != filters.eligibility.hash:
+        state.eligibility = {}
+        state.eligibility_rules = filters.eligibility.hash
+    # Postings already settled before this run: their drops were logged when they were.
+    settled_before = {
+        key
+        for key, value in state.eligibility.items()
+        if value.get("status") != eligibility.UNKNOWN
+    }
+    wanted = [
+        (result.company, job)
+        for result in results
+        for job, decision in matches.get(result.company.key, ())
+        if _needs_reading(job, decision, state, read, filters)
+    ]
+    if wanted and http is not None:
+        before = len(read)
+        read_descriptions(wanted, http, settings, read)
+        report.descriptions_read = len(read) - before
+
+    # --- reconcile ---------------------------------------------------------------------
     reconciler = Reconciler(state, now, settings)
     baselined_jobs: list[StoredJob] = []
     filters_changed = False
@@ -260,35 +323,48 @@ def run_profile(
 
     for result in results:
         company = result.company
-        # A failed fetch, or a source its polling interval skipped this run, is left
-        # exactly as it was: nothing new, nothing counted as missing, nothing closed.
-        if result.status != OK or not profile.watches(company):
+        if company.key not in matches:
             continue
+        verdicts = [
+            (job, decision, _verdict(job, decision, state, read, filters))
+            for job, decision in matches[company.key]
+        ]
 
         # A board is baselined (recorded without individual alerts) the first time this
         # profile sees it and again whenever the profile's filter rules have changed since.
         previous_hash = state.baselines.get(company.source_key)
         baseline = previous_hash != filters.hash
-        if result.partial:
-            # Part of the board was not read this run. A baseline taken from it would be
-            # incomplete, and the rest would then arrive as a flood of alerts, so the
-            # baseline waits for the next complete fetch.
-            if baseline:
-                continue
-        else:
+        # Part of the board was not read this run, or a description on it could not be
+        # read yet. A baseline taken now would be incomplete, and the rest would then
+        # arrive as a flood of alerts, so the baseline waits for the next complete run.
+        undecided = any(verdict.status == eligibility.UNKNOWN for _, _, verdict in verdicts)
+        if baseline and (result.partial or undecided):
+            continue
+        if not result.partial:
             # Only a complete fetch can show that a job has gone.
             fetched.add(company.source_key)
+            _forget_verdicts(state, company, {job.key for job, _, _ in verdicts})
         counts = report.sources.setdefault(company.source_key, SourceCounts())
         if baseline:
             filters_changed = filters_changed or previous_hash is not None
             state.baselines[company.source_key] = filters.hash
 
-        for job in result.jobs:
-            decision = classify(job, company, filters)
-            if not decision.matched:
+        for job, decision, verdict in verdicts:
+            if verdict.status in (*eligibility.DROPPED, eligibility.UNKNOWN):
+                # Not for first years, or not known yet (tried again next run).
+                counts.ineligible += 1
+                report.dropped.append((company.key, job.title, verdict.reason))
+                if job.key not in settled_before:
+                    log.event(
+                        "eligibility_dropped",
+                        profile=profile.key,
+                        company=company.key,
+                        title=job.title,
+                        why=verdict.reason,
+                    )
                 continue
             counts.matched += 1
-            outcome = reconciler.observe(job, decision, baseline)
+            outcome = reconciler.observe(job, decision, baseline, verdict.basis)
             if outcome == NEW:
                 counts.new += 1
             elif outcome == REPOST:
@@ -307,8 +383,8 @@ def run_profile(
     # One summary for everything baselined this run. A baseline that found nothing (a
     # new company with no matching roles, a filter change that surfaces nothing) sends
     # no notification: "0 matching roles" is not worth a buzz.
-    if baselined_jobs:
-        notification = baseline_notification(baselined_jobs, config, filters_changed)
+    notification = baseline_notification(baselined_jobs, profile, config, filters_changed)
+    if notification:
         report.baseline_sent = notifier.send_job(profile.key, notification)
 
     # Everything not yet announced: this run's new jobs plus any whose alert failed to
@@ -324,7 +400,120 @@ def run_profile(
 
     if save:
         save_profile_state(state, state_dir, profile.key)
+        if readme_path and settings.readme_profile == profile.key:
+            # The state is already saved; a README that cannot be written costs the
+            # table one run, not the profile its alerts.
+            try:
+                readme.update(readme_path, readme.open_roles(state, profile, config, now.date()))
+            except Exception as exc:  # noqa: BLE001
+                log.warning("readme_failed", profile=profile.key, error=_describe_error(exc))
     return report
+
+
+def _needs_reading(
+    job: Job, decision: Decision, state: ProfileState, read: dict, filters: Filters
+) -> bool:
+    """Must this posting's description be requested before its eligibility is known?"""
+    role = filters.role_type(decision.role_type or "")
+    if role is None or not eligibility.needs_description(role, job.title, filters):
+        return False  # the title settles it, or this role type is not checked
+    if job.description is not None or job.key in read:
+        return False  # already in hand
+    settled = state.eligibility.get(job.key, {}).get("status")
+    return settled in (None, eligibility.UNKNOWN)
+
+
+def _verdict(
+    job: Job, decision: Decision, state: ProfileState, read: dict, filters: Filters
+) -> eligibility.Eligibility:
+    """Decide one posting's eligibility, remembering what a description settled."""
+    role = filters.role_type(decision.role_type or "")
+    if role is None:
+        return eligibility.Eligibility(eligibility.NOT_APPLICABLE)
+    if not eligibility.needs_description(role, job.title, filters):
+        return eligibility.assess(role, job.title, None, filters)
+
+    remembered = state.eligibility.get(job.key, {})
+    if remembered.get("status") == eligibility.ELIGIBLE:
+        return eligibility.Eligibility(
+            eligibility.ELIGIBLE, eligibility.REMEMBERED, remembered.get("basis", "")
+        )
+    if remembered.get("status") in eligibility.DROPPED:
+        return eligibility.Eligibility(remembered["status"], evidence=remembered.get("why", ""))
+
+    text = job.description if job.description is not None else read.get(job.key)
+    verdict = eligibility.assess(
+        role, job.title, None if text is None else descriptions.plain_text(text), filters
+    )
+    if verdict.status == eligibility.UNKNOWN:
+        tries = remembered.get("tries", 0) + (1 if job.key in read else 0)
+        if tries < DESCRIPTION_TRIES:
+            state.eligibility[job.key] = {"status": eligibility.UNKNOWN, "tries": tries}
+            return verdict
+        # It cannot be read. Without it nothing says first years may apply.
+        verdict = eligibility.Eligibility(eligibility.UNCLEAR)
+    record = {"status": verdict.status}
+    if verdict.eligible:
+        record["basis"] = verdict.basis
+    elif verdict.evidence:
+        record["why"] = verdict.evidence
+    state.eligibility[job.key] = record
+    return verdict
+
+
+def _forget_verdicts(state: ProfileState, company: Company, still_matching: set[str]) -> None:
+    """Drop the remembered verdicts of postings that have left this board."""
+    prefix = company.source_key + ":"
+    for key in [key for key in state.eligibility if key.startswith(prefix)]:
+        if key not in still_matching:
+            del state.eligibility[key]
+
+
+def read_descriptions(
+    wanted: list[tuple[Company, Job]],
+    http: HttpClient,
+    settings: Settings,
+    read: dict[str, str | None],
+) -> None:
+    """Read each posting's description into `read`, one queue per host.
+
+    A posting that cannot be read is recorded as None and tried again on a later run;
+    one whose page is gone, or may not be read, as "" (there is nothing to read). At
+    most `descriptions_per_run` are requested in a run; the rest wait for the next.
+    """
+    # The budget is per run, and `read` already holds what earlier profiles read in it.
+    budget = max(0, settings.descriptions_per_run - len(read))
+    queues: dict[str, list[tuple[Company, Job]]] = {}
+    for company, job in wanted[:budget]:
+        queues.setdefault(company.host_group, []).append((company, job))
+
+    def work(queue: list[tuple[Company, Job]]) -> list[tuple[str, str | None]]:
+        results: list[tuple[str, str | None]] = []
+        for company, job in queue:
+            try:
+                text: str | None = descriptions.describe(company, job, http)
+            except RobotsDisallowedError:
+                text = ""
+            except httpx.HTTPStatusError as exc:
+                text = "" if exc.response.status_code in (404, 410) else None
+            except Exception as exc:  # noqa: BLE001 - one posting must never fail the run
+                text = None
+                log.warning("description_failed", job=job.key, error=_describe_error(exc))
+            results.append((job.key, text))
+        return results
+
+    requested = unreadable = 0
+    with ThreadPoolExecutor(max_workers=settings.max_workers) as pool:
+        for results in pool.map(work, sorted(queues.values(), key=len, reverse=True)):
+            read.update(results)
+            requested += len(results)
+            unreadable += sum(1 for _, text in results if text is None)
+    log.event(
+        "descriptions_read",
+        requested=requested,
+        unreadable=unreadable,
+        waiting=len(wanted) - requested,
+    )
 
 
 def interval_elapsed(source: SourceState | None, minutes: int, now: datetime) -> bool:
@@ -437,6 +626,7 @@ def log_report(report: RunReport) -> None:
                     profile=profile.profile,
                     source=source_key,
                     matched=counts.matched,
+                    ineligible=counts.ineligible,
                     new=counts.new,
                     baselined=counts.baselined,
                     reposts=counts.reposts,
@@ -449,6 +639,8 @@ def log_report(report: RunReport) -> None:
             error=profile.error,
             companies=profile.companies,
             matched=profile.total("matched"),
+            ineligible=profile.total("ineligible"),
+            descriptions_read=profile.descriptions_read,
             new=profile.total("new"),
             baselined=profile.total("baselined"),
             reposts=profile.total("reposts"),
