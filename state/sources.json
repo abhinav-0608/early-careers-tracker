@@ -2347,12 +2347,12 @@
       "last_alert_at": null
     },
     "workday:expedia": {
-      "alerted": false,
-      "consecutive_failures": 1,
+      "alerted": true,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:45:40+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-16T00:01:06+00:00"
     },
     "workday:f5": {
       "alerted": false,
