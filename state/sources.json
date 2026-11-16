@@ -2272,6 +2272,60 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "workable:capula": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:38:00+00:00",
+      "last_alert_at": null
+    },
+    "workable:hugging-face": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:38:00+00:00",
+      "last_alert_at": null
+    },
+    "workable:portswigger": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:38:00+00:00",
+      "last_alert_at": null
+    },
+    "workable:starling-bank": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:38:00+00:00",
+      "last_alert_at": null
+    },
+    "workable:trail-of-bits": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:38:00+00:00",
+      "last_alert_at": null
+    },
+    "workable:trexquant": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:38:00+00:00",
+      "last_alert_at": null
+    },
     "workday:abrdn": {
       "alerted": false,
       "consecutive_failures": 0,
