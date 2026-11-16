@@ -2348,9 +2348,9 @@
     },
     "workday:expedia": {
       "alerted": false,
-      "consecutive_failures": 0,
+      "consecutive_failures": 1,
       "empty_runs": 0,
-      "failing_since": null,
+      "failing_since": "2026-11-16T02:01:04+00:00",
       "has_returned_jobs": true,
       "last_alert_at": null
     },
