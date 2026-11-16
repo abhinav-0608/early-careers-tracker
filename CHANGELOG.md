@@ -5,6 +5,12 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Merged the apply buttons** (e89011f): reviewer APPROVE, then APPROVE again on the
+  follow-up (a word ending exactly at the label cut is kept; clearer docs); 600 tests,
+  ruff clean; dry run, on a state copy with HSBC's baseline removed so that a summary was
+  built, sent one HSBC baseline with 3 buttons and its tap on the first role, no errors,
+  2 min 54 s; manual run 43981847741 succeeded in 3 min 1 s with no notifications (nothing
+  new), no health alert, and no HSBC posting link in its log.
 - **Apply buttons on summaries** (owner's request, DESIGN.md decision 33): a summary of 3
   roles or fewer gets an ntfy "view" button per role and its tap opens the first role; a
   longer one keeps the README tap and gives buttons to its FAANG+ 🔥 roles (listed
