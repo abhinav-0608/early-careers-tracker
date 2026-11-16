@@ -107,6 +107,7 @@ PLATFORMS = {
     "workable": "Workable",
     "workday": "Workday",
     "talnet": "tal.net",
+    "eightfold": "Eightfold",
 }
 
 

@@ -39,8 +39,18 @@ WORKDAY = "workday"
 # runs on sites too large to read in full.
 WORKDAY_SEARCH = "workday_search"
 TALNET = "talnet"
+EIGHTFOLD = "eightfold"
 UNSUPPORTED = "unsupported"
-BOARD_ATS = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "custom", TALNET}
+BOARD_ATS = {
+    "greenhouse",
+    "lever",
+    "ashby",
+    "smartrecruiters",
+    "workable",
+    "custom",
+    TALNET,
+    EIGHTFOLD,
+}
 KNOWN_ATS = BOARD_ATS | {WORKDAY, UNSUPPORTED}
 
 # A profile's key is its folder name. It ends up in a file name and in the name of an
@@ -652,6 +662,9 @@ def load_companies(path: Path) -> tuple[Company, ...]:
         if ats == WORKDAY:
             for part in ("tenant", "host"):
                 _get(raw, part, str, f"{where} (workday)")
+        if ats == EIGHTFOLD:
+            # https://{host}/api/pcsx/search?domain={board}
+            _get(raw, "host", str, f"{where} (eightfold)")
         if ats == TALNET:
             # https://{tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/
             _get(raw, "tenant", str, f"{where} (talnet)")

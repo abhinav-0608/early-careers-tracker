@@ -614,7 +614,8 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Custom: Google | `GET www.google.com/about/careers/applications/jobs/results` | JSON embedded in the page; first page of each search only (robots.txt) |
 | Custom: Amazon | `GET www.amazon.jobs/en/search.json` | 100 per page, each role with its full description (about 1 MB a page); narrowed to one category and three countries |
 | Custom: Apple | `GET jobs.apple.com/en-gb/search` | JSON embedded in the page, 20 per page (about 320 KB a page); narrowed to one team |
-| Custom: Microsoft | `GET apply.careers.microsoft.com/api/pcsx/search` | Eightfold; 10 per page; narrowed to one experience level |
+| Eightfold | `GET {host}/api/pcsx/search?domain={board}` | 10 per page; narrowed to the "Intern" experience level. `host` and `board` (the site's domain) per company. Qualcomm; polled hourly |
+| Custom: Microsoft | `GET apply.careers.microsoft.com/api/pcsx/search` | Eightfold on Microsoft's own hostname, read by the Eightfold adapter; kept a custom source so its job keys are unchanged |
 | Custom: AMD | `GET careers.amd.com/api/jobs` | iCIMS Attract; 100 per page with full descriptions; one category and three keyword searches. `Crawl-delay: 5` |
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
 
@@ -1490,3 +1491,10 @@ none should be without a decision to grow the scope.
     words are kept in code, not in `filters.yaml`, so adding them did not change the
     rules hash and re-read every description; only verdicts already settled by a
     description are read once more (section 6a).
+29. **A generic Eightfold adapter** (2026-11-16, owner's decision on the gap report):
+    `ats: eightfold` with `host` and `board` (the domain), the intern-level search
+    Microsoft's adapter already used, which Microsoft now shares. Qualcomm is polled with
+    it. Netflix and Millennium answer the search API with 403 and stay unsupported (a
+    refusal is not worked around); American Express's careers host could not be found
+    (aexp.eightfold.ai answers 404) and stays unsupported. Eightfold's acceptable use
+    policy has no clause on automated access.

@@ -185,12 +185,12 @@ def test_every_polled_company_has_what_its_adapter_needs(config):
     polled = [company for company in config.companies if adapter_for(company)]
     assert {company.ats for company in polled} == {
         "greenhouse", "lever", "ashby", "smartrecruiters", "workable", "workday", "talnet",
-        "custom",
+        "custom", "eightfold",
     }  # fmt: skip
     for company in polled:
         if company.ats in ("workday", "talnet"):
             assert company.tenant and company.sites, company.key
-        if company.ats == "workday":
+        if company.ats in ("workday", "eightfold"):
             assert company.host, company.key
         else:
             assert company.board, company.key
@@ -551,3 +551,12 @@ def test_the_description_budget_for_changed_rules_is_at_least_the_usual_one(tmp_
     )
     with pytest.raises(ConfigError, match="at least descriptions_per_run"):
         load_config(config_dir)
+
+
+def test_an_eightfold_company_needs_its_host_and_domain(tmp_path):
+    entry = "- {key: acme, name: Acme, ats: eightfold, board: acme.com}"
+    with pytest.raises(ConfigError, match="host"):
+        load_config(_companies_file(tmp_path / "a", entry))
+    entry = "- {key: acme, name: Acme, ats: eightfold, host: acme.eightfold.ai}"
+    with pytest.raises(ConfigError, match="board is required"):
+        load_config(_companies_file(tmp_path / "b", entry))

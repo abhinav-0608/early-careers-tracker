@@ -18,6 +18,7 @@ from jobtracker.models import Company, Job
 from jobtracker.sources import (
     ashby,
     custom,
+    eightfold,
     greenhouse,
     lever,
     smartrecruiters,
@@ -36,6 +37,7 @@ ADAPTERS: dict[str, Adapter] = {
     talnet.NAME: talnet.fetch,
     smartrecruiters.NAME: smartrecruiters.fetch,
     workable.NAME: workable.fetch,
+    eightfold.NAME: eightfold.fetch,
 }
 
 

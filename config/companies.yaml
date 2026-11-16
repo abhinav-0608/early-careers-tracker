@@ -141,7 +141,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://explore.jobs.netflix.net/careers
-  note: "Eightfold careers site (netflix.eightfold.ai); its Workday site is disallowed by robots.txt"
+  note: "Eightfold careers site (netflix.eightfold.ai) refuses its search API with 403 (2026-11-16); its Workday site is disallowed by robots.txt"
 
 - key: adobe
   name: Adobe
@@ -214,9 +214,12 @@
   industry: big_tech
   tags: [big_tech]
   regions: [uk, us, india]
-  ats: unsupported
+  ats: eightfold
+  host: qualcomm.eightfold.ai
+  board: qualcomm.com
   careers_url: https://careers.qualcomm.com
-  note: "Eightfold careers site (qualcomm.eightfold.ai); its Workday site is empty"
+  note: "Intern experience level only, worldwide (Eightfold search API, which its robots.txt allows); its Workday site is empty"
+  verified: 2026-11-16
 
 - key: arm
   name: Arm
@@ -1421,7 +1424,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://www.mlp.com/careers
-  note: "Eightfold careers site (mlp.eightfold.ai); its Workday sites are empty"
+  note: "Eightfold careers site (mlp.eightfold.ai) refuses its search API with 403 (2026-11-16); its Workday sites are empty"
 
 - key: point72
   name: Point72
@@ -2680,7 +2683,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://www.americanexpress.com/en-us/careers/
-  note: "Eightfold (aexp.eightfold.ai)"
+  note: "Said to use Eightfold, but aexp.eightfold.ai is not its careers host (404, 2026-11-16) and the real one is unknown"
 
 - key: affirm
   name: Affirm

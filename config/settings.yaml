@@ -59,6 +59,7 @@ polling:
     apple: 60             # about 7 pages of 320 KB
     amd: 60               # four requests, five seconds apart (the site's Crawl-delay)
     microsoft: 0          # five small requests (10 roles each); raise it if that grows
+    eightfold: 60         # intern-level search, 10 roles a request (Qualcomm: about 12)
 
 # Kinds of source taken off polling because their servers refuse the tracker. Nothing is
 # asked of them for probe_after_hours; then one request to probe_company every
