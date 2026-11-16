@@ -1088,8 +1088,16 @@ and ✅ only where they apply, the ✅ with its preference note when there is on
 6a; a second location shows as "+1"). That holds for the "N new
 roles" summary and for a baseline, which used to give a count per company. ntfy refuses a
 message over 4,096 bytes, so a list is cut at 3,800 bytes on a whole line and ends
-"+N more"; the click opens the README's open-roles table (`#open-roles`), which has them
-all. A summary with no roles in it is never built. Health alerts use the same cut.
+"+N more". A summary with no roles in it is never built. Health alerts use the same cut.
+
+**Buttons on summaries** (decision 33). ntfy shows up to three "view" buttons on a
+notification, each opening a link. A summary (a baseline or "N new roles") of **3 roles or
+fewer** gives each role a button, `Apply: <Company> – <title>` with the title cut to 32
+characters on a word, and its tap opens the first role's posting. A summary of **more than
+3** keeps the tap on the README's open-roles table (`#open-roles`), which has them all, and
+gives buttons only to its FAANG+ 🔥 roles, which it lists first, up to three. A private
+company's roles (section 2a) get buttons too, since ntfy is the owner's own channel; like
+the tap, buttons are never written to a log on a real send (a dry run logs them locally).
 
 **Testing alerts.** `python -m jobtracker test-alert` sends one message to the health topic
 (`NTFY_HEALTH_TOPIC`), to check that alerts reach the phone without waiting for a failure.
@@ -1554,3 +1562,10 @@ none should be without a decision to grow the scope.
     (`group.bnpparibas`: Akamai "Access Denied" for robots.txt) refuse the tracker and
     stay unsupported, and UBS was skipped by the owner (a browser-like session handshake
     and terms limited to personal viewing); all three are on the manual email alert list.
+33. **Summaries carry apply buttons** (2026-11-16, owner's request). A summary is usually
+    a baseline of a few roles, and opening the README to find each link was a detour. Up
+    to 3 roles: a button each, and the tap opens the first. More than 3: the tap stays on
+    the README, which lists them all, and the three buttons ntfy allows go to the FAANG+
+    🔥 roles, which matter most. Normal roles beyond the first three of a long summary have
+    no button rather than an arbitrary few. The URLs are the ones the tracker already
+    sends as an alert's click; nothing new is fetched.

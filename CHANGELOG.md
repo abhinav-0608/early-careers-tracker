@@ -5,6 +5,11 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Apply buttons on summaries** (owner's request, DESIGN.md decision 33): a summary of 3
+  roles or fewer gets an ntfy "view" button per role and its tap opens the first role; a
+  longer one keeps the README tap and gives buttons to its FAANG+ 🔥 roles (listed
+  first), up to three. Private companies (HSBC) get buttons too; buttons are never
+  logged on a real send.
 - **Merged HSBC, polled privately** (87c6896): reviewer BLOCK (terms; parser), then
   APPROVE on the private mode and the follow-up fixes; 595 tests, ruff clean; dry run
   one baseline summary of 3 HSBC insight programmes, no errors, 2 min 55 s; manual run

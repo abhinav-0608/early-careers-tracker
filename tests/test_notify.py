@@ -8,6 +8,7 @@ from conftest import NOW, make_company, make_profile
 from jobtracker.http import HttpClient
 from jobtracker.notify import (
     MAX_MESSAGE_BYTES,
+    Action,
     Notification,
     Notifier,
     baseline_notification,
@@ -181,7 +182,13 @@ def test_baseline_summary_lists_each_role_faang_plus_first(config, me):
         "Normal Co — Spring Week 1 · London, UK",
         "Normal Co — Spring Week 2 · London, UK",
     ]
-    assert notification.click.endswith("#open-roles")
+    # Three roles or fewer: a button each, and the tap opens the first (FAANG+ first).
+    assert notification.click == "https://example.com/fireco/3"
+    assert notification.actions == (
+        Action("Apply: Fire Co – Spring Week 3", "https://example.com/fireco/3"),
+        Action("Apply: Normal Co – Spring Week 1", "https://example.com/normalco/1"),
+        Action("Apply: Normal Co – Spring Week 2", "https://example.com/normalco/2"),
+    )
     assert notification.job_keys == ()
 
 
@@ -312,3 +319,76 @@ def test_a_summary_line_carries_the_preference_note(config, me):
     note = "All years welcome · prefers penultimate/final"
     job = stored_job(1, eligibility='description: "x"', eligibility_note=note)
     assert role_line(job, me, with_companies(config)).endswith(f"· ✅ {note}")
+
+
+# --- buttons on summaries --------------------------------------------------------------
+
+
+def test_a_longer_summary_opens_the_readme_and_gives_faang_plus_roles_buttons(config, me):
+    config = with_companies(config)
+    jobs = [stored_job(n) for n in range(1, 5)] + [
+        stored_job(n, company="fireco") for n in range(5, 10)
+    ]
+    for notification in (
+        baseline_notification(jobs, me, config, filters_changed=False),
+        summary_notification(jobs, me, config),
+    ):
+        assert notification.click.endswith("#open-roles")
+        assert notification.message.splitlines()[0].startswith("🔥 Fire Co")
+        assert [action.url for action in notification.actions] == [
+            "https://example.com/fireco/5",
+            "https://example.com/fireco/6",
+            "https://example.com/fireco/7",
+        ]
+
+
+def test_a_longer_summary_without_faang_plus_roles_has_no_buttons(config, me):
+    jobs = [stored_job(n) for n in range(1, 7)]
+    notification = summary_notification(jobs, me, with_companies(config))
+    assert notification.click.endswith("#open-roles")
+    assert notification.actions == ()
+
+
+def test_a_short_summary_gives_every_role_a_button_and_opens_the_first(config, me):
+    jobs = [stored_job(2), stored_job(1)]
+    notification = summary_notification(jobs, me, with_companies(config))
+    assert notification.click == "https://example.com/normalco/1"
+    assert [action.label for action in notification.actions] == [
+        "Apply: Normal Co – Spring Week 1",
+        "Apply: Normal Co – Spring Week 2",
+    ]
+
+
+def test_a_long_title_is_cut_on_a_word_in_its_button(config, me):
+    title = "Insight into Technology Apprenticeships at Morgan Stanley (Glasgow)"
+    notification = baseline_notification(
+        [stored_job(1, title=title)], me, with_companies(config), filters_changed=False
+    )
+    (action,) = notification.actions
+    assert action.label == "Apply: Normal Co – Insight into Technology…"
+    assert notification.message.startswith(f"Normal Co — {title}")  # the list is whole
+
+
+def test_buttons_are_sent_as_ntfy_view_actions_but_never_logged(settings, caplog):
+    caplog.set_level("INFO")
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, json={})
+
+    with_buttons = replace(
+        NOTIFICATION,
+        actions=(Action("Apply: Acme – Spring Week", "https://careers.example/job/77"),),
+    )
+    assert make_notifier(settings, handler).send_job("me", with_buttons) is True
+    (request,) = requests
+    assert json.loads(request.content)["actions"] == [
+        {
+            "action": "view",
+            "label": "Apply: Acme – Spring Week",
+            "url": "https://careers.example/job/77",
+        }
+    ]
+    assert "notification_sent" in caplog.text
+    assert "careers.example/job/77" not in caplog.text

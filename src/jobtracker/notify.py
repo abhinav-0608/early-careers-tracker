@@ -28,6 +28,16 @@ MAX_MESSAGE_BYTES = 3800
 OPEN_ROLES_ANCHOR = "#open-roles"  # the README table that a summary opens when tapped
 FIRE = "🔥"
 TICK = "✅"
+MAX_ACTIONS = 3  # ntfy shows at most three buttons on a notification
+BUTTON_TITLE_CHARS = 32  # a role title is cut to this in a button label
+
+
+@dataclass(frozen=True)
+class Action:
+    """An ntfy "view" button: tapping it opens `url`."""
+
+    label: str
+    url: str
 
 
 @dataclass(frozen=True)
@@ -39,6 +49,9 @@ class Notification:
     click: str | None = None
     job_keys: tuple[str, ...] = ()  # the jobs this notification covers
     private: bool = False  # names a private company's role: its title is not logged
+    # Buttons, at most MAX_ACTIONS. Like the click, never logged on a real send: the
+    # Actions log is public, and a private company's posting links must not reach it.
+    actions: tuple[Action, ...] = ()
 
 
 class Notifier:
@@ -83,6 +96,7 @@ class Notifier:
                 priority=notification.priority,
                 tags=list(notification.tags),
                 click=notification.click,
+                actions=[[action.label, action.url] for action in notification.actions],
             )
             return True
 
@@ -99,6 +113,11 @@ class Notifier:
         }
         if notification.click:
             payload["click"] = notification.click
+        if notification.actions:
+            payload["actions"] = [
+                {"action": "view", "label": action.label, "url": action.url}
+                for action in notification.actions[:MAX_ACTIONS]
+            ]
         try:
             self._http.post_json(self._server, payload, check_robots=False)
         except httpx.HTTPError as exc:
@@ -212,13 +231,15 @@ def summary_notification(
     if not jobs:
         return None
     jobs = in_order(jobs, profile, config)
+    click, actions = summary_links(jobs, profile, config)
     return Notification(
         title=f"{len(jobs)} new {'role' if len(jobs) == 1 else 'roles'}",
         message=fit_lines([role_line(job, profile, config) for job in jobs]),
         priority=config.settings.priority_normal,
         tags=("bell",),
-        click=config.settings.repo_url + OPEN_ROLES_ANCHOR,
+        click=click,
         job_keys=tuple(job.key for job in jobs),
+        actions=actions,
     )
 
 
@@ -238,13 +259,46 @@ def baseline_notification(
         title = f"Baseline: {len(jobs)} {noun} newly match your filters"
     else:
         title = f"Baseline: {len(jobs)} matching {noun} currently open"
+    click, actions = summary_links(jobs, profile, config)
     return Notification(
         title=title,
         message=fit_lines([role_line(job, profile, config) for job in jobs]),
         priority=config.settings.priority_normal,
         tags=("clipboard",),
-        click=config.settings.repo_url + OPEN_ROLES_ANCHOR,
+        click=click,
+        actions=actions,
     )
+
+
+def summary_links(
+    jobs: list[StoredJob], profile: Profile, config: Config
+) -> tuple[str, tuple[Action, ...]]:
+    """Where a summary's tap goes, and its buttons. `jobs` are already in_order.
+
+    Up to MAX_ACTIONS roles: a button for each, and the tap opens the first. More: the
+    tap opens the README's table, and only FAANG+ roles (first in the order) get
+    buttons, up to MAX_ACTIONS. ntfy is private to the profile, so a private company's
+    roles get buttons too (privacy.py); the buttons are never logged.
+    """
+    linked = [job for job in jobs if job.url]  # a private record not refreshed has none
+    if len(jobs) > MAX_ACTIONS:
+        linked = [job for job in linked if profile.is_faang_plus(job.company)]
+    actions = tuple(
+        Action(label=_apply_label(job, config), url=job.url) for job in linked[:MAX_ACTIONS]
+    )
+    readme = config.settings.repo_url + OPEN_ROLES_ANCHOR
+    if len(jobs) <= MAX_ACTIONS and actions:
+        return actions[0].url, actions
+    return readme, actions
+
+
+def _apply_label(job: StoredJob, config: Config) -> str:
+    """ "Apply: Morgan Stanley – 2027 Technology Spring…": short enough for a button."""
+    title = job.title
+    if len(title) > BUTTON_TITLE_CHARS:
+        cut = title[: BUTTON_TITLE_CHARS - 1].rsplit(" ", 1)[0].rstrip(" -–—|,:(")
+        title = (cut or title[: BUTTON_TITLE_CHARS - 1]) + "…"
+    return f"Apply: {_company_name(job, config)} – {title}"
 
 
 def health_test_notification(now: datetime) -> Notification:

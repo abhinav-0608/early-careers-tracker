@@ -815,6 +815,11 @@ def test_a_private_company_is_alerted_in_full_but_nothing_public_names_its_roles
     caplog.set_level("INFO")
     private = _private(tracker.config)
     tracker(config=private)
+    # The baseline summary (one role) has its button: ntfy is the owner's own channel.
+    (baseline,) = web.published
+    (button,) = baseline["actions"]
+    assert button["url"].startswith("https://boards.greenhouse.io/point72/jobs/8845395002")
+    assert baseline["click"] == button["url"]
     web.published.clear()
 
     web.add_greenhouse_job(9000001, "Spring Week 2027 - Technology")
