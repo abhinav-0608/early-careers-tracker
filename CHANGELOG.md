@@ -5,6 +5,17 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Merged HSBC, polled privately** (87c6896): reviewer BLOCK (terms; parser), then
+  APPROVE on the private mode and the follow-up fixes; 595 tests, ruff clean; dry run
+  one baseline summary of 3 HSBC insight programmes, no errors, 2 min 55 s; manual run
+  43977372619 succeeded in 3 min 47 s, sent exactly that summary, no health alert. Its
+  public log names no HSBC role (the dropped one is `(private)`), the committed state has
+  hashed ids and no title, link, place or quote, and the README leaves HSBC out. Other
+  failures in that run: Microsoft backing off (429) and an Anduril timeout.
+- **Microsoft still rate-limited** (not changed): it answered 429 again at hourly polling
+  (run 43975272542). The tracker backs off as designed (2-hour wait after the third
+  strike, doubling) and the grouped health alert was sent once, at 19:01 UTC. A likely
+  cause is GitHub's shared runner addresses; nothing to fix in the tracker.
 - **Merged the place-names change** (36a7244): reviewer APPROVE; 576 tests, ruff clean;
   dry run no alerts, no errors, 2 min 53 s; manual run 43975272542 succeeded in 3 min
   21 s, no alerts, no health alert, and the three Glasgow/London roles moved to United
