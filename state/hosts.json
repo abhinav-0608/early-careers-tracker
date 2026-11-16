@@ -1,5 +1,9 @@
 {
   "backoff": {
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-16T17:15:47+00:00",
+      "strikes": 1
+    },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-16T18:01:08+00:00",
       "strikes": 3
@@ -65,26 +69,6 @@
         "Disallow: /cn/*/aow/*",
         "Disallow: /tmall*",
         "Allow: /ac/globalnav/2.0/*/images/ac-globalnav/globalnav/search/*"
-      ]
-    },
-    "apply.careers.microsoft.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T16:16:00+00:00",
-      "rules": [
-        "Disallow: /",
-        "Allow: /$",
-        "Allow: /careers",
-        "Allow: /api/apply",
-        "Allow: /api/pcsx",
-        "Allow: /candidate/login",
-        "Allow: /login",
-        "Allow: /events/candidate",
-        "Allow: /events/open",
-        "Allow: /api/events",
-        "Allow: /careerhub/explore/jobs",
-        "Allow: /api/career_hub",
-        "Allow: /static/gen",
-        "Allow: /gen"
       ]
     },
     "apply.workable.com": {
