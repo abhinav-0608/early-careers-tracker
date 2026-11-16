@@ -986,12 +986,12 @@
       "last_alert_at": null
     },
     "greenhouse:anduril": {
-      "alerted": true,
-      "consecutive_failures": 2,
+      "alerted": false,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-16T23:13:40+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T23:17:46+00:00"
+      "last_alert_at": null
     },
     "greenhouse:anthropic": {
       "alerted": false,
