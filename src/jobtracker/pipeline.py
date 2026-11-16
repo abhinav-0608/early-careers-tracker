@@ -475,9 +475,9 @@ def _verdict(
 
     remembered = state.eligibility.get(job.key, {})
     text = job.description if job.description is not None else read.get(job.key)
-    if remembered.get("status") == eligibility.ELIGIBLE and (
-        not _before_notes(remembered) or text is None
-    ):
+    if _before_notes(remembered):
+        _add_note(job, role, text, remembered, read, filters)
+    if remembered.get("status") == eligibility.ELIGIBLE:
         return eligibility.Eligibility(
             eligibility.ELIGIBLE,
             eligibility.REMEMBERED,
@@ -506,6 +506,28 @@ def _verdict(
         record["why"] = verdict.evidence
     state.eligibility[job.key] = record
     return verdict
+
+
+def _add_note(
+    job: Job, role, text: str | None, remembered: dict, read: dict, filters: Filters
+) -> None:
+    """Look for a preference note in a verdict settled before notes existed.
+
+    This only ever adds a note: the verdict itself stands whatever the description now
+    says (empty, disallowed, gone or edited), so the read cannot close or drop an open
+    role. A read that keeps failing is given up after DESCRIPTION_TRIES runs.
+    """
+    if text is None:
+        tries = remembered.get("note_tries", 0) + (1 if job.key in read else 0)
+        if tries < DESCRIPTION_TRIES:
+            if tries:
+                remembered["note_tries"] = tries
+            return
+        text = ""
+    fresh = eligibility.assess(role, job.title, descriptions.plain_text(text), filters)
+    found = fresh.eligible and fresh.source == eligibility.DESCRIPTION
+    remembered.pop("note_tries", None)
+    remembered["note"] = fresh.note if found else ""
 
 
 def _forget_verdicts(state: ProfileState, company: Company, still_matching: set[str]) -> None:

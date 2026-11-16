@@ -748,19 +748,51 @@ def test_a_verdict_stored_before_notes_existed_is_read_once_more(tracker, web):
     assert web.description_fetches.count(INTERN_PATH) == 2  # and only once
 
 
-def test_if_that_read_fails_the_old_verdict_stands_and_the_role_stays_open(tracker, web):
+def _pre_notes_intern(tracker, web):
     tracker()
     web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
     web.descriptions[str(INTERN_ID)] = ADDEPAR
     tracker(NOW + RUN)
     _forget_note(tracker)
-    web.descriptions_down = True
+    web.published.clear()
 
-    for later in (2, 3, 4):
+
+def test_a_failing_re_read_is_retried_then_given_up_and_the_role_stays_open(tracker, web):
+    _pre_notes_intern(tracker, web)
+    web.descriptions_down = True
+    tracker(NOW + 2 * RUN)
+    web.descriptions_down = False
+    tracker(NOW + 3 * RUN)  # readable again within the tries: the note is found
+    assert tracker.state().jobs[INTERN_KEY].eligibility_note == PREFERS
+
+    _forget_note(tracker)
+    web.descriptions_down = True
+    web.description_fetches.clear()
+    for later in range(4, 10):
         tracker(NOW + later * RUN)
+    assert len(web.description_fetches) == 3  # DESCRIPTION_TRIES, then no more
     job = tracker.state().jobs[INTERN_KEY]
     assert job.status == "open" and job.eligibility.startswith("description: ")
-    assert job.eligibility_note == ""
-    web.descriptions_down = False
-    tracker(NOW + 5 * RUN)
-    assert tracker.state().jobs[INTERN_KEY].eligibility_note == PREFERS
+    assert tracker.state().eligibility[INTERN_KEY]["note"] == ""
+    assert web.published == []
+
+
+@pytest.mark.parametrize(
+    "now_says",
+    [
+        "",  # gone, disallowed or empty: recorded as "" by read_descriptions
+        "<p>Open to penultimate year students only.</p>",  # edited since it was alerted
+        "<p>Join us for the summer.</p>",  # no longer says either way
+    ],
+)
+def test_the_re_read_never_changes_a_verdict_only_adds_a_note(tracker, web, now_says):
+    _pre_notes_intern(tracker, web)
+    web.descriptions[str(INTERN_ID)] = now_says
+    for later in (2, 3, 4, 5):
+        tracker(NOW + later * RUN)
+    job = tracker.state().jobs[INTERN_KEY]
+    assert job.status == "open"
+    assert job.eligibility.startswith("description: ") and job.eligibility_note == ""
+    assert tracker.state().eligibility[INTERN_KEY]["status"] == "eligible"
+    assert web.description_fetches.count(INTERN_PATH) == 2  # read once more, only once
+    assert web.published == []

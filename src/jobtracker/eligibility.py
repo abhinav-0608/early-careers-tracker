@@ -221,12 +221,21 @@ def _first_offer(
     keywords: KeywordSet, sentences: list[str]
 ) -> tuple[str, str, tuple[int, int, int]] | None:
     """The first sentence offering first years a place: (quote, keyword, (sentence index,
-    start, end) of the phrase in the normalised sentence). Negated offers are skipped."""
+    start, end) of the phrase in the normalised sentence).
+
+    Only the earliest first-year phrase in a sentence is judged, and a sentence whose
+    earliest one is negated is skipped whole: "we cannot accept first year students, so
+    if you are a first year student see our spring week" is not an offer.
+    """
     for index, sentence in enumerate(sentences):
         text = normalise(sentence)
-        for keyword, start, end in keywords.find_all(text):
-            if not _negated(text, start):
-                return _shorten(sentence, keyword), keyword, (index, start, end)
+        found = keywords.find_all(text)
+        if not found:
+            continue
+        keyword, start, end = found[0]  # the earliest, as KeywordSet.search gives it
+        if _negated(text, start):
+            continue
+        return _shorten(sentence, keyword), keyword, (index, start, end)
     return None
 
 

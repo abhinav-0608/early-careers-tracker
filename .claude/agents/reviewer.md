@@ -26,8 +26,9 @@ Treat the summary as a claim to verify, not as evidence.
    - a MUST-stop item (new source type; site with unclear robots.txt or terms; a block
      or challenge beyond the Workday plan; changes to filters, eligibility rules or the
      FAANG+ list in `config/profiles/`; deleting data; anything irreversible). A
-     MUST-stop item without a recorded decision from the owner in `DECISIONS_NEEDED.md`
-     or the commit message is a BLOCK;
+     MUST-stop item without a recorded decision from the owner (in `CHANGELOG.md`,
+     where answered decisions go, or in the commit message) is a BLOCK; so is a change
+     that goes beyond what the owner decided;
    - correctness bugs: state that could lose or close open roles, alerts that could
      repeat or flood, a baseline that could fire individual alerts;
    - missing tests for changed behaviour; DESIGN.md not updated for a behaviour change.

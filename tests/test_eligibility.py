@@ -194,3 +194,12 @@ def test_label_and_mark_with_a_note():
     assert label('description: "x"', note) == f'✅ {note} (description: "x")'
     assert mark(note) == f"✅ {note}"
     assert mark() == "✅"
+
+
+def test_a_sentence_whose_first_offer_is_negated_is_not_an_offer_however_it_goes_on(filters):
+    description = (
+        "Unfortunately we cannot accept applications from first year students this summer, "
+        "so if you are a first year student please look at our spring week instead."
+    )
+    verdict = check(filters, "summer_internship", "Software Engineer Intern", description)
+    assert verdict.status == UNCLEAR

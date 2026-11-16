@@ -950,8 +950,10 @@ kept in `eligibility.py` beside the negation words), and not when it is part of 
 ("first or penultimate") or negated. Without that wording, "open to first year and
 penultimate year students" is an equal offer and gets a plain ✅. Only a description can
 carry a note: a title that settles eligibility means the description is never read.
-Verdicts settled by a description before notes existed are read once more to find one;
-if that read fails, the old verdict stands, so no open role is put at risk by it.
+Verdicts settled by a description before notes existed are read once more to find one.
+That read only ever adds a note: the verdict stands whatever the description now says
+(empty, disallowed, gone, or edited since), so it cannot close or drop an open role. A
+read that keeps failing is given up after three runs, with no note.
 
 **Known limits.** Keyword matching cannot read every phrasing: a posting that offers places
 to "students graduating in 2029" says nothing a keyword list can tell is first-year (the
