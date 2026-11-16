@@ -112,6 +112,7 @@
     "custom:apple": "10b0cf2721ab4e39",
     "custom:google": "10b0cf2721ab4e39",
     "custom:google-deepmind": "10b0cf2721ab4e39",
+    "custom:hsbc": "10b0cf2721ab4e39",
     "custom:microsoft": "10b0cf2721ab4e39",
     "greenhouse:abnormal-ai": "10b0cf2721ab4e39",
     "greenhouse:addepar": "10b0cf2721ab4e39",
@@ -453,6 +454,22 @@
       "status": "ineligible",
       "why": "Enrolled in the [penultimate academic year] of a Bachelor's or Master's degree"
     },
+    "custom:hsbc:1a4a623890fc4f26": {
+      "basis": "(private)",
+      "status": "eligible"
+    },
+    "custom:hsbc:3731fb09f8df59c1": {
+      "basis": "(private)",
+      "status": "eligible"
+    },
+    "custom:hsbc:6aba43631c054dce": {
+      "basis": "description: (private)",
+      "note": "",
+      "status": "eligible"
+    },
+    "custom:hsbc:a5142754a9fa249a": {
+      "status": "unclear"
+    },
     "custom:jpmorgan-chase:210775780": {
       "status": "unclear"
     },
@@ -790,6 +807,70 @@
   },
   "eligibility_rules": "9bc7b15a981f5c27",
   "jobs": {
+    "custom:hsbc:1a4a623890fc4f26": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "hsbc",
+      "eligibility": "(private)",
+      "fields": [
+        "software"
+      ],
+      "fingerprint": "hsbc|sha256-20f5b0a2d8ee319e751c8b45e7d7b37a",
+      "first_seen": "2026-11-16T23:13:40+00:00",
+      "last_seen": "2026-11-16",
+      "locations": [],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": null,
+      "region": "uk",
+      "role_type": "insight",
+      "source": "custom",
+      "status": "open",
+      "title": "",
+      "url": ""
+    },
+    "custom:hsbc:3731fb09f8df59c1": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "hsbc",
+      "eligibility": "(private)",
+      "fields": [
+        "software"
+      ],
+      "fingerprint": "hsbc|sha256-0b22bf471473739b28e435777dc36c44",
+      "first_seen": "2026-11-16T23:13:40+00:00",
+      "last_seen": "2026-11-16",
+      "locations": [],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": null,
+      "region": "uk",
+      "role_type": "insight",
+      "source": "custom",
+      "status": "open",
+      "title": "",
+      "url": ""
+    },
+    "custom:hsbc:6aba43631c054dce": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "hsbc",
+      "eligibility": "description: (private)",
+      "fields": [],
+      "fingerprint": "hsbc|sha256-a5593b3b6c7d05f25cfaaee246d4c570",
+      "first_seen": "2026-11-16T23:13:40+00:00",
+      "last_seen": "2026-11-16",
+      "locations": [],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": null,
+      "region": "uk",
+      "role_type": "insight",
+      "source": "custom",
+      "status": "open",
+      "title": "",
+      "url": ""
+    },
     "greenhouse:addepar:8910310002": {
       "aliases": [],
       "closed_at": null,

@@ -71,6 +71,22 @@
         "Allow: /ac/globalnav/2.0/*/images/ac-globalnav/globalnav/search/*"
       ]
     },
+    "apply.careers.hsbc.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-16T23:13:00+00:00",
+      "rules": [
+        "Disallow: /applybutton/",
+        "Disallow: /talentcommunity/",
+        "Disallow: /mobile/talentcommunity/",
+        "Disallow: /emailsubscribe/",
+        "Disallow: /email/image/",
+        "Disallow: /services/",
+        "Disallow: /preapply/",
+        "Disallow: /error",
+        "Disallow: /unsubscribe/",
+        "Disallow: /reset/"
+      ]
+    },
     "apply.careers.microsoft.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T17:15:00+00:00",
@@ -490,13 +506,6 @@
         "Allow: /X_GhostSite_CHARLESSTERLINGGROUP/",
         "Allow: /X_GhostSite_MavenPartnership/",
         "Disallow: /refreshFacet/"
-      ]
-    },
-    "boards-api.greenhouse.io": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T20:15:00+00:00",
-      "rules": [
-        "Disallow: /embed/"
       ]
     },
     "broadcom.wd1.myworkdayjobs.com": {

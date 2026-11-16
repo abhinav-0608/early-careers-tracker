@@ -57,7 +57,7 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 Last updated 2026-11-16.
 
 <details>
-<summary>70 companies in scope cannot be polled</summary>
+<summary>69 companies in scope cannot be polled</summary>
 
 - **Akamai**: Own careers site (akamaicareers.inflightcloud.com)
 - **American Express**: Said to use Eightfold, but aexp.eightfold.ai is not its careers host (404, 2026-11-16) and the real one is unknown
@@ -66,7 +66,7 @@ Last updated 2026-11-16.
 - **BAE Systems Digital Intelligence**: Own careers site (jobs.baesystems.com)
 - **Balyasny Asset Management**: Own careers site (bamfunds.com); no public job-board endpoint found (checked 2026-11-15)
 - **Bloomberg**: Avature (bloomberg.avature.net)
-- **BNP Paribas**: Own careers site
+- **BNP Paribas**: Own careers site (group.bnpparibas): Akamai Access Denied even for robots.txt (2026-11-16)
 - **BNY**: Oracle Cloud HCM (eofe.fa.us2.oraclecloud.com)
 - **Booking.com**: iCIMS (external-workingatbooking.icims.com)
 - **Brevan Howard**: Phenom careers site, no adapter
@@ -89,7 +89,6 @@ Last updated 2026-11-16.
 - **GitHub**: iCIMS (careers-githubinc.icims.com)
 - **Goldman Sachs**: robots.txt on higher.gs.com disallows everything except single role pages (/roles/), so the pages that list roles may not be read. Checked 2026-11-15
 - **Groq**: Gem ATS (jobs.gem.com), no adapter
-- **HSBC**: Own careers site (mycareer.hsbc.com)
 - **IBM**: Own careers site (careers.ibm.com)
 - **Intuit**: Own careers site
 - **JPMorgan Chase**: Switched off 2026-11-16: jpmorgan.com's terms forbid any robot that monitors or copies its pages or data without written permission, and may cover its careers site (Oracle Recruiting Cloud, jpmc.fa.oraclecloud.com). custom/jpmorgan.py is kept: ats: custom, board: jpmorgan turns it back on
@@ -102,7 +101,7 @@ Last updated 2026-11-16.
 - **Millennium**: Eightfold careers site (mlp.eightfold.ai) refuses its search API with 403 (2026-11-16); its Workday sites are empty
 - **Moody's**: SAP SuccessFactors
 - **MSCI**: iCIMS (globalcareers-msci.icims.com)
-- **NatWest Group**: Own careers site (jobs.natwestgroup.com); no public job-board endpoint found (checked 2026-11-15)
+- **NatWest Group**: Own careers site (jobs.natwestgroup.com): Cloudflare challenge even for robots.txt (2026-11-16)
 - **NCC Group**: Pinpoint (nccgroup.pinpointhq.com), no adapter
 - **Netflix**: Eightfold careers site (netflix.eightfold.ai) refuses its search API with 403 (2026-11-16); its Workday site is disallowed by robots.txt
 - **Oracle**: Oracle Cloud HCM (eeho.fa.us2.oraclecloud.com)
