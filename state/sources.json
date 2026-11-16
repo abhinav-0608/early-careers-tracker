@@ -2278,7 +2278,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T06:45:00+00:00",
+      "interval_polled_at": "2026-11-16T07:45:00+00:00",
       "last_alert_at": null
     },
     "workable:hugging-face": {
@@ -2287,7 +2287,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T06:45:00+00:00",
+      "interval_polled_at": "2026-11-16T07:45:00+00:00",
       "last_alert_at": null
     },
     "workable:portswigger": {
@@ -2296,7 +2296,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T06:45:00+00:00",
+      "interval_polled_at": "2026-11-16T07:45:00+00:00",
       "last_alert_at": null
     },
     "workable:starling-bank": {
@@ -2305,7 +2305,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T06:45:00+00:00",
+      "interval_polled_at": "2026-11-16T07:45:00+00:00",
       "last_alert_at": null
     },
     "workable:trail-of-bits": {
@@ -2314,7 +2314,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T06:45:00+00:00",
+      "interval_polled_at": "2026-11-16T07:45:00+00:00",
       "last_alert_at": null
     },
     "workable:trexquant": {
@@ -2323,7 +2323,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T06:45:00+00:00",
+      "interval_polled_at": "2026-11-16T07:45:00+00:00",
       "last_alert_at": null
     },
     "workday:abrdn": {
@@ -2336,7 +2336,7 @@
     },
     "workday:adobe": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2429,7 +2429,7 @@
     },
     "workday:cisco": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2446,7 +2446,7 @@
     },
     "workday:crowdstrike": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2472,7 +2472,7 @@
     },
     "workday:f5": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2506,7 +2506,7 @@
     },
     "workday:fis": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2515,7 +2515,7 @@
     },
     "workday:fiserv": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2540,7 +2540,7 @@
     },
     "workday:hp": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2575,7 +2575,7 @@
     },
     "workday:jain-global": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2625,7 +2625,7 @@
     },
     "workday:mimecast": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2641,7 +2641,7 @@
     },
     "workday:morgan-stanley-experienced": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2676,7 +2676,7 @@
     },
     "workday:nvidia": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2702,7 +2702,7 @@
     },
     "workday:proofpoint": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2710,7 +2710,7 @@
     },
     "workday:qualys": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2778,7 +2778,7 @@
     },
     "workday:sp-global": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2796,7 +2796,7 @@
     },
     "workday:t-rowe-price": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2829,7 +2829,7 @@
     },
     "workday:vanguard": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2838,7 +2838,7 @@
     },
     "workday:visa": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2847,7 +2847,7 @@
     },
     "workday:wellington-management": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
@@ -2864,7 +2864,7 @@
     },
     "workday:workday": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
