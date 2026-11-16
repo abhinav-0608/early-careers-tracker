@@ -99,8 +99,9 @@ BLOCKED = "blocked"  # robots.txt disallows the fetch, or could not be read
 NOT_DUE = "not_due"  # skipped this run by its polling interval: neither a failure nor a fetch
 RATE_LIMITED = "rate_limited"  # the host answered 429 this run; it is now backing off
 BACKING_OFF = "backing_off"  # not asked: its host answered 429 earlier and is being left alone
+PAUSED = "paused"  # not asked: its whole kind of source is paused in settings.yaml (pauses.py)
 # Statuses in which nothing was asked of the source, so nothing is recorded about it.
-NOT_ASKED = (NOT_DUE, BACKING_OFF)
+NOT_ASKED = (NOT_DUE, BACKING_OFF, PAUSED)
 
 
 @dataclass

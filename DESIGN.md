@@ -276,6 +276,22 @@ everyone.
 `interval_polled_at` is written only for a source that has a polling interval (section 5),
 when the interval-limited part of it last ran, to the minute.
 
+Two optional top-level keys sit beside `sources`, written only when they hold something:
+
+```json
+{
+  "pauses": {
+    "workday": {"probed_at": "2026-11-18T17:07:00+00:00", "probe": "wd3...: HTTP 429, a Cloudflare challenge; ..."}
+  },
+  "alert_groups": {"Workday: blocked (Cloudflare 429)": "2026-11-16T15:01:11+00:00"}
+}
+```
+
+`pauses` is the progress of a paused kind of source (section 5, Pauses): when it was last
+probed and with what answer, and `resumed_at`, `gave_up_at` and `announced` once those
+happen. `alert_groups` is when each group of failing sources was last announced (section
+9); an entry is dropped once it is a day old, because it then holds nothing back.
+
 FAANG+ 🔥 and company name are not stored with a job: the name is looked up from
 `companies.yaml` and the tier from the profile's `faang_plus` list when needed, so changing either
 takes effect immediately.
@@ -310,8 +326,8 @@ a cache: deleting it costs one robots.txt request per host and forgets the back-
 ```
 
 `robots` holds the rules that apply to this tracker's user agent, not the whole file.
-An entry is dropped when a fetch from that host fails (so the file is re-read on the
-next run) and after a week. `backoff` is keyed by server (one entry for all of a Workday
+An entry is dropped when a fetch from that host fails with an error status or a
+timeout (so the file is re-read on the next run), but not on a 429, and after a week. `backoff` is keyed by server (one entry for all of a Workday
 server's tenants) and is removed when the server answers again.
 
 ### Keeping commit volume sane
@@ -355,8 +371,18 @@ http:
   hosts_without_robots_txt:  # checked by hand: /robots.txt redirects to an ordinary page
     - careers.smartrecruiters.com
   descriptions_per_run: 60   # most posting descriptions read in one run (section 6a)
+  descriptions_when_rules_change: 400  # the same, in the run eligibility rules change
 readme:
   profile: abhinav           # whose open roles the README table shows (section 11)
+pauses:                      # kinds of source taken off polling (section 5, Pauses)
+  workday:
+    since: "2026-11-16T17:00:00+00:00"
+    reason: "Cloudflare challenge (HTTP 429) on every Workday server ..."
+    probe_company: lloyds-banking-group
+    probe_after_hours: 48
+    probe_every_hours: 6
+    resume_every_minutes: 180
+    give_up_after_days: 7
 polling:
   disabled: []               # kinds of source switched off: not polled, not reported
   every_minutes:             # minimum minutes between polls of a source; 0 = every run
@@ -730,8 +756,10 @@ were already covered. Of the 23 FAANG+ 🔥 companies, 17 are polled and 6 are n
   - **Read once a day, not once a run.** The rules are kept in `state/hosts.json` for
     `http.robots_cache_hours` (24, the longest RFC 9309 suggests) and used without a
     request until then. They are re-read early only after a fetch from that host
-    fails (an error status, a timeout, a 429), in case the failure is the rules having
-    changed. If the re-read itself fails for a passing reason (5xx, timeout), the last
+    fails (an error status or a timeout), in case the failure is the rules having
+    changed. A 429 does not count: it says how often to ask, not what may be asked,
+    and re-reading robots.txt from a host that is refusing requests would only be one
+    more refused request (changed 2026-11-16, with the Workday pause). If the re-read itself fails for a passing reason (5xx, timeout), the last
     copy is used for up to a week; with no copy, nothing is fetched. This removes about
     80 requests from every run, one per hostname.
   - Parsing is our own (`robots.py`, following RFC 9309) rather than
@@ -790,6 +818,30 @@ were already covered. Of the 23 FAANG+ 🔥 companies, 17 are polled and 6 are n
 - **Switching a source off.** A kind of source listed under `polling.disabled` (same names
   as the intervals) is not polled at all: no request, no result, no health record. It
   is how an adapter that is built but not yet proven ships dark (Workable, for a day).
+- **Pauses** (`pauses.py`, settings `pauses`). A kind of source whose servers refuse the
+  tracker outright, rather than asking it to slow down, is paused, never worked around
+  (decision 12: no other hosts, proxies or headless browsers). A pause has four stages:
+
+  | Stage | What is asked of the source |
+  |---|---|
+  | Paused, for `probe_after_hours` (48) after `since` | Nothing at all |
+  | Probing | One request every `probe_every_hours` (6): the first posting of `probe_company`'s first site, using its cached robots.txt even if over a day old (up to a week). A host still backing off from the last 429 waits for the next run |
+  | Resumed, after the first probe that succeeds | Polled again, at most every `resume_every_minutes` (180), small sites in full and one page per search term |
+  | Given up, if no probe has succeeded `give_up_after_days` (7) after `since` | Nothing; probing stops |
+
+  Throughout, every source of the kind reports `paused`, which like `not_due` is neither a
+  failure nor a fetch: no health record changes, nothing closes, no baseline is taken, and
+  `explain` will not fetch it either. Resuming and giving up are each announced once on
+  the health topic; the second asks for the kind to be marked `unsupported` in
+  `companies.yaml` (the workflow commits only state, so that edit is made by hand).
+  Deleting the pause from `settings.yaml` resumes normal polling at once.
+
+  **Workday** is paused from 2026-11-16 17:00 UTC: since 07:00 that day every Workday
+  server (wd1, wd3, wd5 and the three smaller ones) has answered with a Cloudflare
+  challenge, from GitHub's runners and from the development machine alike. Probing starts
+  2026-11-18 17:00, with Lloyds Banking Group (wd3, whose robots.txt is cached); if no
+  probe has succeeded by 2026-11-23 17:00 the tracker stops and asks for Workday to be
+  marked unsupported.
 - LinkedIn, Indeed and Glassdoor are refused by hostname in `http.py`, as a hard guard.
 
 ## 6. Filtering
@@ -864,7 +916,11 @@ When both appear, first years win: "open to first and penultimate year students"
 **Cost and safety.** A description is requested only for a posting that passed a profile's
 filters and whose title does not settle it, once per posting (the verdict is kept in the
 profile's state, section 3), shared between profiles within a run, and at most
-`http.descriptions_per_run` (60) in a run; the rest wait for the next run. A page robots.txt
+`http.descriptions_per_run` (60) in a run; the rest wait for the next run. In the one run
+in which a profile's eligibility rules are new or changed (every open posting is then
+checked again), the limit is `http.descriptions_when_rules_change` (400) instead, so the
+check finishes in that run and its baseline is a single summary (decision 25); per-host
+spacing, robots.txt and back-off still apply to every read. A page robots.txt
 disallows, or that is gone (404, 410), counts as saying nothing. A read that fails for a
 passing reason is retried on the next two runs; after the third failure the posting counts
 as saying nothing. Until then it is `unknown`: not alerted, not dropped for good, and a
@@ -1014,11 +1070,21 @@ even if every source failed.
 Profiles never receive them, and a board watched by several profiles still produces one
 alert:
 
-- Raised on a **state change**, not every run: a source alerts after 2 consecutive failures
-  (3 when the failure is a rate limit, and runs in which a backed-off host was not asked
-  count as neither failure nor success; section 5), then at most once every 24 hours while it stays broken, then once more on recovery. A
-  source broken for a week sends about 8 messages, not 672.
-- Multiple sources failing in one run are combined into one message.
+- A source **counts as failing** after 2 consecutive failures (3 when the failure is a
+  rate limit, and runs in which a backed-off or paused source was not asked count as
+  neither failure nor success; section 5).
+- **Grouped by root cause.** Failing sources are grouped by platform and cause, and each
+  group is one line of one alert: "Workday: 64 sources blocked (Cloudflare 429)", then
+  the first few names and when it started. A single failing source is named:
+  "Palantir (Lever): failing (HTTP 500)". Causes: blocked (Cloudflare 429), rate limited
+  (429), blocked by robots.txt, timing out, returning no jobs, failing (HTTP nnn).
+- **At most once a day per group** (`health.reminder_hours`, 24), however many sources
+  join it in between: a source that fails the same way as a group announced in the last
+  day is covered by that alert. A group still failing a day later gets one reminder.
+  (Before 2026-11-16 alerts were per source, and the Workday outage sent three in a day.)
+- Recoveries are grouped by platform ("Workday: 64 sources recovered") and sent when
+  they happen. A platform broken for a week sends about 8 messages, not 672, and not
+  one per source.
 - If the whole run crashes (bug, bad config, failed push), a final `if: failure()` workflow
   step sends a health alert with a link to the run. It only fires when the previous run
   succeeded, so a persistent crash sends one alert rather than one every 15 minutes; the
@@ -1364,7 +1430,7 @@ none should be without a decision to grow the scope.
     Verified and enabled on 2026-11-16.
 17. **No baseline notification for zero matches** (2026-11-15).
 18. **robots.txt is cached for 24 hours** in `state/hosts.json` (2026-11-16), re-read
-    early only after a failed fetch from that host.
+    early only after a failed fetch from that host (not after a 429, since decision 26).
 19. **A 429 is transient** (2026-11-16): not retried blind, the host backed off (per
     `Retry-After`, else 30 minutes doubling to 6 hours), and no health alert until three
     refusals in a row. Prompted by seven Workday tenants (wd12, wd103, wd108) answering
@@ -1382,3 +1448,15 @@ none should be without a decision to grow the scope.
 23. **Alerts list every role** (2026-11-16): FAANG+ 🔥 marked and first, summaries and
     baselines one line per role within ntfy's 4 KB, the README table one tap away.
 24. **The README table shows one profile**, named by `readme.profile` (2026-11-16).
+25. **The eligibility check completes in one run** (2026-11-16): in the run in which a
+    profile's eligibility rules are new or changed, up to
+    `descriptions_when_rules_change` (400) descriptions are read instead of 60, so its
+    baseline is one summary, not one per run over several runs. Per-host spacing,
+    robots.txt and back-off apply as always.
+26. **Workday is paused, not worked around** (2026-11-16), after every Workday server
+    answered with a Cloudflare challenge from 07:00 that day: nothing for 48 hours, then
+    one probe every 6 hours with a cached robots.txt, resuming at most every 3 hours with
+    small searches if a probe succeeds, and marked unsupported if still refused after 7
+    days (section 5, Pauses). A 429 no longer discards a host's cached robots.txt.
+27. **Health alerts are grouped by platform and cause, at most once a day per group**
+    (2026-11-16, section 9).

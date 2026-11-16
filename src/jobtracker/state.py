@@ -106,13 +106,43 @@ def load_sources(state_dir: Path | str) -> dict[str, SourceState]:
     return sources
 
 
-def save_sources(sources: dict[str, SourceState], state_dir: Path | str) -> None:
+@dataclass
+class SharedState:
+    """Run-level memory kept beside board health in sources.json.
+
+    pauses:        kind of source -> {"probed_at", "probe", "resumed_at", "gave_up_at"},
+                   the progress of a paused kind of source (pauses.py)
+    alert_groups:  "Platform: cause" -> ISO time of that group's last health alert, so a
+                   group is announced at most once a day (health.py)
+    """
+
+    pauses: dict[str, dict] = field(default_factory=dict)
+    alert_groups: dict[str, str] = field(default_factory=dict)
+
+
+def load_shared(state_dir: Path | str) -> SharedState:
+    data = _read(Path(state_dir) / "sources.json")
+    return SharedState(
+        pauses=dict(data.get("pauses", {})), alert_groups=dict(data.get("alert_groups", {}))
+    )
+
+
+def save_sources(
+    sources: dict[str, SourceState], state_dir: Path | str, shared: SharedState | None = None
+) -> None:
     data = {}
     for key, source in sources.items():
         data[key] = asdict(source)
         if source.interval_polled_at is None:
             del data[key]["interval_polled_at"]
-    _write(Path(state_dir) / "sources.json", {"version": VERSION, "sources": data})
+    document: dict = {"version": VERSION, "sources": data}
+    # Written only when there is something in them, so they add nothing to the file
+    # (and no commits) while nothing is paused and nothing has alerted.
+    if shared and shared.pauses:
+        document["pauses"] = shared.pauses
+    if shared and shared.alert_groups:
+        document["alert_groups"] = shared.alert_groups
+    _write(Path(state_dir) / "sources.json", document)
 
 
 # --- hosts -----------------------------------------------------------------------------

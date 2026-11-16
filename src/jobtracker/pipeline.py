@@ -30,8 +30,8 @@ from pathlib import Path
 
 import httpx
 
-from jobtracker import eligibility, health, log, readme
-from jobtracker.config import WORKDAY_SEARCH, Config, Filters, Profile, Settings
+from jobtracker import eligibility, health, log, pauses, readme
+from jobtracker.config import WORKDAY_SEARCH, Config, Filters, Pause, Profile, Settings
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
 from jobtracker.filters import Decision, classify
 from jobtracker.http import HttpClient, RateLimitedError, RobotsDisallowedError
@@ -42,6 +42,7 @@ from jobtracker.models import (
     NOT_ASKED,
     NOT_DUE,
     OK,
+    PAUSED,
     RATE_LIMITED,
     TIMEOUT,
     Company,
@@ -53,9 +54,11 @@ from jobtracker.sources import adapter_for, descriptions, workday
 from jobtracker.state import (
     OPEN,
     ProfileState,
+    SharedState,
     SourceState,
     StoredJob,
     load_profile_state,
+    load_shared,
     load_sources,
     save_profile_state,
     save_sources,
@@ -182,18 +185,36 @@ def run(
     # A source with a polling interval is fetched only when the interval has passed since
     # its last poll. One that is not due gets a NOT_DUE result and no request at all.
     sources = load_sources(state_dir)
+    shared = load_shared(state_dir)
+    # A paused kind of source (settings.yaml, pauses) is not asked at all, apart from
+    # one probe now and then; once a probe succeeds it is polled again, gently.
+    held, resumed = resolve_pauses(config, shared, targets, http, notifier, now)
+
+    def interval(company: Company, kind: str | None) -> int:
+        minutes = settings.poll_interval(kind)
+        if company.ats in resumed:
+            minutes = max(minutes, resumed[company.ats].resume_every_minutes)
+        return minutes
+
     due: list[Company] = []
     search_due: dict[str, bool] = {}  # Workday: are the large-site searches due?
+    search_pages: dict[str, int] = {}  # Workday: pages per search term, when not the usual
     for company in targets:
+        if company.ats in held:
+            continue
         last = sources.get(company.source_key)
-        if interval_elapsed(last, settings.poll_interval(company.poll_kind), now):
+        if interval_elapsed(last, interval(company, company.poll_kind), now):
             due.append(company)
-            search_due[company.key] = interval_elapsed(
-                last, settings.poll_interval(WORKDAY_SEARCH), now
-            )
-    fetched = {result.company.key: result for result in fetch_all(due, http, settings, search_due)}
+            search_due[company.key] = interval_elapsed(last, interval(company, WORKDAY_SEARCH), now)
+            if company.ats in resumed:
+                search_pages[company.key] = 1  # small searches while it is eased back in
+    fetched = {
+        result.company.key: result
+        for result in fetch_all(due, http, settings, search_due, search_pages)
+    }
     report.results = [
-        fetched.get(company.key) or SourceResult(company=company, status=NOT_DUE)
+        fetched.get(company.key)
+        or SourceResult(company=company, status=PAUSED if company.ats in held else NOT_DUE)
         for company in targets
     ]
 
@@ -206,17 +227,18 @@ def run(
         if not result.partial:  # a partial fetch says nothing about the board being empty
             health.check_empty(source, result, settings)
         health.record_outcome(source, result, now, settings, health_report)
-        if result.status == OK and settings.poll_interval(result.polled_kind) > 0:
+        if result.status == OK and interval(result.company, result.polled_kind) > 0:
             # To the minute: all the hourly sources of a run then share one timestamp.
             source.interval_polled_at = now.replace(second=0, microsecond=0).isoformat()
     configured = {company.source_key for company in pollable}
     sources = {key: value for key, value in sources.items() if key in configured}
 
-    if health_report:
-        notification = health.health_notification(health_report, sources)
-        if notifier.send_health(notification):
-            health.mark_alerted(sources, health_report, now)
-            report.health_alert_sent = True
+    # One alert, failures grouped by platform and cause, each group at most once a day.
+    alert = health.plan_alert(health_report, sources, shared, now, settings)
+    if alert and notifier.send_health(alert.notification):
+        health.mark_alerted(sources, health_report, alert, shared, now)
+        report.health_alert_sent = True
+    health.forget_quiet_groups(shared, now, settings)
 
     # --- each profile, on its own ------------------------------------------------------
     read: dict[str, str | None] = {}  # descriptions read this run, shared by the profiles
@@ -246,7 +268,7 @@ def run(
 
     # --- persist and report ------------------------------------------------------------
     if save:
-        save_sources(sources, state_dir)
+        save_sources(sources, state_dir, shared)
     log_report(report)
     write_step_summary(report)
     return report
@@ -295,7 +317,8 @@ def run_profile(
     # --- who may apply -----------------------------------------------------------------
     # Verdicts made under other rules are forgotten, so a change to the eligibility
     # keywords is applied to every open posting, not just to new ones.
-    if state.eligibility_rules != filters.eligibility.hash:
+    rules_changed = state.eligibility_rules != filters.eligibility.hash
+    if rules_changed:
         state.eligibility = {}
         state.eligibility_rules = filters.eligibility.hash
     # Postings already settled before this run: their drops were logged when they were.
@@ -312,7 +335,14 @@ def run_profile(
     ]
     if wanted and http is not None:
         before = len(read)
-        read_descriptions(wanted, http, settings, read)
+        # The run in which the rules are new or changed re-checks every open posting,
+        # with a larger budget, so the baseline completes in it and is one summary.
+        limit = (
+            settings.descriptions_when_rules_change
+            if rules_changed
+            else settings.descriptions_per_run
+        )
+        read_descriptions(wanted, http, settings, read, limit)
         report.descriptions_read = len(read) - before
 
     # --- reconcile ---------------------------------------------------------------------
@@ -474,15 +504,17 @@ def read_descriptions(
     http: HttpClient,
     settings: Settings,
     read: dict[str, str | None],
+    limit: int | None = None,
 ) -> None:
     """Read each posting's description into `read`, one queue per host.
 
     A posting that cannot be read is recorded as None and tried again on a later run;
     one whose page is gone, or may not be read, as "" (there is nothing to read). At
-    most `descriptions_per_run` are requested in a run; the rest wait for the next.
+    most `limit` (normally `descriptions_per_run`) are requested in a run, counting
+    those earlier profiles read in it; the rest wait for the next.
     """
-    # The budget is per run, and `read` already holds what earlier profiles read in it.
-    budget = max(0, settings.descriptions_per_run - len(read))
+    limit = settings.descriptions_per_run if limit is None else limit
+    budget = max(0, limit - len(read))
     queues: dict[str, list[tuple[Company, Job]]] = {}
     for company, job in wanted[:budget]:
         queues.setdefault(company.host_group, []).append((company, job))
@@ -516,6 +548,44 @@ def read_descriptions(
     )
 
 
+def resolve_pauses(
+    config: Config,
+    shared: SharedState,
+    targets: list[Company],
+    http: HttpClient,
+    notifier: Notifier,
+    now: datetime,
+) -> tuple[set[str], dict[str, Pause]]:
+    """Decide this run's stage for each paused kind of source, probing if one is due.
+
+    Returns the kinds to leave alone this run and the kinds that have resumed. A kind
+    no profile is watching is left alone without a probe.
+    """
+    held: set[str] = set()
+    resumed: dict[str, Pause] = {}
+    watched_kinds = {company.ats for company in targets}
+    for kind, pause in config.settings.pauses.items():
+        memory = shared.pauses.setdefault(kind, {})
+        current = pauses.stage(pause, memory, now)
+        if current == pauses.PROBE and kind in watched_kinds:
+            company = config.company(pause.probe_company)
+            current = pauses.probe(pause, company, http, memory, now)
+        if current == pauses.RESUMED:
+            resumed[kind] = pause
+        else:
+            held.add(kind)
+        notification = pauses.announcement(pause, current, memory)
+        if notification and notifier.send_health(notification):
+            memory["announced"] = current
+        if not memory:
+            del shared.pauses[kind]  # nothing to remember yet: keep the file unchanged
+        log.event("pause", kind=kind, stage=current)
+    for kind in list(shared.pauses):
+        if kind not in config.settings.pauses:
+            del shared.pauses[kind]  # the pause was removed from settings.yaml
+    return held, resumed
+
+
 def interval_elapsed(source: SourceState | None, minutes: int, now: datetime) -> bool:
     """Is a source with this polling interval due? One never polled always is."""
     if minutes <= 0 or source is None or source.interval_polled_at is None:
@@ -529,6 +599,7 @@ def fetch_all(
     http: HttpClient,
     settings: Settings,
     search_due: dict[str, bool] | None = None,
+    search_pages: dict[str, int] | None = None,
 ) -> list[SourceResult]:
     """Fetch every company, returning results in the order given.
 
@@ -542,6 +613,7 @@ def fetch_all(
     are due this run; a company not listed is fetched in full.
     """
     search_due = search_due or {}
+    search_pages = search_pages or {}
     queues: dict[str, list[Company]] = {}
     for company in companies:
         queues.setdefault(company.host_group, []).append(company)
@@ -549,7 +621,12 @@ def fetch_all(
 
     def work(queue: list[Company]) -> list[SourceResult]:
         return [
-            fetch_company(company, http, search=search_due.get(company.key, True))
+            fetch_company(
+                company,
+                http,
+                search=search_due.get(company.key, True),
+                search_pages=search_pages.get(company.key, workday.MAX_PAGES_PER_SEARCH),
+            )
             for company in queue
         ]
 
@@ -562,7 +639,12 @@ def fetch_all(
     return [fetched[company.key] for company in companies]
 
 
-def fetch_company(company: Company, http: HttpClient, search: bool = True) -> SourceResult:
+def fetch_company(
+    company: Company,
+    http: HttpClient,
+    search: bool = True,
+    search_pages: int = workday.MAX_PAGES_PER_SEARCH,
+) -> SourceResult:
     """Fetch one company. Never raises: every failure becomes a SourceResult.
 
     `search` only matters to Workday: False leaves a large site's searches for a later
@@ -575,7 +657,7 @@ def fetch_company(company: Company, http: HttpClient, search: bool = True) -> So
         if adapter is None:
             raise LookupError(f"no adapter for ats '{company.ats}'")
         if company.ats == workday.NAME:
-            result.jobs, large_sites = workday.fetch_sites(company, http, search)
+            result.jobs, large_sites = workday.fetch_sites(company, http, search, search_pages)
             result.partial = large_sites > 0 and not search
             result.polled_kind = WORKDAY_SEARCH if large_sites and search else None
         else:
@@ -659,6 +741,7 @@ def log_report(report: RunReport) -> None:
         sources_failed=sum(result.status not in (OK, *NOT_ASKED) for result in report.results),
         sources_not_due=sum(result.status == NOT_DUE for result in report.results),
         sources_backing_off=sum(result.status == BACKING_OFF for result in report.results),
+        sources_paused=sum(result.status == PAUSED for result in report.results),
         fetched=sum(len(result.jobs) for result in report.results),
         profiles_ok=sum(profile.status == OK for profile in report.profiles),
         profiles_not_run=sum(profile.status != OK for profile in report.profiles),

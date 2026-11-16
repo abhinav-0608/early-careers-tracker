@@ -184,7 +184,7 @@ def test_one_broken_source_does_not_stop_the_others(tracker, web):
     tracker(NOW + RUN)
 
     (alert,) = web.sent_to(HEALTH_TOPIC)
-    assert alert["title"] == "Source failing: Palantir"
+    assert alert["title"] == "Palantir (Lever): failing (HTTP 500)"
     assert "HTTP 500 from api.lever.co" in alert["message"]
     assert web.sent_to(JOB_TOPIC) == []  # failures never reach the job topic
 
@@ -206,8 +206,8 @@ def test_a_source_robots_txt_disallows_is_reported_as_blocked_and_not_fetched(tr
     tracker(NOW + RUN)
 
     (alert,) = web.sent_to(HEALTH_TOPIC)  # reported like any failing source
-    assert alert["title"] == "Source failing: Palantir"
-    assert "blocked, robots.txt on api.lever.co disallows /v0/postings/palantir" in alert["message"]
+    assert alert["title"] == "Palantir (Lever): blocked by robots.txt"
+    assert "robots.txt on api.lever.co disallows /v0/postings/palantir" in alert["message"]
 
 
 def test_robots_txt_is_read_once_a_day_not_once_a_run(tracker, web):
@@ -280,15 +280,17 @@ def test_a_rate_limited_source_is_backed_off_and_alerts_on_the_third_attempt(tra
     third = tracker(NOW + RUN + timedelta(minutes=90))  # the back-off doubled to an hour
     assert statuses(third)["palantir"] == "rate_limited"
     (alert,) = web.sent_to(HEALTH_TOPIC)
-    assert alert["title"] == "Source failing: Palantir"
-    assert "rate_limited, api.lever.co: HTTP 429, rate limited; next attempt" in alert["message"]
+    assert alert["title"] == "Palantir (Lever): rate limited (429)"
+    assert "api.lever.co: HTTP 429, rate limited; next attempt" in alert["message"]
 
     # It answers again: the source recovers and the back-off is forgotten.
     del web.rate_limited["api.lever.co"]
     web.published.clear()
     recovered = tracker(NOW + RUN + timedelta(minutes=210))
     assert statuses(recovered)["palantir"] == "ok"
-    assert [message["title"] for message in web.sent_to(HEALTH_TOPIC)] == ["Sources recovered"]
+    assert [message["title"] for message in web.sent_to(HEALTH_TOPIC)] == [
+        "Palantir (Lever) recovered"
+    ]
     assert load_hosts(tracker.state_dir).backoff == {}
 
 
@@ -365,7 +367,9 @@ def test_broken_source_recovers_and_is_baselined_then(tracker, web):
     web.broken_hosts.clear()
     tracker(NOW + 2 * RUN)
 
-    assert [message["title"] for message in web.sent_to(HEALTH_TOPIC)] == ["Sources recovered"]
+    assert [message["title"] for message in web.sent_to(HEALTH_TOPIC)] == [
+        "Palantir (Lever) recovered"
+    ]
     # Palantir's first successful fetch is its baseline, not a flood of alerts. Nothing
     # on its board matches, and a baseline of nothing is not announced.
     assert web.sent_to(JOB_TOPIC) == []
@@ -667,3 +671,29 @@ def test_a_dropped_posting_is_logged_once_with_its_reason(tracker, web, caplog):
     caplog.clear()
     tracker(NOW + 2 * RUN)
     assert drops() == []
+
+
+def test_the_run_in_which_eligibility_rules_change_has_a_larger_description_budget(tracker, web):
+    tracker()
+    for number in range(4):
+        web.add_greenhouse_job(INTERN_ID + number, f"Software Engineer Intern {number}")
+        web.descriptions[str(INTERN_ID + number)] = "Open to first year students."
+    settings = replace(
+        tracker.config.settings, descriptions_per_run=1, descriptions_when_rules_change=10
+    )
+    (owner,) = tracker.config.profiles
+    new_rules = replace(owner.filters.eligibility, hash="new-rules")
+    owner = replace(owner, filters=replace(owner.filters, eligibility=new_rules))
+    config = replace(tracker.config, settings=settings, profiles=(owner,))
+
+    web.description_fetches.clear()
+    tracker(NOW + RUN, config=config)  # the rules changed: every open posting re-read
+    interns = {f"{GREENHOUSE}/v1/boards/point72/jobs/{INTERN_ID + n}" for n in range(4)}
+    assert interns <= set(web.description_fetches)
+    assert len(web.description_fetches) > 1
+
+    web.add_greenhouse_job(INTERN_ID + 10, "Software Engineer Intern 10")
+    web.add_greenhouse_job(INTERN_ID + 11, "Software Engineer Intern 11")
+    web.description_fetches.clear()
+    tracker(NOW + 2 * RUN, config=config)  # an ordinary run: back to the usual one
+    assert len(web.description_fetches) == 1

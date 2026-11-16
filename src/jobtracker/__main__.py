@@ -217,6 +217,15 @@ def explain_company(config: Config, profile: Profile, args: argparse.Namespace) 
     if company is None or adapter_for(company) is None:
         print(f"No pollable company with key '{args.company}'.", file=sys.stderr)
         return 2
+    pause = config.settings.pauses.get(company.ats)
+    if pause is not None:
+        # Paused in settings.yaml: not even a manual fetch is made (pauses.py).
+        print(
+            f"'{company.key}' is not fetched: {company.ats} is paused since "
+            f"{pause.since:%Y-%m-%d %H:%M} UTC ({pause.reason}).",
+            file=sys.stderr,
+        )
+        return 2
     if not profile.watches(company):
         print(f"Note: '{company.key}' is outside the scope of profile '{profile.key}'.")
 

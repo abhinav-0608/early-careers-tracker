@@ -79,3 +79,8 @@ def test_test_alert_sends_one_message_and_never_prints_the_topic(monkeypatch, ca
     out = capsys.readouterr()
     assert "Test alert sent" in out.out
     assert "secret-health-topic" not in out.out + out.err
+
+
+def test_explain_will_not_fetch_a_paused_kind_of_source(capsys):
+    assert main([*CONFIG, "explain", "lloyds-banking-group"]) == 2
+    assert "workday is paused since 2026-11-16 17:00 UTC" in capsys.readouterr().err

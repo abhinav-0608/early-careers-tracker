@@ -158,6 +158,9 @@ class HttpClient:
         # Per thread: the hosts whose robots.txt this thread is in the middle of
         # resolving, and whose locks it therefore holds (see _follow_robots_redirect).
         self._resolving = threading.local()
+        # Hosts whose cached robots.txt may be used however old (up to a week), without
+        # the daily re-read: for a single probe of a host that is refusing requests.
+        self._cached_robots_ok: set[str] = set()
 
     def get_json(self, url: str, params: dict[str, Any] | None = None) -> Any:
         return self._request("GET", _with_params(url, params)).json()
@@ -184,6 +187,14 @@ class HttpClient:
         with self._lock_for(shared_host(host)):
             self._refuse_if_backing_off(host)
             self._check_robots(parts.scheme, host, _path_of(url))
+
+    def use_cached_robots(self, host: str) -> None:
+        """Use this host's cached robots.txt even if it is over a day old.
+
+        For a probe of a refusing host (pauses.py): one request, not two. A copy over
+        a week old, or none, is still fetched as usual.
+        """
+        self._cached_robots_ok.add(host)
 
     def hosts_state(self) -> HostsState:
         """What to remember about hosts until the next run, with old entries dropped."""
@@ -245,9 +256,12 @@ class HttpClient:
             self._check_robots(parts.scheme, host, _path_of(url))
             try:
                 response = self._attempt(method, url, host, **kwargs)
-            except (httpx.TransportError, RateLimitedError):
+            except httpx.TransportError:
                 self._hosts.robots.pop(host, None)
                 raise
+            # A 429 (RateLimitedError) keeps the cached rules: it says how often to ask,
+            # not what may be asked, and re-reading robots.txt from a host that is
+            # refusing requests would only be one more refused request.
             if response.status_code >= 400:
                 # A failed fetch may mean the site's rules have changed, so its
                 # robots.txt is read again next run instead of waiting out the cache.
@@ -368,7 +382,7 @@ class HttpClient:
         if host in self._robots:
             return self._robots[host]
         cached = self._cached_robots(host)
-        if cached and cached[1] < self._robots_cache:
+        if cached and (cached[1] < self._robots_cache or host in self._cached_robots_ok):
             self._robots[host] = cached[0]  # read less than a day ago: not fetched again
             return cached[0]
         if host not in self._robots_errors:

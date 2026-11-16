@@ -203,3 +203,27 @@ def test_fetch_sites_reports_no_large_site_for_a_small_tenant(settings):
     handler, _ = workday_handler(lambda site, search, offset: page([1, 2], total=2))
     jobs, large_sites = workday.fetch_sites(LLOYDS, mock_client(settings, handler), search=False)
     assert (len(jobs), large_sites) == (2, 0)
+
+
+def test_fewer_pages_per_search_while_easing_back_in(settings):
+    """A large site: 2 pages per search term normally, 1 when asked for small searches."""
+
+    def handler(request):
+        body = json.loads(request.content)
+        total = 500 if not body["searchText"] else 45  # every search overflows one page
+        return httpx.Response(200, json={"total": total, "jobPostings": []})
+
+    company = make_company("acme", ats="workday", tenant="acme", host="wd3", sites=("Main",))
+    for pages, expected in (
+        (2, 1 + 2 * len(workday.SEARCH_TERMS)),
+        (1, 1 + len(workday.SEARCH_TERMS)),
+    ):
+        calls = []
+
+        def counting(request, calls=calls):
+            calls.append(request)
+            return handler(request)
+
+        http = mock_client(settings, counting)
+        workday.fetch_sites(company, http, search=True, search_pages=pages)
+        assert len(calls) == expected

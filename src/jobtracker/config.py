@@ -19,6 +19,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,27 @@ PROFILE_KEY = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
 
 class ConfigError(Exception):
     """A config file is missing, malformed or inconsistent."""
+
+
+@dataclass(frozen=True)
+class Pause:
+    """A whole kind of source taken off polling because its servers refuse the tracker.
+
+    For `probe_after_hours` after `since` nothing is asked of it at all. Then one probe
+    (one request to `probe_company`) every `probe_every_hours`. A probe that succeeds
+    resumes polling at most every `resume_every_minutes`, with small searches. If no
+    probe has succeeded `give_up_after_days` after `since`, probing stops and a health
+    alert asks for the source to be marked unsupported. See pauses.py.
+    """
+
+    kind: str  # the ATS name, e.g. "workday"
+    since: datetime
+    reason: str
+    probe_company: str
+    probe_after_hours: int = 48
+    probe_every_hours: int = 6
+    resume_every_minutes: int = 180
+    give_up_after_days: int = 7
 
 
 @dataclass(frozen=True)
@@ -86,6 +108,11 @@ class Settings:
     descriptions_per_run: int = 60
     # readme: whose open roles the README table shows (None = no table is written)
     readme_profile: str | None = None
+    # http: the description budget for a run in which a profile's eligibility rules are
+    # new or changed, so the check of every open posting completes in that one run
+    descriptions_when_rules_change: int = 400
+    # pauses: kinds of source taken off polling, by ATS name
+    pauses: dict[str, Pause] = field(default_factory=dict)
 
     def poll_interval(self, kind: str | None) -> int:
         """Minimum minutes between polls of this kind of source; 0 means every run."""
@@ -221,6 +248,13 @@ def load_config(config_dir: Path | str = "config") -> Config:
         # With nobody to alert there is nothing useful a run could do.
         problems = "; ".join(errors.values()) or f"{config_dir / 'profiles'}: no profiles found"
         raise ConfigError(problems)
+    for pause in settings.pauses.values():
+        company = next((c for c in companies if c.key == pause.probe_company), None)
+        if company is None or company.ats != pause.kind:
+            raise ConfigError(
+                f"{config_dir / 'settings.yaml'}: pauses.{pause.kind}.probe_company: "
+                f"no {pause.kind} company called '{pause.probe_company}'"
+            )
     known = {profile.key for profile in profiles} | set(errors)
     if settings.readme_profile is not None and settings.readme_profile not in known:
         raise ConfigError(
@@ -315,6 +349,10 @@ def load_settings(path: Path) -> Settings:
         hosts_without_robots_txt=frozenset(no_robots),
         disabled_sources=frozenset(disabled),
         descriptions_per_run=_get(http, "descriptions_per_run", int, f"{path}: http", default=60),
+        descriptions_when_rules_change=_get(
+            http, "descriptions_when_rules_change", int, f"{path}: http", default=400
+        ),
+        pauses=_pauses(_get(data, "pauses", dict, path, default={}), path),
         readme_profile=(
             _get(readme, "profile", str, f"{path}: readme") if "profile" in readme else None
         ),
@@ -322,6 +360,10 @@ def load_settings(path: Path) -> Settings:
 
     if settings.descriptions_per_run < 0:
         raise ConfigError(f"{path}: http.descriptions_per_run must be 0 or more")
+    if settings.descriptions_when_rules_change < settings.descriptions_per_run:
+        raise ConfigError(
+            f"{path}: http.descriptions_when_rules_change must be at least descriptions_per_run"
+        )
     if settings.max_workers < 1:
         raise ConfigError(f"{path}: http.max_workers must be at least 1")
     if settings.close_after_missing_runs < 1:
@@ -344,6 +386,58 @@ def load_settings(path: Path) -> Settings:
             f"{path}: state.prune_closed_after_days must be >= state.repost_window_days"
         )
     return settings
+
+
+# Kinds of source that can be paused: each needs a one-request probe (pauses.py).
+PAUSABLE = {WORKDAY}
+
+
+def _pauses(raw: dict, path: Path) -> dict[str, Pause]:
+    pauses = {}
+    for kind, entry in raw.items():
+        where = f"{path}: pauses.{kind}"
+        if kind not in PAUSABLE:
+            raise ConfigError(f"{where}: only {sorted(PAUSABLE)} can be paused")
+        _expect(entry, dict, where)
+        _only_keys(
+            entry,
+            {
+                "since",
+                "reason",
+                "probe_company",
+                "probe_after_hours",
+                "probe_every_hours",
+                "resume_every_minutes",
+                "give_up_after_days",
+            },
+            where,
+        )
+        since = _get(entry, "since", (str, datetime), where)
+        try:
+            since = since if isinstance(since, datetime) else datetime.fromisoformat(since)
+        except ValueError as exc:
+            raise ConfigError(f"{where}: since: not an ISO date and time ({exc})") from exc
+        if since.tzinfo is None:
+            raise ConfigError(f"{where}: since needs a time zone, e.g. +00:00")
+        numbers = {
+            name: _get(entry, name, int, where, default=default)
+            for name, default in (
+                ("probe_after_hours", 48),
+                ("probe_every_hours", 6),
+                ("resume_every_minutes", 180),
+                ("give_up_after_days", 7),
+            )
+        }
+        if any(value < 1 for value in numbers.values()):
+            raise ConfigError(f"{where}: every interval must be at least 1")
+        pauses[kind] = Pause(
+            kind=kind,
+            since=since,
+            reason=_get(entry, "reason", str, where),
+            probe_company=_get(entry, "probe_company", str, where),
+            **numbers,
+        )
+    return pauses
 
 
 # --- profiles/<key>/ -------------------------------------------------------------------

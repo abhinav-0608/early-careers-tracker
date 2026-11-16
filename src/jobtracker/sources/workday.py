@@ -69,18 +69,36 @@ def fetch(company: Company, http: HttpClient) -> list[Job]:
     return fetch_sites(company, http, search=True)[0]
 
 
-def fetch_sites(company: Company, http: HttpClient, search: bool) -> tuple[list[Job], int]:
+def probe(company: Company, http: HttpClient) -> None:
+    """One request, to see whether Workday answers again (pauses.py).
+
+    The first posting of the company's first site, with its cached robots.txt. Raises
+    what the request raises: RateLimitedError while the challenge is still there.
+    """
+    site = company.sites[0]
+    base = BASE.format(tenant=company.tenant, host=company.host)
+    http.use_cached_robots(f"{company.tenant}.{company.host}.myworkdayjobs.com")
+    http.require_allowed(f"{base}/{site}/")
+    url = API.format(tenant=company.tenant, host=company.host, site=site)
+    body = {"appliedFacets": {}, "limit": 1, "offset": 0, "searchText": ""}
+    http.post_json(url, body).json()
+
+
+def fetch_sites(
+    company: Company, http: HttpClient, search: bool, search_pages: int = MAX_PAGES_PER_SEARCH
+) -> tuple[list[Job], int]:
     """Fetch every site. Returns the jobs and how many of the sites were large.
 
     With search=False a large site is not searched: only its first page is read. The
-    caller can tell from the count whether anything was left out.
+    caller can tell from the count whether anything was left out. `search_pages` is
+    how many pages each search term reads (fewer while Workday is being eased back in).
     """
     jobs: dict[str, Job] = {}
     large_sites = 0
     for site in company.sites:
         base = BASE.format(tenant=company.tenant, host=company.host)
         http.require_allowed(f"{base}/{site}/")
-        found, large = _fetch_site(company, site, http, search)
+        found, large = _fetch_site(company, site, http, search, search_pages)
         large_sites += large
         for job in found:
             jobs.setdefault(job.job_id, job)  # the same posting on two sites
@@ -88,7 +106,7 @@ def fetch_sites(company: Company, http: HttpClient, search: bool) -> tuple[list[
 
 
 def _fetch_site(
-    company: Company, site: str, http: HttpClient, search: bool
+    company: Company, site: str, http: HttpClient, search: bool, search_pages: int
 ) -> tuple[list[Job], bool]:
     """One site's jobs, and whether the site is too large to read in full."""
     url = API.format(tenant=company.tenant, host=company.host, site=site)
@@ -108,7 +126,7 @@ def _fetch_site(
         page = _page(http, url, term, 0)
         found = page.get("total") or 0
         jobs += parse(company, page, site)
-        limit = min(found, MAX_PAGES_PER_SEARCH * PAGE_SIZE)
+        limit = min(found, search_pages * PAGE_SIZE)
         for offset in range(PAGE_SIZE, limit, PAGE_SIZE):
             jobs += parse(company, _page(http, url, term, offset), site)
         if found > limit:

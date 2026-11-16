@@ -27,6 +27,10 @@ http:
   # (only postings that passed a profile's filters and whose title does not settle it,
   # once each). The rest wait for the next run.
   descriptions_per_run: 60
+  # The same, for the one run in which a profile's eligibility rules are new or changed:
+  # every open posting is then checked again, and a larger budget lets that finish in
+  # one run, so the baseline arrives as a single summary. Per-host spacing still applies.
+  descriptions_when_rules_change: 400
 
 polling:
   # Kinds of source that are switched off: not polled at all, and not reported as failing.
@@ -55,6 +59,22 @@ polling:
     apple: 60             # about 7 pages of 320 KB
     amd: 60               # four requests, five seconds apart (the site's Crawl-delay)
     microsoft: 0          # five small requests (10 roles each); raise it if that grows
+
+# Kinds of source taken off polling because their servers refuse the tracker. Nothing is
+# asked of them for probe_after_hours; then one request to probe_company every
+# probe_every_hours (using its cached robots.txt). A probe that succeeds resumes polling
+# at most every resume_every_minutes, with one page per search. If none has succeeded
+# give_up_after_days after `since`, probing stops and a health alert asks for the kind
+# to be marked unsupported. Delete an entry to resume normal polling at once.
+pauses:
+  workday:
+    since: "2026-11-16T17:00:00+00:00"
+    reason: "Cloudflare challenge (HTTP 429) on every Workday server since 2026-11-16 07:00 UTC"
+    probe_company: lloyds-banking-group   # wd3; its robots.txt is cached
+    probe_after_hours: 48
+    probe_every_hours: 6
+    resume_every_minutes: 180
+    give_up_after_days: 7
 
 readme:
   profile: abhinav              # whose open roles the README table shows

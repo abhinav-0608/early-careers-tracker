@@ -1,5 +1,28 @@
 # Coverage gap report
 
+## Set up manual email alerts for these
+
+The tracker cannot see these employers' roles, and will not work around what stops it
+(DESIGN.md decision 12). Each one's own job alerts, by email, are the way to hear about
+them. Sign up on the company's careers site for early careers, internships and insight
+or spring programmes in the UK.
+
+| Company | Why the tracker cannot see it |
+|---|---|
+| Goldman Sachs 🔥 | robots.txt disallows every page that lists roles |
+| Meta 🔥 | robots.txt notice prohibits automated collection |
+| Citadel 🔥 | Cloudflare browser challenge |
+| Citadel Securities 🔥 | Cloudflare browser challenge |
+| Revolut 🔥 | Browser security check; robots.txt disallows its API |
+| Tesla 🔥 | Akamai "Access Denied" to anything but a browser |
+| Arm (early careers) | Its iCIMS early-careers site disallows everything in robots.txt |
+| Susquehanna (SIG) | Its iCIMS site disallows everything in robots.txt |
+| Bloomberg | Its Avature careers host did not answer at all (twice, 2026-11-16) |
+| Barclays, Lloyds Banking Group, Deutsche Bank, BlackRock, NVIDIA 🔥 | **While Workday is paused.** Every Workday server has answered with a Cloudflare challenge since 2026-11-16 07:00 UTC, so Workday polling is paused (settings.yaml, `pauses`). If it is still refused on 2026-11-23 it will be marked unsupported, and these alerts become permanent |
+
+The grad boards whose terms forbid scraping (Trackr, Gradcracker) and the one behind a bot
+challenge (Bright Network) also have their own email alerts (section 3).
+
 Written 2026-11-16, in place of stage 4 (DESIGN.md section 13: grad boards and community
 repos are not used). The tracker watches 422 companies, all in this profile's scope; 353
 are polled and 69 are `unsupported`. This report says where the remaining coverage is, and
@@ -36,7 +59,7 @@ hear about them.
 | Amazon | Student roles outside the "Student Programs" category or the three countries |
 | Apple | Graduate, retail and support programmes (only "Students: Internships") |
 | Microsoft | Graduate ("Entry") roles |
-| 7 Workday tenants on wd12, wd103, wd108 (FactSet, Postman, Expedia, Salesforce, Capital One, G-Research, IG) | Everything, while Cloudflare challenges those servers (DESIGN.md section 13, stage 3). If the 429s persist they belong in `unsupported` |
+| All 64 Workday tenants (NVIDIA and G-Research among them, and most UK banks) | Everything. Since 2026-11-16 07:00 UTC every Workday server answers with a Cloudflare challenge; polling is paused for 48 hours, then probed every 6 hours, and Workday is marked unsupported if still refused on 2026-11-23 (DESIGN.md section 5, Pauses) |
 
 ### Unsupported companies, by what would unlock them
 

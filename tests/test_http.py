@@ -934,3 +934,34 @@ def test_a_429_from_one_tenant_backs_off_the_whole_server_and_no_other(settings)
             second.get_json(f"https://{tenant}.wd108.myworkdayjobs.com/jobs")
         assert not caught.value.answered_now
     assert requested == []
+
+
+def test_a_429_keeps_the_cached_robots_txt(settings):
+    """A 429 says how often to ask, not what may be asked: no re-read of the rules."""
+    first, _ = run_with(settings, HostsState(), NOW, ok)
+    first.get_json("https://example.com/jobs")
+
+    second, _ = run_with(
+        settings, first.hosts_state(), NOW + timedelta(hours=1), lambda r: httpx.Response(429)
+    )
+    with pytest.raises(RateLimitedError):
+        second.get_json("https://example.com/jobs")
+    assert "example.com" in second.hosts_state().robots
+
+
+def test_a_probe_may_use_a_cached_robots_txt_older_than_a_day_but_not_a_week(settings):
+    first, _ = run_with(settings, HostsState(), NOW, ok)
+    first.get_json("https://example.com/jobs")
+    hosts = first.hosts_state()
+
+    probe, requested = run_with(settings, hosts, NOW + timedelta(days=3), ok)
+    probe.use_cached_robots("example.com")
+    probe.get_json("https://example.com/jobs")
+    assert requested == ["/jobs"]
+    with pytest.raises(RobotsDisallowedError):
+        probe.get_json("https://example.com/private/x")  # and still obeyed
+
+    stale, requested = run_with(settings, hosts, NOW + timedelta(days=8), ok)
+    stale.use_cached_robots("example.com")
+    stale.get_json("https://example.com/jobs")
+    assert requested == ["/robots.txt", "/jobs"]

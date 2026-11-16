@@ -16,11 +16,21 @@ import httpx
 import pytest
 
 from conftest import NOW, OWNER, FakeWeb, changed_filters, make_company, make_profile
+from jobtracker import pauses
+from jobtracker.config import Pause
 from jobtracker.http import HttpClient
 from jobtracker.notify import Notifier
 from jobtracker.pipeline import interval_elapsed, run
 from jobtracker.sources import workday
-from jobtracker.state import CLOSED, OPEN, SourceState, load_profile_state, load_sources
+from jobtracker.state import (
+    CLOSED,
+    OPEN,
+    SourceState,
+    load_hosts,
+    load_profile_state,
+    load_sources,
+    save_hosts,
+)
 
 JOB_TOPIC = "secret-job-topic"
 HEALTH_TOPIC = "secret-health-topic"
@@ -48,6 +58,7 @@ class WorkdayWeb(FakeWeb):
         self.newest: list[str] = ["Staff Engineer"]
         self.searchable: list[str] = ["Technology Insight Week 2027"]
         self.calls: list[tuple[str, str]] = []  # (site, search text)
+        self.limits: list[int] = []  # the page size each call asked for
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         if request.url.host.endswith("myworkdayjobs.com") and request.method == "GET":
@@ -55,11 +66,15 @@ class WorkdayWeb(FakeWeb):
                 # A posting's own page, read by the eligibility check. It says nothing
                 # about years of study.
                 return httpx.Response(200, text=POSTING_PAGE)
+        if request.url.host in self.rate_limited:
+            return super().handle(request)  # challenged: 429 for everything
         if not request.url.host.endswith("myworkdayjobs.com") or request.method != "POST":
             return super().handle(request)
         site = request.url.path.split("/")[-2]
-        search = json.loads(request.content)["searchText"]
+        body = json.loads(request.content)
+        search = body["searchText"]
         self.calls.append((site, search))
+        self.limits.append(body["limit"])
         if site == "Campus":
             return httpx.Response(200, json=self._page(self.campus, len(self.campus)))
         if not search:
@@ -182,7 +197,7 @@ def test_a_skipped_source_does_not_recover_or_extend_a_failure_streak(tracker):
     assert statuses(run_once(NOW + 2 * RUN))["point72"] == "ok"
     assert statuses(run_once(NOW + 3 * RUN))["point72"] == "not_due"
     titles = [message["title"] for message in web.sent_to(HEALTH_TOPIC)]
-    assert titles == ["Source failing: Point72", "Sources recovered"]
+    assert titles == ["Point72 (Greenhouse): failing (HTTP 500)", "Point72 (Greenhouse) recovered"]
 
 
 def test_a_run_a_few_seconds_early_still_counts_as_the_hour(tracker):
@@ -320,3 +335,152 @@ def test_with_no_interval_workday_is_searched_every_run_and_keeps_no_timestamp(t
         assert web.searches() == list(workday.SEARCH_TERMS) and not result.partial
     saved = json.loads((tmp_path / "sources.json").read_text())["sources"]
     assert "interval_polled_at" not in saved["workday:acme"]
+
+
+# --- a paused kind of source (settings.yaml, pauses) ------------------------------------
+
+ACME_HOST = "acme.wd3.myworkdayjobs.com"
+CHALLENGE = {"cf-mitigated": "challenge"}
+PAUSE = Pause(kind="workday", since=NOW, reason="Cloudflare challenge", probe_company="acme")
+HOUR = timedelta(hours=1)
+
+
+@pytest.fixture
+def paused(config, profile, settings, tmp_path):
+    """A Workday tenant paused at NOW, in a world that keeps hosts.json between runs."""
+    web = WorkdayWeb()
+    owner = make_profile(profile, OWNER, industries=("quant",))
+    plain = replace(
+        config,
+        settings=replace(settings, poll_every_minutes={"workday_search": 60}),
+        companies=TENANT,
+        profiles=(owner,),
+    )
+    with_pause = replace(plain, settings=replace(plain.settings, pauses={"workday": PAUSE}))
+
+    def run_once(now, config=with_pause):
+        http = HttpClient(
+            config.settings,
+            transport=httpx.MockTransport(web.handle),
+            sleep=lambda _: None,
+            hosts=load_hosts(tmp_path),
+            now=now,
+        )
+        notifier = Notifier(http, config.settings.ntfy_server, {OWNER: JOB_TOPIC}, HEALTH_TOPIC)
+        try:
+            return run(config, tmp_path, http, notifier, now)
+        finally:
+            save_hosts(http.hosts_state(), tmp_path)
+
+    # Before the pause: one ordinary run, which caches the tenant's robots.txt.
+    run_once(NOW - RUN, config=plain)
+    web.published.clear()
+    web.calls.clear()
+    web.limits.clear()
+    web.fetches.clear()
+    web.robots_requests.clear()
+    run_once.web = web
+    run_once.state_dir = tmp_path
+    return run_once
+
+
+def acme_requests(web):
+    return (
+        [f for f in web.fetches if f.startswith(ACME_HOST)]
+        + [call for call in web.calls]
+        + [host for host in web.robots_requests if host == ACME_HOST]
+    )
+
+
+def test_a_paused_source_is_not_asked_anything_for_48_hours(paused):
+    web = paused.web
+    web.rate_limited[ACME_HOST] = CHALLENGE
+    for hours in (0, 1, 24, 47):
+        report = paused(NOW + hours * HOUR)
+        assert statuses(report) == {"acme": "paused"}
+    assert acme_requests(web) == []
+    assert web.published == []  # no health alert: a pause is not a failure
+    assert not (paused.state_dir / "sources.json").read_text().count('"probed_at"')
+
+
+def test_after_48_hours_one_request_every_6_hours_with_the_cached_robots_txt(paused):
+    web = paused.web
+    web.rate_limited[ACME_HOST] = CHALLENGE
+    paused(NOW + 48 * HOUR)
+    # Exactly one request, and robots.txt (cached two days ago) is not read again.
+    assert web.fetches == [f"{ACME_HOST}/wday/cxs/acme/Campus/jobs"]
+    assert ACME_HOST not in web.robots_requests
+    assert web.published == []
+    for hours in (48.25, 50, 53.5):
+        assert statuses(paused(NOW + hours * HOUR)) == {"acme": "paused"}
+    assert len(web.fetches) == 1  # nothing between probes
+    paused(NOW + 54 * HOUR)
+    assert len(web.fetches) == 2
+    assert ACME_HOST not in web.robots_requests  # the 429s kept the cached copy
+
+
+def test_a_probe_that_succeeds_resumes_polling_every_3_hours_with_small_searches(paused):
+    web = paused.web
+    report = paused(NOW + 48 * HOUR)
+    # The probe (one posting) and then, in the same run, the tenant itself.
+    assert web.limits[0] == 1 and web.calls[0] == ("Campus", "")
+    assert statuses(report) == {"acme": "ok"}
+    assert web.searches() == list(workday.SEARCH_TERMS)
+    (announcement,) = web.sent_to(HEALTH_TOPIC)
+    assert announcement["title"] == "Workday answers again"
+    assert "at most every 3 h" in announcement["message"]
+
+    web.calls.clear()
+    for minutes in (15, 60, 165):
+        assert statuses(paused(NOW + 48 * HOUR + minutes * RUN / 15)) == {"acme": "not_due"}
+    assert web.calls == []
+    assert statuses(paused(NOW + 51 * HOUR)) == {"acme": "ok"}
+    assert len(web.sent_to(HEALTH_TOPIC)) == 1  # announced once
+
+
+def test_still_refused_after_7_days_probing_stops_and_one_alert_asks_to_mark_it_unsupported(
+    paused,
+):
+    web = paused.web
+    web.rate_limited[ACME_HOST] = CHALLENGE
+    for hours in range(48, 7 * 24, 6):
+        paused(NOW + hours * HOUR)
+    probes = len(web.fetches)
+    assert probes == (7 * 24 - 48) // 6
+    assert web.published == []
+
+    report = paused(NOW + 7 * 24 * HOUR)
+    assert statuses(report) == {"acme": "paused"}
+    (alert,) = web.sent_to(HEALTH_TOPIC)
+    assert alert["title"] == "Workday still refused after 7 days"
+    assert "Mark the Workday companies unsupported in companies.yaml" in alert["message"]
+    for days in (7.5, 8, 10):
+        paused(NOW + days * 24 * HOUR)
+    assert len(web.fetches) == probes  # no more probes
+    assert len(web.sent_to(HEALTH_TOPIC)) == 1
+
+
+def test_a_paused_source_closes_nothing(paused):
+    web = paused.web
+    stored = load_profile_state(paused.state_dir, OWNER).jobs
+    assert SPRING in stored and stored[SPRING].status == OPEN
+    web.campus.clear()  # the role has really gone, but nobody is looking
+    web.rate_limited[ACME_HOST] = CHALLENGE
+    for hours in range(0, 48, 6):
+        paused(NOW + hours * HOUR)
+    assert load_profile_state(paused.state_dir, OWNER).jobs[SPRING].status == OPEN
+
+
+def test_stage_and_announcement_rules():
+    memory: dict = {}
+    assert pauses.stage(PAUSE, memory, NOW - HOUR) == pauses.PAUSED  # before it began
+    assert pauses.stage(PAUSE, memory, NOW + 47 * HOUR) == pauses.PAUSED
+    assert pauses.stage(PAUSE, memory, NOW + 48 * HOUR - timedelta(minutes=1)) == pauses.PROBE
+    memory["probed_at"] = (NOW + 48 * HOUR).isoformat()
+    assert pauses.stage(PAUSE, memory, NOW + 50 * HOUR) == pauses.PAUSED
+    assert pauses.stage(PAUSE, memory, NOW + 54 * HOUR) == pauses.PROBE
+    assert pauses.announcement(PAUSE, pauses.PAUSED, memory) is None
+    assert pauses.stage(PAUSE, memory, NOW + 7 * 24 * HOUR) == pauses.GIVEN_UP
+    assert pauses.announcement(PAUSE, pauses.GIVEN_UP, memory) is not None
+    memory["announced"] = pauses.GIVEN_UP
+    assert pauses.announcement(PAUSE, pauses.GIVEN_UP, memory) is None

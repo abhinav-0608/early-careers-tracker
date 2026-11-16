@@ -1,6 +1,7 @@
 import shutil
 
 import pytest
+import yaml
 
 from conftest import OWNER, ROOT, make_company, make_profile
 from jobtracker.config import KNOWN_ATS, ConfigError, load_config
@@ -105,7 +106,16 @@ def _companies_file(tmp_path, entry: str):
     shutil.copytree(ROOT / "config", tmp_path / "config")
     (tmp_path / "config" / "companies.yaml").write_text(entry)
     (tmp_path / "config" / OWNER_PROFILE).write_text("name: Test\nscope: {companies: [acme]}\n")
+    _drop_pauses(tmp_path / "config")
     return tmp_path / "config"
+
+
+def _drop_pauses(config_dir):
+    """Remove the pauses section, whose probe company the test's own list may not have."""
+    path = config_dir / "settings.yaml"
+    data = yaml.safe_load(path.read_text())
+    data.pop("pauses", None)
+    path.write_text(yaml.safe_dump(data))
 
 
 def test_unknown_ats_is_rejected(tmp_path):
@@ -502,3 +512,42 @@ def test_settings_without_a_readme_section_write_no_table(tmp_path):
         tmp_path, "settings.yaml", "readme:\n  profile: abhinav", "readme: {}"
     )
     assert load_config(config_dir).settings.readme_profile is None
+
+
+# --- pauses --------------------------------------------------------------------------------
+
+
+def test_the_shipped_workday_pause_loads(config):
+    pause = config.settings.pauses["workday"]
+    assert pause.since.isoformat() == "2026-11-16T17:00:00+00:00"
+    assert (pause.probe_after_hours, pause.probe_every_hours) == (48, 6)
+    assert (pause.resume_every_minutes, pause.give_up_after_days) == (180, 7)
+    assert config.company(pause.probe_company).ats == "workday"
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("probe_company: lloyds-banking-group", "probe_company: anthropic", "no workday company"),
+        ('since: "2026-11-16T17:00:00+00:00"', 'since: "2026-11-16T17:00:00"', "needs a time zone"),
+        ('since: "2026-11-16T17:00:00+00:00"', 'since: "soon"', "not an ISO date"),
+        ("probe_every_hours: 6", "probe_every_hours: 0", "at least 1"),
+        ("probe_every_hours: 6", "probe_evry_hours: 6", "unknown key 'probe_evry_hours'"),
+        ("  workday:\n    since", "  greenhouse:\n    since", r"only \['workday'\] can be paused"),
+    ],
+)
+def test_pause_mistakes_are_rejected(tmp_path, old, new, message):
+    with pytest.raises(ConfigError, match=message):
+        load_config(_config_with(tmp_path, "settings.yaml", old, new))
+
+
+def test_the_description_budget_for_changed_rules_is_at_least_the_usual_one(tmp_path, config):
+    assert config.settings.descriptions_when_rules_change == 400
+    config_dir = _config_with(
+        tmp_path,
+        "settings.yaml",
+        "descriptions_when_rules_change: 400",
+        "descriptions_when_rules_change: 10",
+    )
+    with pytest.raises(ConfigError, match="at least descriptions_per_run"):
+        load_config(config_dir)
