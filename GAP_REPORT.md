@@ -29,8 +29,8 @@ The grad boards whose terms forbid scraping (Trackr, Gradcracker) and the one be
 challenge (Bright Network) also have their own email alerts (section 3).
 
 Written 2026-11-16, in place of stage 4 (DESIGN.md section 13: grad boards and community
-repos are not used). The tracker watches 422 companies, all in this profile's scope; 352
-are polled and 70 are `unsupported` (counts updated 2026-11-16). This report says where the
+repos are not used). The tracker watches 422 companies, all in this profile's scope; 353
+are polled and 69 are `unsupported` (counts updated 2026-11-16). This report says where the
 remaining coverage is, and what each piece would take. Items built since are marked
 **Built** with the decision that allowed them; everything else still needs a decision.
 
