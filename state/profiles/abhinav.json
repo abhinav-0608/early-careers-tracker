@@ -110,10 +110,10 @@
     "custom:amazon": "e574528ec087c1a7",
     "custom:amd": "e574528ec087c1a7",
     "custom:apple": "e574528ec087c1a7",
-    "custom:google": "e574528ec087c1a7",
-    "custom:google-deepmind": "e574528ec087c1a7",
+    "custom:google": "10b0cf2721ab4e39",
+    "custom:google-deepmind": "10b0cf2721ab4e39",
     "custom:jpmorgan-chase": "10b0cf2721ab4e39",
-    "custom:microsoft": "e574528ec087c1a7",
+    "custom:microsoft": "10b0cf2721ab4e39",
     "greenhouse:abnormal-ai": "10b0cf2721ab4e39",
     "greenhouse:addepar": "10b0cf2721ab4e39",
     "greenhouse:adyen": "10b0cf2721ab4e39",
@@ -393,10 +393,35 @@
     "ashby:sierra:7af8aa4e-ba84-49ba-bc53-19358f4564ff": {
       "status": "unclear"
     },
+    "custom:google:109375266236572358": {
+      "status": "unclear"
+    },
+    "custom:google:109976286780105414": {
+      "status": "unclear"
+    },
+    "custom:google:112940936274551494": {
+      "status": "ineligible",
+      "why": "…or students enrolled in their penultimate/final year of education in an accredited Bachelo…"
+    },
+    "custom:google:73321728058499782": {
+      "status": "ineligible",
+      "why": "…or students enrolled in their penultimate/final year of studies in an accredited full-time…"
+    },
+    "custom:google:80037545080955590": {
+      "status": "ineligible",
+      "why": "…or students enrolled in their penultimate/final year of education in an accredited full-ti…"
+    },
+    "custom:google:96299220855595718": {
+      "status": "ineligible",
+      "why": "Enrolled in the [penultimate academic year] of a Bachelor's or Master's degree"
+    },
     "custom:jpmorgan-chase:210775780": {
       "status": "unclear"
     },
     "custom:jpmorgan-chase:210802065": {
+      "status": "unclear"
+    },
+    "custom:microsoft:1970393557050102": {
       "status": "unclear"
     },
     "greenhouse:addepar:8910310002": {
