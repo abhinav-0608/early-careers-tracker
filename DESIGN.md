@@ -616,6 +616,7 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Custom: Apple | `GET jobs.apple.com/en-gb/search` | JSON embedded in the page, 20 per page (about 320 KB a page); narrowed to one team |
 | Eightfold | `GET {host}/api/pcsx/search?domain={board}` | 10 per page; narrowed to the "Intern" experience level. `host` and `board` (the site's domain) per company. Used by Microsoft; Qualcomm waits on its terms (decision 29) |
 | Custom: Microsoft | `GET apply.careers.microsoft.com/api/pcsx/search` | Eightfold on Microsoft's own hostname, read by the Eightfold adapter; kept a custom source so its job keys are unchanged |
+| Custom: HSBC | `GET apply.careers.hsbc.com/emergingtalent/search/` | SAP SuccessFactors career pages, server-rendered, 25 per page: HSBC's whole early-careers site (37 roles, two requests). robots.txt disallows only apply, alerts and `/services/` |
 | Custom: AMD | `GET careers.amd.com/api/jobs` | iCIMS Attract; 100 per page with full descriptions; one category and three keyword searches. `Crawl-delay: 5` |
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
 
@@ -804,8 +805,8 @@ were already covered. Of the 23 FAANG+ 🔥 companies, 16 are polled and 7 are n
   than 60 seconds is not fetched at all, because a 12-minute run could not honour it.
 - **Polling intervals.** `settings.yaml` gives each kind of source a minimum number of
   minutes between polls (`polling.every_minutes`, keyed by ATS name or custom module name;
-  0 or absent means every run). Today the ATS APIs, tal.net and small Workday sites are
-  polled every run. SmartRecruiters, Workable, Amazon, Apple, AMD, Microsoft and any
+  0 or absent means every run). Today the ATS APIs, tal.net, HSBC and small Workday
+  sites are polled every run. SmartRecruiters, Workable, Amazon, Apple, AMD, Microsoft and any
   Eightfold site are held to once an hour as whole sources; their weight is in the tables
   above, and Microsoft answered 429 twice on 2026-11-16 when polled every run. Two more
   are limited too:
@@ -1519,3 +1520,11 @@ none should be without a decision to grow the scope.
     Jefferies' publish no location, though their titles often name one. Reading the title
     like a location would let a title naming only New York drop a role, which would change
     what alerts; so it is used only when it gives a region the role passes in.
+32. **HSBC is polled from its early-careers site** (2026-11-16, owner's decision on the
+    gap report): `apply.careers.hsbc.com/emergingtalent`, whose robots.txt allows the
+    search and posting pages and whose terms allow copying extracts for personal
+    information. Of the other three UK banks chosen with it, NatWest
+    (`jobs.natwestgroup.com`: a Cloudflare challenge even for robots.txt) and BNP Paribas
+    (`group.bnpparibas`: Akamai "Access Denied" for robots.txt) refuse the tracker and
+    stay unsupported, and UBS was skipped by the owner (a browser-like session handshake
+    and terms limited to personal viewing); all three are on the manual email alert list.

@@ -53,7 +53,7 @@ or endpoint below has been tried yet.
 | Tesla | Akamai "Access Denied" to non-browsers | None |
 | JPMorgan Chase | Switched off 2026-11-16: jpmorgan.com's terms forbid robots that monitor or copy its pages or data | Written permission (decision 30) |
 
-These are final under the rules in DESIGN.md. Their own job alerts (email) are the way to
+Under the rules in DESIGN.md these are final, short of JPMorgan's written permission. Their own job alerts (email) are the way to
 hear about them.
 
 ### Polled, but only in part
@@ -86,7 +86,7 @@ cheapest gains are generalising those.
 | Avature | Bloomberg, Two Sigma | **No answer** from either host, twice (25-second timeout) | None while robots.txt cannot be read: the client fetches nothing from such a host | Stay unsupported for now. Bloomberg runs UK student programmes, so this gap matters |
 | SAP SuccessFactors | SAP, Moody's | Not checked | Not checked | Later |
 | Phenom | Brevan Howard, Circle | Not checked | Not checked | Later |
-| Own sites | HSBC, UBS, BNP Paribas, NatWest, IBM, BAE Systems Digital Intelligence, D. E. Shaw and others | Not checked here | One custom adapter each, as in stage 3b | Worth it only for the banks with UK spring weeks (HSBC, UBS, BNP Paribas, NatWest), one at a time |
+| Own sites | HSBC (**polled since 2026-11-16**); UBS (skipped by the owner), BNP Paribas and NatWest (both refuse the tracker: bot protection) are on the manual alert list; IBM, BAE Systems Digital Intelligence, D. E. Shaw and others | Not checked here | One custom adapter each, as in stage 3b | Worth it only for the banks with UK spring weeks (HSBC, UBS, BNP Paribas, NatWest), one at a time |
 | Disallowed Workday sites | Citi, RBC, PIMCO, Franklin Templeton, eBay, Zoom, Palo Alto Networks, Darktrace | Disallowed | None (decision 7) | Stay unsupported |
 
 **Suggested order:** a generic Eightfold adapter (4 companies), then a generic Oracle adapter

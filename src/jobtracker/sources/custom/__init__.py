@@ -15,7 +15,7 @@ from collections.abc import Callable
 
 from jobtracker.http import HttpClient
 from jobtracker.models import Company, Job
-from jobtracker.sources.custom import amazon, amd, apple, google, jpmorgan, microsoft
+from jobtracker.sources.custom import amazon, amd, apple, google, hsbc, jpmorgan, microsoft
 
 NAME = "custom"
 
@@ -24,6 +24,7 @@ MODULES: dict[str, Callable[[Company, HttpClient], list[Job]]] = {
     "amd": amd.fetch,
     "apple": apple.fetch,
     "google": google.fetch,
+    "hsbc": hsbc.fetch,
     "jpmorgan": jpmorgan.fetch,
     "microsoft": microsoft.fetch,
 }

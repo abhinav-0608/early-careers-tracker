@@ -60,6 +60,7 @@ polling:
     amd: 60               # four requests, five seconds apart (the site's Crawl-delay)
     microsoft: 60         # five small requests (10 roles each); hourly since it answered
                           # 429 twice on 2026-11-16 when polled every run
+    hsbc: 0               # two server-rendered pages of 25 (its whole early-careers site)
     eightfold: 60         # intern-level search, 10 roles a request; no company uses it yet (Qualcomm waits on its terms)
 
 # Kinds of source taken off polling because their servers refuse the tracker. Nothing is

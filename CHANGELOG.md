@@ -28,6 +28,9 @@ first. Changes the owner approved directly are noted as such.
 - **Tooling** (owner's request): the reviewer agent inherits the session model; no
   setting selects Fable (the Fable entry in the user settings' `modelSettings` was
   removed); worktrees live under `.worktrees/`, gitignored.
+- **HSBC polled from its early-careers site** (owner's decision 1): robots.txt allows the
+  search and posting pages; terms allow extracts for personal information. NatWest and
+  BNP Paribas refuse even robots.txt (Cloudflare, Akamai) and stay unsupported.
 - **Microsoft polled hourly, not every run** (autonomous): apply.careers.microsoft.com
   answered 429 twice on 2026-11-16 (run 43924111375 and earlier), so the tracker was
   asking too often. Fewer requests, no change to what is seen beyond up to an hour's delay.

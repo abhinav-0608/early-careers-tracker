@@ -1905,9 +1905,11 @@
   industry: finance
   tags: []
   regions: [uk, us, india]
-  ats: unsupported
+  ats: custom
+  board: hsbc
   careers_url: https://www.hsbc.com/careers
-  note: "Own careers site (mycareer.hsbc.com)"
+  note: "Its early-careers site (apply.careers.hsbc.com/emergingtalent): every student and graduate programme, worldwide"
+  verified: 2026-11-16
 
 - key: ubs
   name: UBS
@@ -1937,7 +1939,7 @@
   regions: [uk, us, india]
   ats: unsupported
   careers_url: https://group.bnpparibas/en/careers
-  note: "Own careers site"
+  note: "Own careers site (group.bnpparibas): Akamai Access Denied even for robots.txt (2026-11-16)"
 
 - key: societe-generale
   name: Societe Generale
@@ -2011,7 +2013,7 @@
   regions: [uk, india]
   ats: unsupported
   careers_url: https://jobs.natwestgroup.com
-  note: "Own careers site (jobs.natwestgroup.com); no public job-board endpoint found (checked 2026-11-15)"
+  note: "Own careers site (jobs.natwestgroup.com): Cloudflare challenge even for robots.txt (2026-11-16)"
 
 - key: lloyds-banking-group
   name: Lloyds Banking Group
