@@ -693,7 +693,8 @@ sets `Crawl-delay: 10`. The adapter reads the board page with `html.parser`: a b
 each posting as a table row, a tile, or both, and the parser reads whichever is there and
 merges by posting id. An Atom feed exists on some tenants but is switched off on Morgan
 Stanley and Nomura, so the page is the one source that works for all. Jefferies publishes
-no location field (the city is in the title), so its roles are labelled "unclear". A page
+no location field (the city is in the title); the title's place then labels the role
+(section 6, decision 31), and a title with none leaves it "unclear". A page
 with no results section (a login page, an error, a redesign) raises instead of looking like
 an empty board. A tenant's root URL redirects to `/ats/login`, which is disallowed; the
 adapter never requests the root, and the client would refuse the redirect if it did.
@@ -873,6 +874,10 @@ programmes).
    - A location that cannot be classified at all (empty, "Multiple locations") **passes** and
      is labelled "unclear" in the alert and the README. A known non-target location (e.g.
      Singapore) is dropped.
+   - A job with **no location at all** is classified by its title instead ("2027 Technology
+     Spring Insight (Glasgow)" is UK), but only to label and group it: the title is used
+     when it places the job in a region the job passes in, and otherwise the job stays
+     "unclear". A title never drops a job (decision 31).
 
 Role types are checked in file order and the first match wins, **including disabled ones**:
 a job that lands on a disabled type is dropped rather than falling through to a later, more
@@ -1509,3 +1514,8 @@ none should be without a decision to grow the scope.
     terms were found. Its adapter (custom/jpmorgan.py) is kept for if permission is ever
     given; JPMorgan is on the manual email alert list. The same test applies to any other
     Oracle Recruiting Cloud company: none is added unless its own terms are clear.
+31. **A title's place name labels a job with no location, and never drops it**
+    (2026-11-16, owner's decision, option B). tal.net boards such as Morgan Stanley's and
+    Jefferies' publish no location, though their titles often name one. Reading the title
+    like a location would let a title naming only New York drop a role, which would change
+    what alerts; so it is used only when it gives a region the role passes in.

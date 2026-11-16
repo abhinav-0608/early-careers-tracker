@@ -183,3 +183,26 @@ def test_a_real_region_is_preferred_over_unclear(filters):
 def test_every_decision_explains_itself(filters):
     rejected = classify(make_job(locations=("New York, NY",)), COMPANY, filters)
     assert rejected.reason == "location: 'New York, NY' is onsite, us allows remote only"
+
+
+@pytest.mark.parametrize(
+    ("title", "region"),
+    [
+        ("2027 Technology Spring Insight (Glasgow)", "uk"),
+        ("2027 Equity Research Spring Week Programme - London", "uk"),
+        ("Bank of America | Early Insights Event", UNCLEAR),  # names no place
+        # A place outside the regions, or a region the role would not pass in, is not used
+        # to drop it: with no location given, the role stays unclear.
+        ("Spring Week 2027 - New York", UNCLEAR),
+        ("Spring Week 2027 - Tokyo", UNCLEAR),
+    ],
+)
+def test_a_role_with_no_location_is_placed_by_its_title_but_never_dropped(filters, title, region):
+    decision = classify(make_job(title=title, locations=()), COMPANY, filters)
+    assert decision.matched
+    assert decision.region == region
+
+
+def test_a_given_location_wins_over_the_title(filters):
+    job = make_job(title="Spring Week 2027 - London", locations=("New York, NY",))
+    assert not classify(job, COMPANY, filters).matched  # US on-site: as before

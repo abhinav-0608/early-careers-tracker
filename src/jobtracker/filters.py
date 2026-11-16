@@ -89,8 +89,17 @@ def match_location(job: Job, company: Company, filters: Filters) -> tuple[str | 
 
     A job passes if any one of its locations is acceptable. When several are, a real
     region beats "unclear", and regions are preferred in config order.
+
+    A posting with no location (tal.net boards often publish none) may still name a place
+    in its title: "2027 Technology Spring Insight (Glasgow)". The title is read only to
+    label and group the role: it is used when it places the role in a region the role
+    passes in, and otherwise the role stays "unclear". It never drops a role (DESIGN.md
+    decision 31).
     """
     if not job.locations:
+        region, reason = classify_location(job.title, job.remote_hint, company, filters)
+        if region is not None and region != UNCLEAR:
+            return region, f"{reason}, from the title"
         return UNCLEAR, "location: none given"
 
     accepted: list[tuple[str, str]] = []

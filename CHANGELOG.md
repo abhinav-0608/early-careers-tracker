@@ -5,6 +5,13 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Place names in titles** (owner's decision 3, option B): a role with no location is
+  labelled and grouped by a place its title names (UK for "… (Glasgow)"), only when that
+  is a region it passes in; it is never dropped. Moves the Morgan Stanley and Jefferies
+  roles from "Location unclear" to United Kingdom in the README; no alert changes.
+- **Merged the Eightfold change** (ead20ac): reviewer APPROVE (after a first BLOCK on
+  Qualcomm's terms, fixed below); 570 tests, ruff clean; dry run no alerts, no errors,
+  2 min 51 s; manual run 43972877581 succeeded in 2 min 39 s, no alerts, no health alert.
 - **Owner's decisions on #4 and #5** (2026-11-16):
   - JPMorgan: check its own careers-site terms; keep polling only if they do not forbid
     automated access. jpmorgan.com's terms say "you will not use any robot, spider, other
