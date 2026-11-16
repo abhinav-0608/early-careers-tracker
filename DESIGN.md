@@ -802,9 +802,10 @@ were already covered. Of the 23 FAANG+ 🔥 companies, 17 are polled and 6 are n
   than 60 seconds is not fetched at all, because a 12-minute run could not honour it.
 - **Polling intervals.** `settings.yaml` gives each kind of source a minimum number of
   minutes between polls (`polling.every_minutes`, keyed by ATS name or custom module name;
-  0 or absent means every run). Today the ATS APIs, tal.net, JPMorgan, Microsoft and small
-  Workday sites are polled every run. SmartRecruiters, Workable, Amazon, Apple and AMD
-  are held to once an hour as whole sources (their weight is in the tables above), and
+  0 or absent means every run). Today the ATS APIs, tal.net, JPMorgan and small
+  Workday sites are polled every run. SmartRecruiters, Workable, Amazon, Apple, AMD,
+  Microsoft and Eightfold (Qualcomm) are held to once an hour as whole sources (Microsoft
+  since it answered 429 twice on 2026-11-16 when polled every run) (their weight is in the tables above), and
   so are two more:
   - **Google** (whole source): each request is a 1.3 MB page. When it is not due it gets a
     `not_due` result and no request at all.

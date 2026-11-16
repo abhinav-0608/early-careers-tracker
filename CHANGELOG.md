@@ -5,6 +5,16 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Microsoft polled hourly, not every run** (autonomous): apply.careers.microsoft.com
+  answered 429 twice on 2026-11-16 (run 43924111375 and earlier), so the tracker was
+  asking too often. Fewer requests, no change to what is seen beyond up to an hour's delay.
+- **Generic Eightfold adapter; Qualcomm polled** (owner's decision 1): Netflix and
+  Millennium refused the search API (403) and stay unsupported; Amex's careers host is
+  unknown.
+- **Merged the preference note** (`0e8abe4`): the reviewer blocked the first attempt
+  (eligibility widened by accident; a re-read could close a role), approved after the
+  fixes. Manual run 43924111375: success in 4 min 36 s, no notifications, no health
+  alert; Microsoft 429 and one Anduril timeout, both outside causes.
 - **Owner's decisions** (answers to DECISIONS_NEEDED.md, 2026-11-16):
   1. New source types, option B: a generic Eightfold adapter, then a generic Oracle
      Recruiting Cloud adapter, then the own sites of HSBC, UBS, BNP Paribas and NatWest one

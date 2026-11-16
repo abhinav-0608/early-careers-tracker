@@ -58,7 +58,8 @@ polling:
     amazon: 60            # about 1 MB per page of 100 roles
     apple: 60             # about 7 pages of 320 KB
     amd: 60               # four requests, five seconds apart (the site's Crawl-delay)
-    microsoft: 0          # five small requests (10 roles each); raise it if that grows
+    microsoft: 60         # five small requests (10 roles each); hourly since it answered
+                          # 429 twice on 2026-11-16 when polled every run
     eightfold: 60         # intern-level search, 10 roles a request (Qualcomm: about 12)
 
 # Kinds of source taken off polling because their servers refuse the tracker. Nothing is
