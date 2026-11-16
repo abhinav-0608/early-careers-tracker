@@ -5,6 +5,10 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Merged the place-names change** (36a7244): reviewer APPROVE; 576 tests, ruff clean;
+  dry run no alerts, no errors, 2 min 53 s; manual run 43975272542 succeeded in 3 min
+  21 s, no alerts, no health alert, and the three Glasgow/London roles moved to United
+  Kingdom in the README. Its one failed source was Microsoft (HTTP 429, backed off).
 - **Place names in titles** (owner's decision 3, option B): a role with no location is
   labelled and grouped by a place its title names (UK for "… (Glasgow)"), only when that
   is a region it passes in; it is never dropped. Moves the Morgan Stanley and Jefferies
