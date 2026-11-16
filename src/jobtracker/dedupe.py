@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
+from jobtracker import privacy
 from jobtracker.config import Settings
 from jobtracker.filters import Decision
 from jobtracker.models import Job
@@ -34,9 +35,13 @@ BASELINED = "baselined"  # new to us, but recorded silently as part of a baselin
 
 
 def fingerprint(job: Job) -> str:
-    """Fallback identity. Digits are kept, so "Spring Week 2027" != "Spring Week 2028"."""
+    """Fallback identity. Digits are kept, so "Spring Week 2027" != "Spring Week 2028".
+
+    For a private company's posting it is a hash, so the stored value reveals nothing.
+    """
     locations = sorted(normalise(location) for location in job.locations)
-    return "|".join([job.company, normalise(job.title), "; ".join(locations)])
+    plain = "|".join([job.company, normalise(job.title), "; ".join(locations)])
+    return f"{job.company}|sha256-{privacy.digest(plain, 32)}" if job.private else plain
 
 
 class Reconciler:

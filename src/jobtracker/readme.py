@@ -32,7 +32,9 @@ HEADING = "## Open roles"
 def open_roles(state: ProfileState, profile: Profile, config: Config, today: date) -> str:
     """The generated section, from the heading to the footer."""
     filters = profile.filters
-    jobs = [job for job in state.jobs.values() if job.status == OPEN]
+    # A private company's roles are alerted only, never listed here (privacy.py).
+    private = {company.key for company in config.companies if company.private}
+    jobs = [job for job in state.jobs.values() if job.status == OPEN and job.company not in private]
     lines = [HEADING, ""]
     if not jobs:
         lines += ["No matching roles are open right now.", ""]

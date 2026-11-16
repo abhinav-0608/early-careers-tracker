@@ -30,7 +30,7 @@ from pathlib import Path
 
 import httpx
 
-from jobtracker import eligibility, health, log, pauses, readme
+from jobtracker import eligibility, health, log, pauses, privacy, readme
 from jobtracker.config import WORKDAY_SEARCH, Config, Filters, Pause, Profile, Settings
 from jobtracker.dedupe import BASELINED, NEW, REPOST, Reconciler
 from jobtracker.filters import Decision, classify
@@ -385,12 +385,13 @@ def run_profile(
                 counts.ineligible += 1
                 report.dropped.append((company.key, job.title, verdict.reason))
                 if job.key not in settled_before:
+                    # A private company's role is never named in the (public) log.
                     log.event(
                         "eligibility_dropped",
                         profile=profile.key,
                         company=company.key,
-                        title=job.title,
-                        why=verdict.reason,
+                        title=privacy.WITHHELD if job.private else job.title,
+                        why=verdict.status if job.private else verdict.reason,
                     )
                 continue
             counts.matched += 1
@@ -429,7 +430,8 @@ def run_profile(
             report.job_alerts_failed += 1
 
     if save:
-        save_profile_state(state, state_dir, profile.key)
+        private = {company.key for company in config.companies if company.private}
+        save_profile_state(state, state_dir, profile.key, private)
         if readme_path and settings.readme_profile == profile.key:
             # The state is already saved; a README that cannot be written costs the
             # table one run, not the profile its alerts.
@@ -702,6 +704,8 @@ def fetch_company(
         else:
             result.jobs = adapter(company, http)
             result.polled_kind = company.poll_kind
+        if company.private:
+            result.jobs = [privacy.pseudonymise(job) for job in result.jobs]
     except RateLimitedError as exc:
         # 429. Either the host said so just now (a failure, counted towards an alert),
         # or it said so earlier and was not asked at all this run (not a failure).

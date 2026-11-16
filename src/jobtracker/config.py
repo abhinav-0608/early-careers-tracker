@@ -696,6 +696,7 @@ def load_companies(path: Path) -> tuple[Company, ...]:
                 careers_url=raw.get("careers_url"),
                 note=raw.get("note"),
                 opt_in=_get(raw, "opt_in", bool, where, default=False),
+                private=_get(raw, "private", bool, where, default=False),
             )
         )
     return tuple(companies)

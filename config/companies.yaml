@@ -1907,8 +1907,12 @@
   regions: [uk, us, india]
   ats: custom
   board: hsbc
+  # Alerts only: its terms allow extracts for personal information but not passing
+  # them on (DESIGN.md decision 31), so its roles stay out of the public README, logs
+  # and state.
+  private: true
   careers_url: https://www.hsbc.com/careers
-  note: "Its early-careers site (apply.careers.hsbc.com/emergingtalent): every student and graduate programme, worldwide"
+  note: "Its early-careers site (apply.careers.hsbc.com/emergingtalent): every student and graduate programme, worldwide. Private: alerts only"
   verified: 2026-11-16
 
 - key: ubs

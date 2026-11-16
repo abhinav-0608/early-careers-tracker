@@ -19,8 +19,11 @@ an uneventful run leaves the files byte-identical and nothing is committed.
 from __future__ import annotations
 
 import json
+from collections.abc import Collection
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+
+from jobtracker import privacy
 
 VERSION = 2
 
@@ -202,19 +205,47 @@ def load_profile_state(state_dir: Path | str, profile_key: str) -> ProfileState:
     )
 
 
-def save_profile_state(state: ProfileState, state_dir: Path | str, profile_key: str) -> None:
+def save_profile_state(
+    state: ProfileState,
+    state_dir: Path | str,
+    profile_key: str,
+    private: Collection[str] = (),
+) -> None:
+    """Write one profile's state. Roles of the `private` companies (keys) are written
+    without title, link, location or quoted text: the file is committed to a public
+    repository (privacy.py). In memory they stay whole for the rest of the run."""
     jobs = {}
     for key, job in state.jobs.items():
         record = asdict(job)
         del record["key"]  # already the dictionary key
+        if job.company in private:
+            record.update(title="", url="", locations=[])
+            if record["eligibility"]:
+                record["eligibility"] = privacy.redact_basis(record["eligibility"])
         if not record["eligibility_note"]:
             del record["eligibility_note"]  # rare: keep the file small and stable
         jobs[key] = record
     data = {"version": VERSION, "jobs": jobs, "baselines": state.baselines}
     if state.eligibility_rules:
-        data["eligibility"] = state.eligibility
+        data["eligibility"] = {
+            key: _redact_verdict(verdict) if _company_of(key) in private else verdict
+            for key, verdict in state.eligibility.items()
+        }
         data["eligibility_rules"] = state.eligibility_rules
     _write(profile_path(state_dir, profile_key), data)
+
+
+def _company_of(job_key: str) -> str:
+    """ "source:company:job_id" -> company."""
+    parts = job_key.split(":")
+    return parts[1] if len(parts) > 2 else ""
+
+
+def _redact_verdict(verdict: dict) -> dict:
+    redacted = {key: value for key, value in verdict.items() if key != "why"}
+    if redacted.get("basis"):
+        redacted["basis"] = privacy.redact_basis(redacted["basis"])
+    return redacted
 
 
 # --- files -----------------------------------------------------------------------------

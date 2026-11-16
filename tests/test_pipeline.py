@@ -796,3 +796,111 @@ def test_the_re_read_never_changes_a_verdict_only_adds_a_note(tracker, web, now_
     assert tracker.state().eligibility[INTERN_KEY]["status"] == "eligible"
     assert web.description_fetches.count(INTERN_PATH) == 2  # read once more, only once
     assert web.published == []
+
+
+# --- private companies (alerts only; privacy.py, DESIGN.md decision 31) ----------------
+
+
+def _private(config, key="point72"):
+    companies = tuple(
+        replace(company, private=True) if company.key == key else company
+        for company in config.companies
+    )
+    return replace(config, companies=companies)
+
+
+def test_a_private_company_is_alerted_in_full_but_nothing_public_names_its_roles(
+    tracker, web, caplog
+):
+    caplog.set_level("INFO")
+    private = _private(tracker.config)
+    tracker(config=private)
+    web.published.clear()
+
+    web.add_greenhouse_job(9000001, "Spring Week 2027 - Technology")
+    tracker(NOW + RUN, config=private)
+
+    # The alert, to the owner's own topic, is whole.
+    (alert,) = web.published
+    assert alert["topic"] == JOB_TOPIC
+    assert alert["title"] == "Point72 – Spring Week 2027 - Technology"
+    assert alert["click"] == "https://boards.greenhouse.io/point72/jobs/9000001"
+
+    # The committed state and the (public) logs carry no title, link or posting id.
+    saved = (tracker.state_dir / "profiles" / f"{OWNER}.json").read_text()
+    for public in (saved, caplog.text):
+        for secret in ("Spring Week", "Point72 Academy", "9000001", "8845395002", "/jobs/"):
+            assert secret not in public
+    assert "notification_sent" in caplog.text
+
+    # It is still one job, alerted once.
+    web.published.clear()
+    tracker(NOW + 2 * RUN, config=private)
+    assert web.published == []
+    assert all(job.title == "" and job.url == "" for job in tracker.state().jobs.values())
+
+
+def test_a_private_company_still_recognises_reposts_and_closes_roles(tracker, web):
+    private = _private(tracker.config)
+    tracker(config=private)
+    web.published.clear()
+
+    original = web.boards["boards-api.greenhouse.io"]["jobs"][0]
+    web.remove_greenhouse_job(8845395002)
+    web.add_greenhouse_job(9000001, original["title"], original["location"]["name"])
+    report = tracker(NOW + RUN, config=private)
+    assert web.published == []
+    assert report.total("reposts") == 1
+
+    web.remove_greenhouse_job(9000001)
+    tracker(NOW + 2 * RUN, config=private)
+    report = tracker(NOW + 3 * RUN, config=private)
+    assert report.closed == 1
+
+
+def test_a_private_company_s_dropped_posting_is_logged_without_its_title_or_text(
+    tracker, web, caplog
+):
+    caplog.set_level("INFO")
+    private = _private(tracker.config)
+    tracker(config=private)
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = "<p>Open only to final year students.</p>"
+    caplog.clear()
+    tracker(NOW + RUN, config=private)
+
+    (fields,) = [
+        record.fields for record in caplog.records if record.getMessage() == "eligibility_dropped"
+    ]
+    assert fields["title"] == "(private)"
+    assert "final year" not in caplog.text and "Software Engineer" not in caplog.text
+    saved = (tracker.state_dir / "profiles" / f"{OWNER}.json").read_text()
+    assert "final year" not in saved and str(INTERN_ID) not in saved
+
+
+def test_a_private_company_s_roles_are_left_out_of_the_readme(
+    config, profile, settings, web, tmp_path
+):
+    companies = (
+        make_company("point72", name="Point72", private=True),
+        make_company("palantir", name="Palantir", ats="lever"),
+    )
+    owner = make_profile(profile, OWNER, industries=("quant",))
+    test_config = replace(
+        config,
+        settings=replace(settings, readme_profile=OWNER),
+        companies=companies,
+        profiles=(owner,),
+    )
+    readme_path = tmp_path / "README.md"
+    readme_path.write_text("# Tracker\n")
+    http = HttpClient(
+        test_config.settings, transport=httpx.MockTransport(web.handle), sleep=lambda _: None
+    )
+    notifier = Notifier(http, test_config.settings.ntfy_server, {OWNER: JOB_TOPIC}, HEALTH_TOPIC)
+    run(test_config, tmp_path / "state", http, notifier, NOW, readme_path=readme_path)
+
+    assert "Baseline: 1 matching role" in web.published[0]["title"]  # alerted
+    text = readme_path.read_text()
+    assert "## Open roles" in text
+    assert "Point72" not in text and "Spring Insight" not in text

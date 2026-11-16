@@ -32,6 +32,11 @@ class Company:
     # True = only profiles that name this company watch it; watching its industry is
     # not enough. Lets a company be added for one person without alerting anyone else.
     opt_in: bool = False
+    # True = alerts only. The company's terms allow extracts for the owner's own
+    # information but not passing them on, and this repository is public: its roles are
+    # kept out of the README, out of log lines, and out of committed state except as
+    # opaque ids and hashes (privacy.py, DESIGN.md decision 31).
+    private: bool = False
 
     @property
     def source_key(self) -> str:
@@ -83,6 +88,8 @@ class Job:
     # (Lever, Ashby, Amazon). Other sources are asked for it per job, and only for jobs
     # that have passed the title and location filters (sources/descriptions.py).
     description: str | None = field(default=None, compare=False, repr=False)
+    # From a private company (Company.private): job_id is already a hash (privacy.py).
+    private: bool = False
 
     @property
     def key(self) -> str:

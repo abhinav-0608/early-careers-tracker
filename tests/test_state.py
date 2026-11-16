@@ -86,3 +86,39 @@ def test_missing_or_damaged_host_memory_is_just_an_empty_cache(tmp_path):
     assert load_hosts(tmp_path) == HostsState()
     (tmp_path / "hosts.json").write_text("{ not json", encoding="utf-8")
     assert load_hosts(tmp_path) == HostsState()
+
+
+def test_a_private_company_s_roles_are_saved_without_their_text(tmp_path):
+    from jobtracker.state import ProfileState, StoredJob, load_profile_state, save_profile_state
+
+    def job(company, key):
+        return StoredJob(
+            key=key, source="custom", company=company, title="Spring Insight (Sheffield)",
+            locations=["Sheffield, GB"], url="https://example.com/job/1", role_type="insight",
+            fields=["swe"], region="uk", fingerprint="hashed", first_seen="2026-11-16T00:00:00",
+            last_seen="2026-11-16", eligibility='description: "all years are welcome"',
+        )  # fmt: skip
+
+    eligible = {"status": "eligible", "basis": 'description: "all years"', "note": ""}
+    state = ProfileState(
+        jobs={"custom:hsbc:ab12": job("hsbc", "custom:hsbc:ab12"),
+              "custom:acme:1": job("acme", "custom:acme:1")},
+        eligibility={
+            "custom:hsbc:ab12": dict(eligible),
+            "custom:hsbc:cd34": {"status": "ineligible", "why": "final year only"},
+            "custom:acme:1": dict(eligible),
+        },
+        eligibility_rules="rules",
+    )  # fmt: skip
+    save_profile_state(state, tmp_path, "owner", private={"hsbc"})
+    text = (tmp_path / "profiles" / "owner.json").read_text()
+    assert text.count("Spring Insight") == 1 and text.count("all years") == 2  # acme's only
+    assert "final year" not in text
+
+    loaded = load_profile_state(tmp_path, "owner")
+    hsbc = loaded.jobs["custom:hsbc:ab12"]
+    assert (hsbc.title, hsbc.url, hsbc.locations) == ("", "", [])
+    assert hsbc.eligibility == "description: (private)"
+    assert loaded.eligibility["custom:hsbc:ab12"]["basis"] == "description: (private)"
+    assert loaded.eligibility["custom:hsbc:cd34"] == {"status": "ineligible"}
+    assert loaded.jobs["custom:acme:1"] == state.jobs["custom:acme:1"]

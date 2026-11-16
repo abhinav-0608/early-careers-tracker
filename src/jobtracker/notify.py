@@ -16,7 +16,7 @@ from datetime import date, datetime
 
 import httpx
 
-from jobtracker import eligibility, log
+from jobtracker import eligibility, log, privacy
 from jobtracker.config import Config, Profile
 from jobtracker.filters import UNCLEAR
 from jobtracker.http import HttpClient
@@ -38,6 +38,7 @@ class Notification:
     tags: tuple[str, ...] = ()
     click: str | None = None
     job_keys: tuple[str, ...] = ()  # the jobs this notification covers
+    private: bool = False  # names a private company's role: its title is not logged
 
 
 class Notifier:
@@ -105,7 +106,8 @@ class Notifier:
             # nothing derived from the request can end up in a public Actions log.
             log.warning("notification_failed", channel=channel, error=_describe(exc))
             return False
-        log.event("notification_sent", channel=channel, title=notification.title)
+        title = privacy.WITHHELD if notification.private else notification.title
+        log.event("notification_sent", channel=channel, title=title)
         return True
 
 
@@ -174,6 +176,7 @@ def job_notification(job: StoredJob, profile: Profile, config: Config) -> Notifi
         tags=(*(role.ntfy_tags if role else ()), *(("fire",) if is_faang_plus else ())),
         click=job.url,
         job_keys=(job.key,),
+        private=_is_private(job, config),
     )
 
 
@@ -255,6 +258,11 @@ def health_test_notification(now: datetime) -> Notification:
         priority=4,
         tags=("test_tube",),
     )
+
+
+def _is_private(job: StoredJob, config: Config) -> bool:
+    company = config.company(job.company)
+    return bool(company and company.private)
 
 
 def _company_name(job: StoredJob, config: Config) -> str:

@@ -79,7 +79,7 @@ def parse(company: Company, page: str) -> list[Job]:
         tile = match.group(0)
         title = _TITLE.search(tile)
         if not title:
-            raise ValueError(f"HSBC result {job_id} has no title")
+            raise ValueError("an HSBC result has no title")
         opened = _field(tile, job_id, "customfield1")
         jobs.append(
             Job(
