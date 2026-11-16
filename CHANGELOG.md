@@ -5,6 +5,16 @@ first. Changes the owner approved directly are noted as such.
 
 ## 2026-11-16
 
+- **Owner's decisions** (answers to DECISIONS_NEEDED.md, 2026-11-16):
+  1. New source types, option B: a generic Eightfold adapter, then a generic Oracle
+     Recruiting Cloud adapter, then the own sites of HSBC, UBS, BNP Paribas and NatWest one
+     at a time, spring week and insight programmes first. robots.txt and terms checked
+     first; reviewer; merged one at a time; stop only if a site's rules are unclear.
+  2. Candidates not added: as recommended. CMC Markets is added without asking if
+     Workday resumes and its robots.txt allows the jobs API; Arrowstreet, government/
+     defence and gaming are skipped.
+  3. tal.net place names, option B: a place name in the title labels and groups a role
+     with no location (UK instead of "unclear"); it never drops one.
 - **Autonomous operation set up** (owner's request): CLAUDE.md (standing rules),
   `.claude/agents/reviewer.md` (pre-merge reviewer), this file and DECISIONS_NEEDED.md.
 - **Already done before this, approved by the owner directly** (merged as `e304870`,
