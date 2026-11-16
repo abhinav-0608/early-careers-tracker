@@ -1,20 +1,24 @@
 {
   "backoff": {
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-16T12:31:10+00:00",
+      "strikes": 1
+    },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-16T14:30:57+00:00",
       "strikes": 4
     },
     "wd103.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T12:01:05+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-16T18:01:10+00:00",
+      "strikes": 5
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T12:01:05+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-16T18:01:10+00:00",
+      "strikes": 5
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T12:01:05+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-16T18:01:10+00:00",
+      "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-16T14:30:57+00:00",
@@ -65,26 +69,6 @@
         "Disallow: /cn/*/aow/*",
         "Disallow: /tmall*",
         "Allow: /ac/globalnav/2.0/*/images/ac-globalnav/globalnav/search/*"
-      ]
-    },
-    "apply.careers.microsoft.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T11:31:00+00:00",
-      "rules": [
-        "Disallow: /",
-        "Allow: /$",
-        "Allow: /careers",
-        "Allow: /api/apply",
-        "Allow: /api/pcsx",
-        "Allow: /candidate/login",
-        "Allow: /login",
-        "Allow: /events/candidate",
-        "Allow: /events/open",
-        "Allow: /api/events",
-        "Allow: /careerhub/explore/jobs",
-        "Allow: /api/career_hub",
-        "Allow: /static/gen",
-        "Allow: /gen"
       ]
     },
     "apply.workable.com": {
