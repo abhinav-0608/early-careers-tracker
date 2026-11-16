@@ -1,288 +1,288 @@
 {
   "baselines": {
-    "ashby:1password": "e574528ec087c1a7",
-    "ashby:9fin": "e574528ec087c1a7",
-    "ashby:airwallex": "e574528ec087c1a7",
-    "ashby:amplitude": "e574528ec087c1a7",
-    "ashby:anyscale": "e574528ec087c1a7",
-    "ashby:applied-intuition": "e574528ec087c1a7",
-    "ashby:attio": "e574528ec087c1a7",
-    "ashby:baseten": "e574528ec087c1a7",
-    "ashby:beamery": "e574528ec087c1a7",
-    "ashby:benchling": "e574528ec087c1a7",
-    "ashby:black-forest-labs": "e574528ec087c1a7",
-    "ashby:cerebras": "e574528ec087c1a7",
-    "ashby:chainalysis": "e574528ec087c1a7",
-    "ashby:character-ai": "e574528ec087c1a7",
-    "ashby:checkout-com": "e574528ec087c1a7",
-    "ashby:clearbank": "e574528ec087c1a7",
-    "ashby:cleo": "e574528ec087c1a7",
-    "ashby:clerk": "e574528ec087c1a7",
-    "ashby:clickhouse": "e574528ec087c1a7",
-    "ashby:cognition": "e574528ec087c1a7",
-    "ashby:cohere": "e574528ec087c1a7",
-    "ashby:cursor": "e574528ec087c1a7",
-    "ashby:decagon": "e574528ec087c1a7",
-    "ashby:deepl": "e574528ec087c1a7",
-    "ashby:drata": "e574528ec087c1a7",
-    "ashby:elevenlabs": "e574528ec087c1a7",
-    "ashby:elliptic": "e574528ec087c1a7",
-    "ashby:encord": "e574528ec087c1a7",
-    "ashby:faculty": "e574528ec087c1a7",
-    "ashby:fireworks-ai": "e574528ec087c1a7",
-    "ashby:freetrade": "e574528ec087c1a7",
-    "ashby:funding-circle": "e574528ec087c1a7",
-    "ashby:gen-digital": "e574528ec087c1a7",
-    "ashby:granola": "e574528ec087c1a7",
-    "ashby:griffin": "e574528ec087c1a7",
-    "ashby:hackerone": "e574528ec087c1a7",
-    "ashby:harvey": "e574528ec087c1a7",
-    "ashby:hex": "e574528ec087c1a7",
-    "ashby:horizon3-ai": "e574528ec087c1a7",
-    "ashby:illumio": "e574528ec087c1a7",
-    "ashby:immersive": "e574528ec087c1a7",
-    "ashby:improbable": "e574528ec087c1a7",
-    "ashby:incident-io": "e574528ec087c1a7",
-    "ashby:iwoca": "e574528ec087c1a7",
-    "ashby:kraken": "e574528ec087c1a7",
-    "ashby:kraken-technologies": "e574528ec087c1a7",
-    "ashby:lambda": "e574528ec087c1a7",
-    "ashby:langchain": "e574528ec087c1a7",
-    "ashby:lendable": "e574528ec087c1a7",
-    "ashby:linear": "e574528ec087c1a7",
-    "ashby:lovable": "e574528ec087c1a7",
-    "ashby:luma-ai": "e574528ec087c1a7",
-    "ashby:marshmallow": "e574528ec087c1a7",
-    "ashby:mintlify": "e574528ec087c1a7",
-    "ashby:miro": "e574528ec087c1a7",
-    "ashby:mistral-ai": "e574528ec087c1a7",
-    "ashby:modal": "e574528ec087c1a7",
-    "ashby:moneybox": "e574528ec087c1a7",
-    "ashby:motorway": "e574528ec087c1a7",
-    "ashby:multiverse": "e574528ec087c1a7",
-    "ashby:notion": "e574528ec087c1a7",
-    "ashby:nubank": "e574528ec087c1a7",
-    "ashby:oaknorth": "e574528ec087c1a7",
-    "ashby:old-mission-capital": "e574528ec087c1a7",
-    "ashby:openai": "e574528ec087c1a7",
-    "ashby:oxa": "e574528ec087c1a7",
-    "ashby:paddle": "e574528ec087c1a7",
-    "ashby:perplexity": "e574528ec087c1a7",
-    "ashby:physical-intelligence": "e574528ec087c1a7",
-    "ashby:pinecone": "e574528ec087c1a7",
-    "ashby:plaid": "e574528ec087c1a7",
-    "ashby:pleo": "e574528ec087c1a7",
-    "ashby:poolside": "e574528ec087c1a7",
-    "ashby:posthog": "e574528ec087c1a7",
-    "ashby:quantexa": "e574528ec087c1a7",
-    "ashby:railway": "e574528ec087c1a7",
-    "ashby:ramp": "e574528ec087c1a7",
-    "ashby:reflection-ai": "e574528ec087c1a7",
-    "ashby:render": "e574528ec087c1a7",
-    "ashby:replit": "e574528ec087c1a7",
-    "ashby:runway": "e574528ec087c1a7",
-    "ashby:semgrep": "e574528ec087c1a7",
-    "ashby:sentry": "e574528ec087c1a7",
-    "ashby:sierra": "e574528ec087c1a7",
-    "ashby:snowflake": "e574528ec087c1a7",
-    "ashby:snyk": "e574528ec087c1a7",
-    "ashby:socket": "e574528ec087c1a7",
-    "ashby:sophos": "e574528ec087c1a7",
-    "ashby:suno": "e574528ec087c1a7",
-    "ashby:supabase": "e574528ec087c1a7",
-    "ashby:synthesia": "e574528ec087c1a7",
-    "ashby:teleport": "e574528ec087c1a7",
-    "ashby:temporal": "e574528ec087c1a7",
-    "ashby:tessl": "e574528ec087c1a7",
-    "ashby:thinking-machines-lab": "e574528ec087c1a7",
-    "ashby:thought-machine": "e574528ec087c1a7",
-    "ashby:tractable": "e574528ec087c1a7",
-    "ashby:trading-212": "e574528ec087c1a7",
-    "ashby:truelayer": "e574528ec087c1a7",
-    "ashby:vanta": "e574528ec087c1a7",
-    "ashby:voleon": "e574528ec087c1a7",
-    "ashby:wayve": "e574528ec087c1a7",
-    "ashby:webflow": "e574528ec087c1a7",
-    "ashby:world-labs": "e574528ec087c1a7",
-    "ashby:writer": "e574528ec087c1a7",
-    "ashby:zapier": "e574528ec087c1a7",
-    "ashby:zilch": "e574528ec087c1a7",
+    "ashby:1password": "10b0cf2721ab4e39",
+    "ashby:9fin": "10b0cf2721ab4e39",
+    "ashby:airwallex": "10b0cf2721ab4e39",
+    "ashby:amplitude": "10b0cf2721ab4e39",
+    "ashby:anyscale": "10b0cf2721ab4e39",
+    "ashby:applied-intuition": "10b0cf2721ab4e39",
+    "ashby:attio": "10b0cf2721ab4e39",
+    "ashby:baseten": "10b0cf2721ab4e39",
+    "ashby:beamery": "10b0cf2721ab4e39",
+    "ashby:benchling": "10b0cf2721ab4e39",
+    "ashby:black-forest-labs": "10b0cf2721ab4e39",
+    "ashby:cerebras": "10b0cf2721ab4e39",
+    "ashby:chainalysis": "10b0cf2721ab4e39",
+    "ashby:character-ai": "10b0cf2721ab4e39",
+    "ashby:checkout-com": "10b0cf2721ab4e39",
+    "ashby:clearbank": "10b0cf2721ab4e39",
+    "ashby:cleo": "10b0cf2721ab4e39",
+    "ashby:clerk": "10b0cf2721ab4e39",
+    "ashby:clickhouse": "10b0cf2721ab4e39",
+    "ashby:cognition": "10b0cf2721ab4e39",
+    "ashby:cohere": "10b0cf2721ab4e39",
+    "ashby:cursor": "10b0cf2721ab4e39",
+    "ashby:decagon": "10b0cf2721ab4e39",
+    "ashby:deepl": "10b0cf2721ab4e39",
+    "ashby:drata": "10b0cf2721ab4e39",
+    "ashby:elevenlabs": "10b0cf2721ab4e39",
+    "ashby:elliptic": "10b0cf2721ab4e39",
+    "ashby:encord": "10b0cf2721ab4e39",
+    "ashby:faculty": "10b0cf2721ab4e39",
+    "ashby:fireworks-ai": "10b0cf2721ab4e39",
+    "ashby:freetrade": "10b0cf2721ab4e39",
+    "ashby:funding-circle": "10b0cf2721ab4e39",
+    "ashby:gen-digital": "10b0cf2721ab4e39",
+    "ashby:granola": "10b0cf2721ab4e39",
+    "ashby:griffin": "10b0cf2721ab4e39",
+    "ashby:hackerone": "10b0cf2721ab4e39",
+    "ashby:harvey": "10b0cf2721ab4e39",
+    "ashby:hex": "10b0cf2721ab4e39",
+    "ashby:horizon3-ai": "10b0cf2721ab4e39",
+    "ashby:illumio": "10b0cf2721ab4e39",
+    "ashby:immersive": "10b0cf2721ab4e39",
+    "ashby:improbable": "10b0cf2721ab4e39",
+    "ashby:incident-io": "10b0cf2721ab4e39",
+    "ashby:iwoca": "10b0cf2721ab4e39",
+    "ashby:kraken": "10b0cf2721ab4e39",
+    "ashby:kraken-technologies": "10b0cf2721ab4e39",
+    "ashby:lambda": "10b0cf2721ab4e39",
+    "ashby:langchain": "10b0cf2721ab4e39",
+    "ashby:lendable": "10b0cf2721ab4e39",
+    "ashby:linear": "10b0cf2721ab4e39",
+    "ashby:lovable": "10b0cf2721ab4e39",
+    "ashby:luma-ai": "10b0cf2721ab4e39",
+    "ashby:marshmallow": "10b0cf2721ab4e39",
+    "ashby:mintlify": "10b0cf2721ab4e39",
+    "ashby:miro": "10b0cf2721ab4e39",
+    "ashby:mistral-ai": "10b0cf2721ab4e39",
+    "ashby:modal": "10b0cf2721ab4e39",
+    "ashby:moneybox": "10b0cf2721ab4e39",
+    "ashby:motorway": "10b0cf2721ab4e39",
+    "ashby:multiverse": "10b0cf2721ab4e39",
+    "ashby:notion": "10b0cf2721ab4e39",
+    "ashby:nubank": "10b0cf2721ab4e39",
+    "ashby:oaknorth": "10b0cf2721ab4e39",
+    "ashby:old-mission-capital": "10b0cf2721ab4e39",
+    "ashby:openai": "10b0cf2721ab4e39",
+    "ashby:oxa": "10b0cf2721ab4e39",
+    "ashby:paddle": "10b0cf2721ab4e39",
+    "ashby:perplexity": "10b0cf2721ab4e39",
+    "ashby:physical-intelligence": "10b0cf2721ab4e39",
+    "ashby:pinecone": "10b0cf2721ab4e39",
+    "ashby:plaid": "10b0cf2721ab4e39",
+    "ashby:pleo": "10b0cf2721ab4e39",
+    "ashby:poolside": "10b0cf2721ab4e39",
+    "ashby:posthog": "10b0cf2721ab4e39",
+    "ashby:quantexa": "10b0cf2721ab4e39",
+    "ashby:railway": "10b0cf2721ab4e39",
+    "ashby:ramp": "10b0cf2721ab4e39",
+    "ashby:reflection-ai": "10b0cf2721ab4e39",
+    "ashby:render": "10b0cf2721ab4e39",
+    "ashby:replit": "10b0cf2721ab4e39",
+    "ashby:runway": "10b0cf2721ab4e39",
+    "ashby:semgrep": "10b0cf2721ab4e39",
+    "ashby:sentry": "10b0cf2721ab4e39",
+    "ashby:sierra": "10b0cf2721ab4e39",
+    "ashby:snowflake": "10b0cf2721ab4e39",
+    "ashby:snyk": "10b0cf2721ab4e39",
+    "ashby:socket": "10b0cf2721ab4e39",
+    "ashby:sophos": "10b0cf2721ab4e39",
+    "ashby:suno": "10b0cf2721ab4e39",
+    "ashby:supabase": "10b0cf2721ab4e39",
+    "ashby:synthesia": "10b0cf2721ab4e39",
+    "ashby:teleport": "10b0cf2721ab4e39",
+    "ashby:temporal": "10b0cf2721ab4e39",
+    "ashby:tessl": "10b0cf2721ab4e39",
+    "ashby:thinking-machines-lab": "10b0cf2721ab4e39",
+    "ashby:thought-machine": "10b0cf2721ab4e39",
+    "ashby:tractable": "10b0cf2721ab4e39",
+    "ashby:trading-212": "10b0cf2721ab4e39",
+    "ashby:truelayer": "10b0cf2721ab4e39",
+    "ashby:vanta": "10b0cf2721ab4e39",
+    "ashby:voleon": "10b0cf2721ab4e39",
+    "ashby:wayve": "10b0cf2721ab4e39",
+    "ashby:webflow": "10b0cf2721ab4e39",
+    "ashby:world-labs": "10b0cf2721ab4e39",
+    "ashby:writer": "10b0cf2721ab4e39",
+    "ashby:zapier": "10b0cf2721ab4e39",
+    "ashby:zilch": "10b0cf2721ab4e39",
     "custom:amazon": "e574528ec087c1a7",
     "custom:amd": "e574528ec087c1a7",
     "custom:apple": "e574528ec087c1a7",
     "custom:google": "e574528ec087c1a7",
     "custom:google-deepmind": "e574528ec087c1a7",
-    "custom:jpmorgan-chase": "e574528ec087c1a7",
+    "custom:jpmorgan-chase": "10b0cf2721ab4e39",
     "custom:microsoft": "e574528ec087c1a7",
-    "greenhouse:abnormal-ai": "e574528ec087c1a7",
-    "greenhouse:addepar": "e574528ec087c1a7",
-    "greenhouse:adyen": "e574528ec087c1a7",
-    "greenhouse:affirm": "e574528ec087c1a7",
-    "greenhouse:airbnb": "e574528ec087c1a7",
-    "greenhouse:airtable": "e574528ec087c1a7",
-    "greenhouse:akuna-capital": "e574528ec087c1a7",
-    "greenhouse:algolia": "e574528ec087c1a7",
-    "greenhouse:anduril": "e574528ec087c1a7",
-    "greenhouse:anthropic": "e574528ec087c1a7",
-    "greenhouse:aqr": "e574528ec087c1a7",
-    "greenhouse:aquatic": "e574528ec087c1a7",
-    "greenhouse:asana": "e574528ec087c1a7",
-    "greenhouse:bishop-fox": "e574528ec087c1a7",
-    "greenhouse:bitwarden": "e574528ec087c1a7",
-    "greenhouse:block": "e574528ec087c1a7",
-    "greenhouse:blockchain-com": "e574528ec087c1a7",
-    "greenhouse:brex": "e574528ec087c1a7",
-    "greenhouse:bridgewater-associates": "e574528ec087c1a7",
-    "greenhouse:bugcrowd": "e574528ec087c1a7",
-    "greenhouse:capital-on-tap": "e574528ec087c1a7",
-    "greenhouse:carta": "e574528ec087c1a7",
-    "greenhouse:cato-networks": "e574528ec087c1a7",
-    "greenhouse:censys": "e574528ec087c1a7",
-    "greenhouse:chainguard": "e574528ec087c1a7",
-    "greenhouse:checkr": "e574528ec087c1a7",
-    "greenhouse:chicago-trading": "e574528ec087c1a7",
-    "greenhouse:chime": "e574528ec087c1a7",
-    "greenhouse:clear-street": "e574528ec087c1a7",
-    "greenhouse:cloudflare": "e574528ec087c1a7",
-    "greenhouse:cockroach-labs": "e574528ec087c1a7",
-    "greenhouse:coinbase": "e574528ec087c1a7",
-    "greenhouse:complyadvantage": "e574528ec087c1a7",
-    "greenhouse:copper": "e574528ec087c1a7",
-    "greenhouse:coreweave": "e574528ec087c1a7",
-    "greenhouse:da-vinci": "e574528ec087c1a7",
-    "greenhouse:databricks": "e574528ec087c1a7",
-    "greenhouse:datadog": "e574528ec087c1a7",
-    "greenhouse:discord": "e574528ec087c1a7",
-    "greenhouse:doordash": "e574528ec087c1a7",
-    "greenhouse:dragos": "e574528ec087c1a7",
-    "greenhouse:dropbox": "e574528ec087c1a7",
-    "greenhouse:drw": "e574528ec087c1a7",
-    "greenhouse:duolingo": "e574528ec087c1a7",
-    "greenhouse:dv-trading": "e574528ec087c1a7",
-    "greenhouse:elastic": "e574528ec087c1a7",
-    "greenhouse:engineers-gate": "e574528ec087c1a7",
-    "greenhouse:exoduspoint": "e574528ec087c1a7",
-    "greenhouse:expel": "e574528ec087c1a7",
-    "greenhouse:faire": "e574528ec087c1a7",
-    "greenhouse:figma": "e574528ec087c1a7",
-    "greenhouse:figure-ai": "e574528ec087c1a7",
-    "greenhouse:fireblocks": "e574528ec087c1a7",
-    "greenhouse:five-rings": "e574528ec087c1a7",
-    "greenhouse:fivetran": "e574528ec087c1a7",
-    "greenhouse:flexport": "e574528ec087c1a7",
-    "greenhouse:flow-traders": "e574528ec087c1a7",
-    "greenhouse:form3": "e574528ec087c1a7",
-    "greenhouse:gitlab": "e574528ec087c1a7",
-    "greenhouse:glean": "e574528ec087c1a7",
-    "greenhouse:gocardless": "e574528ec087c1a7",
-    "greenhouse:gong": "e574528ec087c1a7",
-    "greenhouse:grafana-labs": "e574528ec087c1a7",
-    "greenhouse:graphcore": "e574528ec087c1a7",
-    "greenhouse:groww": "e574528ec087c1a7",
-    "greenhouse:gsa-capital": "e574528ec087c1a7",
-    "greenhouse:gusto": "e574528ec087c1a7",
-    "greenhouse:headlands-technologies": "e574528ec087c1a7",
-    "greenhouse:helsing": "e574528ec087c1a7",
-    "greenhouse:hubspot": "e574528ec087c1a7",
-    "greenhouse:hudson-river-trading": "e574528ec087c1a7",
-    "greenhouse:huntress": "e574528ec087c1a7",
-    "greenhouse:imc-trading": "e574528ec087c1a7",
-    "greenhouse:instacart": "e574528ec087c1a7",
-    "greenhouse:intercom": "e574528ec087c1a7",
-    "greenhouse:island": "e574528ec087c1a7",
-    "greenhouse:isomorphic-labs": "e574528ec087c1a7",
-    "greenhouse:jane-street": "e574528ec087c1a7",
-    "greenhouse:jump-trading": "e574528ec087c1a7",
-    "greenhouse:knowbe4": "e574528ec087c1a7",
-    "greenhouse:lattice": "e574528ec087c1a7",
-    "greenhouse:mako-trading": "e574528ec087c1a7",
-    "greenhouse:man-group": "e574528ec087c1a7",
-    "greenhouse:marshall-wace": "e574528ec087c1a7",
-    "greenhouse:maven-securities": "e574528ec087c1a7",
-    "greenhouse:mercury": "e574528ec087c1a7",
-    "greenhouse:mixpanel": "e574528ec087c1a7",
-    "greenhouse:mongodb": "e574528ec087c1a7",
-    "greenhouse:monzo": "e574528ec087c1a7",
-    "greenhouse:n26": "e574528ec087c1a7",
-    "greenhouse:netskope": "e574528ec087c1a7",
-    "greenhouse:nuro": "e574528ec087c1a7",
-    "greenhouse:ocado": "e574528ec087c1a7",
-    "greenhouse:okta": "e574528ec087c1a7",
-    "greenhouse:optiver": "e574528ec087c1a7",
-    "greenhouse:orca-security": "e574528ec087c1a7",
-    "greenhouse:pagerduty": "e574528ec087c1a7",
-    "greenhouse:pdt-partners": "e574528ec087c1a7",
-    "greenhouse:physicsx": "e574528ec087c1a7",
-    "greenhouse:ping-identity": "e574528ec087c1a7",
-    "greenhouse:pinterest": "e574528ec087c1a7",
-    "greenhouse:playstation": "e574528ec087c1a7",
-    "greenhouse:point72": "e574528ec087c1a7",
-    "greenhouse:polyai": "e574528ec087c1a7",
-    "greenhouse:proton": "e574528ec087c1a7",
-    "greenhouse:quadrature-capital": "e574528ec087c1a7",
-    "greenhouse:qube-rt": "e574528ec087c1a7",
-    "greenhouse:radix-trading": "e574528ec087c1a7",
-    "greenhouse:razorpay": "e574528ec087c1a7",
-    "greenhouse:recorded-future": "e574528ec087c1a7",
-    "greenhouse:reddit": "e574528ec087c1a7",
-    "greenhouse:ripple": "e574528ec087c1a7",
-    "greenhouse:robinhood": "e574528ec087c1a7",
-    "greenhouse:roblox": "e574528ec087c1a7",
-    "greenhouse:rubrik": "e574528ec087c1a7",
-    "greenhouse:sambanova": "e574528ec087c1a7",
-    "greenhouse:samsara": "e574528ec087c1a7",
-    "greenhouse:scale-ai": "e574528ec087c1a7",
-    "greenhouse:schonfeld": "e574528ec087c1a7",
-    "greenhouse:sentinelone": "e574528ec087c1a7",
-    "greenhouse:snorkel-ai": "e574528ec087c1a7",
-    "greenhouse:sofi": "e574528ec087c1a7",
-    "greenhouse:sourcegraph": "e574528ec087c1a7",
-    "greenhouse:speechmatics": "e574528ec087c1a7",
-    "greenhouse:squarepoint-capital": "e574528ec087c1a7",
-    "greenhouse:stability-ai": "e574528ec087c1a7",
-    "greenhouse:stevens-capital": "e574528ec087c1a7",
-    "greenhouse:stripe": "e574528ec087c1a7",
-    "greenhouse:sumup": "e574528ec087c1a7",
-    "greenhouse:tailscale": "e574528ec087c1a7",
-    "greenhouse:tanium": "e574528ec087c1a7",
-    "greenhouse:tenable": "e574528ec087c1a7",
-    "greenhouse:tide": "e574528ec087c1a7",
-    "greenhouse:tines": "e574528ec087c1a7",
-    "greenhouse:together-ai": "e574528ec087c1a7",
-    "greenhouse:tower-research-capital": "e574528ec087c1a7",
-    "greenhouse:transmarket-group": "e574528ec087c1a7",
-    "greenhouse:twilio": "e574528ec087c1a7",
-    "greenhouse:vatic-labs": "e574528ec087c1a7",
-    "greenhouse:vercel": "e574528ec087c1a7",
-    "greenhouse:verkada": "e574528ec087c1a7",
-    "greenhouse:virtu-financial": "e574528ec087c1a7",
-    "greenhouse:waymo": "e574528ec087c1a7",
-    "greenhouse:winton": "e574528ec087c1a7",
-    "greenhouse:wiz": "e574528ec087c1a7",
-    "greenhouse:worldquant": "e574528ec087c1a7",
-    "greenhouse:xai": "e574528ec087c1a7",
-    "greenhouse:xtx-markets": "e574528ec087c1a7",
-    "greenhouse:zipline": "e574528ec087c1a7",
-    "greenhouse:zscaler": "e574528ec087c1a7",
-    "lever:ansatz-capital": "e574528ec087c1a7",
-    "lever:apollo-research": "e574528ec087c1a7",
-    "lever:belvedere-trading": "e574528ec087c1a7",
-    "lever:cred": "e574528ec087c1a7",
-    "lever:meesho": "e574528ec087c1a7",
-    "lever:octopus-energy": "e574528ec087c1a7",
-    "lever:palantir": "e574528ec087c1a7",
-    "lever:spotify": "e574528ec087c1a7",
-    "lever:sysdig": "e574528ec087c1a7",
-    "lever:valkyrie-trading": "e574528ec087c1a7",
-    "lever:wintermute": "e574528ec087c1a7",
-    "lever:zopa": "e574528ec087c1a7",
+    "greenhouse:abnormal-ai": "10b0cf2721ab4e39",
+    "greenhouse:addepar": "10b0cf2721ab4e39",
+    "greenhouse:adyen": "10b0cf2721ab4e39",
+    "greenhouse:affirm": "10b0cf2721ab4e39",
+    "greenhouse:airbnb": "10b0cf2721ab4e39",
+    "greenhouse:airtable": "10b0cf2721ab4e39",
+    "greenhouse:akuna-capital": "10b0cf2721ab4e39",
+    "greenhouse:algolia": "10b0cf2721ab4e39",
+    "greenhouse:anduril": "10b0cf2721ab4e39",
+    "greenhouse:anthropic": "10b0cf2721ab4e39",
+    "greenhouse:aqr": "10b0cf2721ab4e39",
+    "greenhouse:aquatic": "10b0cf2721ab4e39",
+    "greenhouse:asana": "10b0cf2721ab4e39",
+    "greenhouse:bishop-fox": "10b0cf2721ab4e39",
+    "greenhouse:bitwarden": "10b0cf2721ab4e39",
+    "greenhouse:block": "10b0cf2721ab4e39",
+    "greenhouse:blockchain-com": "10b0cf2721ab4e39",
+    "greenhouse:brex": "10b0cf2721ab4e39",
+    "greenhouse:bridgewater-associates": "10b0cf2721ab4e39",
+    "greenhouse:bugcrowd": "10b0cf2721ab4e39",
+    "greenhouse:capital-on-tap": "10b0cf2721ab4e39",
+    "greenhouse:carta": "10b0cf2721ab4e39",
+    "greenhouse:cato-networks": "10b0cf2721ab4e39",
+    "greenhouse:censys": "10b0cf2721ab4e39",
+    "greenhouse:chainguard": "10b0cf2721ab4e39",
+    "greenhouse:checkr": "10b0cf2721ab4e39",
+    "greenhouse:chicago-trading": "10b0cf2721ab4e39",
+    "greenhouse:chime": "10b0cf2721ab4e39",
+    "greenhouse:clear-street": "10b0cf2721ab4e39",
+    "greenhouse:cloudflare": "10b0cf2721ab4e39",
+    "greenhouse:cockroach-labs": "10b0cf2721ab4e39",
+    "greenhouse:coinbase": "10b0cf2721ab4e39",
+    "greenhouse:complyadvantage": "10b0cf2721ab4e39",
+    "greenhouse:copper": "10b0cf2721ab4e39",
+    "greenhouse:coreweave": "10b0cf2721ab4e39",
+    "greenhouse:da-vinci": "10b0cf2721ab4e39",
+    "greenhouse:databricks": "10b0cf2721ab4e39",
+    "greenhouse:datadog": "10b0cf2721ab4e39",
+    "greenhouse:discord": "10b0cf2721ab4e39",
+    "greenhouse:doordash": "10b0cf2721ab4e39",
+    "greenhouse:dragos": "10b0cf2721ab4e39",
+    "greenhouse:dropbox": "10b0cf2721ab4e39",
+    "greenhouse:drw": "10b0cf2721ab4e39",
+    "greenhouse:duolingo": "10b0cf2721ab4e39",
+    "greenhouse:dv-trading": "10b0cf2721ab4e39",
+    "greenhouse:elastic": "10b0cf2721ab4e39",
+    "greenhouse:engineers-gate": "10b0cf2721ab4e39",
+    "greenhouse:exoduspoint": "10b0cf2721ab4e39",
+    "greenhouse:expel": "10b0cf2721ab4e39",
+    "greenhouse:faire": "10b0cf2721ab4e39",
+    "greenhouse:figma": "10b0cf2721ab4e39",
+    "greenhouse:figure-ai": "10b0cf2721ab4e39",
+    "greenhouse:fireblocks": "10b0cf2721ab4e39",
+    "greenhouse:five-rings": "10b0cf2721ab4e39",
+    "greenhouse:fivetran": "10b0cf2721ab4e39",
+    "greenhouse:flexport": "10b0cf2721ab4e39",
+    "greenhouse:flow-traders": "10b0cf2721ab4e39",
+    "greenhouse:form3": "10b0cf2721ab4e39",
+    "greenhouse:gitlab": "10b0cf2721ab4e39",
+    "greenhouse:glean": "10b0cf2721ab4e39",
+    "greenhouse:gocardless": "10b0cf2721ab4e39",
+    "greenhouse:gong": "10b0cf2721ab4e39",
+    "greenhouse:grafana-labs": "10b0cf2721ab4e39",
+    "greenhouse:graphcore": "10b0cf2721ab4e39",
+    "greenhouse:groww": "10b0cf2721ab4e39",
+    "greenhouse:gsa-capital": "10b0cf2721ab4e39",
+    "greenhouse:gusto": "10b0cf2721ab4e39",
+    "greenhouse:headlands-technologies": "10b0cf2721ab4e39",
+    "greenhouse:helsing": "10b0cf2721ab4e39",
+    "greenhouse:hubspot": "10b0cf2721ab4e39",
+    "greenhouse:hudson-river-trading": "10b0cf2721ab4e39",
+    "greenhouse:huntress": "10b0cf2721ab4e39",
+    "greenhouse:imc-trading": "10b0cf2721ab4e39",
+    "greenhouse:instacart": "10b0cf2721ab4e39",
+    "greenhouse:intercom": "10b0cf2721ab4e39",
+    "greenhouse:island": "10b0cf2721ab4e39",
+    "greenhouse:isomorphic-labs": "10b0cf2721ab4e39",
+    "greenhouse:jane-street": "10b0cf2721ab4e39",
+    "greenhouse:jump-trading": "10b0cf2721ab4e39",
+    "greenhouse:knowbe4": "10b0cf2721ab4e39",
+    "greenhouse:lattice": "10b0cf2721ab4e39",
+    "greenhouse:mako-trading": "10b0cf2721ab4e39",
+    "greenhouse:man-group": "10b0cf2721ab4e39",
+    "greenhouse:marshall-wace": "10b0cf2721ab4e39",
+    "greenhouse:maven-securities": "10b0cf2721ab4e39",
+    "greenhouse:mercury": "10b0cf2721ab4e39",
+    "greenhouse:mixpanel": "10b0cf2721ab4e39",
+    "greenhouse:mongodb": "10b0cf2721ab4e39",
+    "greenhouse:monzo": "10b0cf2721ab4e39",
+    "greenhouse:n26": "10b0cf2721ab4e39",
+    "greenhouse:netskope": "10b0cf2721ab4e39",
+    "greenhouse:nuro": "10b0cf2721ab4e39",
+    "greenhouse:ocado": "10b0cf2721ab4e39",
+    "greenhouse:okta": "10b0cf2721ab4e39",
+    "greenhouse:optiver": "10b0cf2721ab4e39",
+    "greenhouse:orca-security": "10b0cf2721ab4e39",
+    "greenhouse:pagerduty": "10b0cf2721ab4e39",
+    "greenhouse:pdt-partners": "10b0cf2721ab4e39",
+    "greenhouse:physicsx": "10b0cf2721ab4e39",
+    "greenhouse:ping-identity": "10b0cf2721ab4e39",
+    "greenhouse:pinterest": "10b0cf2721ab4e39",
+    "greenhouse:playstation": "10b0cf2721ab4e39",
+    "greenhouse:point72": "10b0cf2721ab4e39",
+    "greenhouse:polyai": "10b0cf2721ab4e39",
+    "greenhouse:proton": "10b0cf2721ab4e39",
+    "greenhouse:quadrature-capital": "10b0cf2721ab4e39",
+    "greenhouse:qube-rt": "10b0cf2721ab4e39",
+    "greenhouse:radix-trading": "10b0cf2721ab4e39",
+    "greenhouse:razorpay": "10b0cf2721ab4e39",
+    "greenhouse:recorded-future": "10b0cf2721ab4e39",
+    "greenhouse:reddit": "10b0cf2721ab4e39",
+    "greenhouse:ripple": "10b0cf2721ab4e39",
+    "greenhouse:robinhood": "10b0cf2721ab4e39",
+    "greenhouse:roblox": "10b0cf2721ab4e39",
+    "greenhouse:rubrik": "10b0cf2721ab4e39",
+    "greenhouse:sambanova": "10b0cf2721ab4e39",
+    "greenhouse:samsara": "10b0cf2721ab4e39",
+    "greenhouse:scale-ai": "10b0cf2721ab4e39",
+    "greenhouse:schonfeld": "10b0cf2721ab4e39",
+    "greenhouse:sentinelone": "10b0cf2721ab4e39",
+    "greenhouse:snorkel-ai": "10b0cf2721ab4e39",
+    "greenhouse:sofi": "10b0cf2721ab4e39",
+    "greenhouse:sourcegraph": "10b0cf2721ab4e39",
+    "greenhouse:speechmatics": "10b0cf2721ab4e39",
+    "greenhouse:squarepoint-capital": "10b0cf2721ab4e39",
+    "greenhouse:stability-ai": "10b0cf2721ab4e39",
+    "greenhouse:stevens-capital": "10b0cf2721ab4e39",
+    "greenhouse:stripe": "10b0cf2721ab4e39",
+    "greenhouse:sumup": "10b0cf2721ab4e39",
+    "greenhouse:tailscale": "10b0cf2721ab4e39",
+    "greenhouse:tanium": "10b0cf2721ab4e39",
+    "greenhouse:tenable": "10b0cf2721ab4e39",
+    "greenhouse:tide": "10b0cf2721ab4e39",
+    "greenhouse:tines": "10b0cf2721ab4e39",
+    "greenhouse:together-ai": "10b0cf2721ab4e39",
+    "greenhouse:tower-research-capital": "10b0cf2721ab4e39",
+    "greenhouse:transmarket-group": "10b0cf2721ab4e39",
+    "greenhouse:twilio": "10b0cf2721ab4e39",
+    "greenhouse:vatic-labs": "10b0cf2721ab4e39",
+    "greenhouse:vercel": "10b0cf2721ab4e39",
+    "greenhouse:verkada": "10b0cf2721ab4e39",
+    "greenhouse:virtu-financial": "10b0cf2721ab4e39",
+    "greenhouse:waymo": "10b0cf2721ab4e39",
+    "greenhouse:winton": "10b0cf2721ab4e39",
+    "greenhouse:wiz": "10b0cf2721ab4e39",
+    "greenhouse:worldquant": "10b0cf2721ab4e39",
+    "greenhouse:xai": "10b0cf2721ab4e39",
+    "greenhouse:xtx-markets": "10b0cf2721ab4e39",
+    "greenhouse:zipline": "10b0cf2721ab4e39",
+    "greenhouse:zscaler": "10b0cf2721ab4e39",
+    "lever:ansatz-capital": "10b0cf2721ab4e39",
+    "lever:apollo-research": "10b0cf2721ab4e39",
+    "lever:belvedere-trading": "10b0cf2721ab4e39",
+    "lever:cred": "10b0cf2721ab4e39",
+    "lever:meesho": "10b0cf2721ab4e39",
+    "lever:octopus-energy": "10b0cf2721ab4e39",
+    "lever:palantir": "10b0cf2721ab4e39",
+    "lever:spotify": "10b0cf2721ab4e39",
+    "lever:sysdig": "10b0cf2721ab4e39",
+    "lever:valkyrie-trading": "10b0cf2721ab4e39",
+    "lever:wintermute": "10b0cf2721ab4e39",
+    "lever:zopa": "10b0cf2721ab4e39",
     "smartrecruiters:armis": "e574528ec087c1a7",
     "smartrecruiters:canva": "e574528ec087c1a7",
     "smartrecruiters:servicenow": "e574528ec087c1a7",
-    "talnet:bank-of-america": "e574528ec087c1a7",
-    "talnet:jefferies": "e574528ec087c1a7",
-    "talnet:morgan-stanley": "e574528ec087c1a7",
-    "talnet:nomura": "e574528ec087c1a7",
+    "talnet:bank-of-america": "10b0cf2721ab4e39",
+    "talnet:jefferies": "10b0cf2721ab4e39",
+    "talnet:morgan-stanley": "10b0cf2721ab4e39",
+    "talnet:nomura": "10b0cf2721ab4e39",
     "workable:capula": "e574528ec087c1a7",
     "workable:hugging-face": "e574528ec087c1a7",
     "workable:portswigger": "e574528ec087c1a7",
@@ -354,11 +354,440 @@
     "workday:wells-fargo": "e574528ec087c1a7",
     "workday:workday": "e574528ec087c1a7"
   },
+  "eligibility": {
+    "ashby:clickhouse:558c0c16-5fde-407a-966b-7a2255d3531b": {
+      "status": "unclear"
+    },
+    "ashby:cohere:36d1f52f-8270-4652-adf5-5303a0ff341b": {
+      "status": "unclear"
+    },
+    "ashby:lendable:a2214edc-39e3-4c70-8a09-875bb991062f": {
+      "status": "ineligible",
+      "why": "…A university student in their penultimate year (can be undergraduates, masters or PhD stud…"
+    },
+    "ashby:lendable:e001dc0b-6e0f-46a7-95ba-38a3733db2f4": {
+      "status": "ineligible",
+      "why": "…A university student in their penultimate year (can be undergraduates, masters or PhD stud…"
+    },
+    "ashby:lendable:eabb1e2a-86c3-48e6-836c-af967e0e71d2": {
+      "status": "unclear"
+    },
+    "ashby:mistral-ai:de46ba8b-00cb-4618-83df-66e15a78434e": {
+      "status": "unclear"
+    },
+    "ashby:mistral-ai:f7245b49-92a0-4111-bba1-343183de7d97": {
+      "status": "unclear"
+    },
+    "ashby:nubank:3835ec58-5e5a-4bd4-a076-4a8f89490011": {
+      "status": "unclear"
+    },
+    "ashby:perplexity:71168628-1998-47d3-87a9-be7bc56a430d": {
+      "status": "unclear"
+    },
+    "ashby:perplexity:9246cf02-26fd-4ae8-90c5-639c6e85e9e2": {
+      "status": "unclear"
+    },
+    "ashby:perplexity:be94e89b-89d5-4f2a-a58b-7929c8d97f92": {
+      "status": "unclear"
+    },
+    "ashby:sierra:7af8aa4e-ba84-49ba-bc53-19358f4564ff": {
+      "status": "unclear"
+    },
+    "custom:jpmorgan-chase:210775780": {
+      "status": "unclear"
+    },
+    "custom:jpmorgan-chase:210802065": {
+      "status": "unclear"
+    },
+    "greenhouse:addepar:8910310002": {
+      "basis": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "status": "eligible"
+    },
+    "greenhouse:addepar:8927507002": {
+      "basis": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "status": "eligible"
+    },
+    "greenhouse:addepar:8935678002": {
+      "basis": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "status": "eligible"
+    },
+    "greenhouse:anduril:5255902007": {
+      "status": "unclear"
+    },
+    "greenhouse:aquatic:8489186002": {
+      "status": "unclear"
+    },
+    "greenhouse:cloudflare:7774167": {
+      "status": "unclear"
+    },
+    "greenhouse:cloudflare:8199958": {
+      "status": "unclear"
+    },
+    "greenhouse:cloudflare:8245197": {
+      "status": "unclear"
+    },
+    "greenhouse:cloudflare:8245211": {
+      "status": "unclear"
+    },
+    "greenhouse:databricks:7640764002": {
+      "status": "unclear"
+    },
+    "greenhouse:databricks:8847738002": {
+      "status": "unclear"
+    },
+    "greenhouse:drw:7942281": {
+      "status": "unclear"
+    },
+    "greenhouse:drw:7957243": {
+      "status": "unclear"
+    },
+    "greenhouse:drw:7957756": {
+      "status": "unclear"
+    },
+    "greenhouse:dv-trading:4719125005": {
+      "status": "unclear"
+    },
+    "greenhouse:dv-trading:4719135005": {
+      "status": "unclear"
+    },
+    "greenhouse:dv-trading:4732700005": {
+      "status": "unclear"
+    },
+    "greenhouse:dv-trading:4736603005": {
+      "status": "unclear"
+    },
+    "greenhouse:figma:6152695004": {
+      "status": "unclear"
+    },
+    "greenhouse:graphcore:8894376002": {
+      "status": "unclear"
+    },
+    "greenhouse:graphcore:8894738002": {
+      "status": "unclear"
+    },
+    "greenhouse:graphcore:8894770002": {
+      "status": "unclear"
+    },
+    "greenhouse:graphcore:8894868002": {
+      "status": "unclear"
+    },
+    "greenhouse:graphcore:8894965002": {
+      "status": "unclear"
+    },
+    "greenhouse:gsa-capital:8518528002": {
+      "basis": "description: \"First year undergraduate or postgraduate women in STEM disciplines from any university glo…\"",
+      "status": "eligible"
+    },
+    "greenhouse:gsa-capital:8570661002": {
+      "status": "ineligible",
+      "why": "…hearing from students at the penultimate year of their graduate or postgraduate studies w…"
+    },
+    "greenhouse:gsa-capital:8570668002": {
+      "status": "ineligible",
+      "why": "…hearing from students in the penultimate year of their graduate or postgraduate studies w…"
+    },
+    "greenhouse:gsa-capital:8870173002": {
+      "basis": "description: \"First year undergraduate or postgraduate students in STEM disciplines from any university…\"",
+      "status": "eligible"
+    },
+    "greenhouse:helsing:4941957101": {
+      "status": "unclear"
+    },
+    "greenhouse:hudson-river-trading:7964062": {
+      "status": "unclear"
+    },
+    "greenhouse:hudson-river-trading:8052083": {
+      "status": "unclear"
+    },
+    "greenhouse:hudson-river-trading:8059837": {
+      "status": "unclear"
+    },
+    "greenhouse:hudson-river-trading:8257369": {
+      "status": "unclear"
+    },
+    "greenhouse:jump-trading:7974943": {
+      "status": "unclear"
+    },
+    "greenhouse:jump-trading:8000323": {
+      "status": "unclear"
+    },
+    "greenhouse:jump-trading:8010307": {
+      "status": "unclear"
+    },
+    "greenhouse:jump-trading:8050772": {
+      "status": "unclear"
+    },
+    "greenhouse:jump-trading:8059384": {
+      "status": "unclear"
+    },
+    "greenhouse:marshall-wace:8598324002": {
+      "status": "ineligible",
+      "why": "…ve forward with those in their penultimate year unless there are exceptional circumstances"
+    },
+    "greenhouse:marshall-wace:8772688002": {
+      "status": "ineligible",
+      "why": "…ment: Currently enrolled in a penultimate year of a Master's or PhD program in a STEM subj…"
+    },
+    "greenhouse:maven-securities:7806970": {
+      "status": "ineligible",
+      "why": "You must be a penultimate-year undergraduate or master’s student"
+    },
+    "greenhouse:maven-securities:8229982": {
+      "basis": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
+      "status": "eligible"
+    },
+    "greenhouse:maven-securities:8230037": {
+      "basis": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
+      "status": "eligible"
+    },
+    "greenhouse:optiver:8713435002": {
+      "status": "ineligible",
+      "why": "Penultimate-year student in Computer Science, Computer Engineering or equivalent, with the…"
+    },
+    "greenhouse:pinterest:7838577": {
+      "status": "unclear"
+    },
+    "greenhouse:pinterest:8140217": {
+      "status": "unclear"
+    },
+    "greenhouse:pinterest:8214783": {
+      "status": "unclear"
+    },
+    "greenhouse:pinterest:8214788": {
+      "status": "unclear"
+    },
+    "greenhouse:point72:7297657002": {
+      "status": "unclear"
+    },
+    "greenhouse:qube-rt:8623972002": {
+      "status": "ineligible",
+      "why": "Who qualifies: Penultimate or final year students completing a Bachelor's, Master's"
+    },
+    "greenhouse:qube-rt:8773084002": {
+      "status": "ineligible",
+      "why": "Programmes offered: Final-year internship, penultimate-year internship"
+    },
+    "greenhouse:qube-rt:8777760002": {
+      "status": "ineligible",
+      "why": "Programmes offered: Final-year internship, penultimate-year internship"
+    },
+    "greenhouse:qube-rt:8785833002": {
+      "status": "ineligible",
+      "why": "Programmes offered: Final-year internship, penultimate-year internship, some permanent opp…"
+    },
+    "greenhouse:qube-rt:8926633002": {
+      "status": "ineligible",
+      "why": "Programmes offered: Final-year internship, penultimate-year internship"
+    },
+    "greenhouse:qube-rt:8926642002": {
+      "status": "ineligible",
+      "why": "Programmes offered: Final-year internship, penultimate-year internship"
+    },
+    "greenhouse:scale-ai:4730846005": {
+      "status": "unclear"
+    },
+    "greenhouse:squarepoint-capital:243853": {
+      "status": "unclear"
+    },
+    "greenhouse:squarepoint-capital:7231006": {
+      "status": "ineligible",
+      "why": "Candidates must be in penultimate year of study"
+    },
+    "greenhouse:stripe:8031833": {
+      "status": "unclear"
+    },
+    "greenhouse:stripe:8130867": {
+      "status": "unclear"
+    },
+    "greenhouse:tower-research-capital:8037860": {
+      "status": "ineligible",
+      "why": "…r internships in Summer 2027 (open exclusively to penultimate-year or final-year students)"
+    },
+    "greenhouse:tower-research-capital:8113986": {
+      "status": "unclear"
+    },
+    "greenhouse:virtu-financial:8745933002": {
+      "status": "ineligible",
+      "why": "Entering final year of school, or students expected to be ready for full time employment b…"
+    },
+    "greenhouse:waymo:8205680": {
+      "status": "unclear"
+    },
+    "greenhouse:waymo:8208465": {
+      "status": "unclear"
+    },
+    "greenhouse:waymo:8265868": {
+      "status": "unclear"
+    },
+    "lever:palantir:26e23f5d-083b-45aa-b223-1a6e43d960bf": {
+      "status": "unclear"
+    },
+    "lever:palantir:3e59369e-1392-42f2-8d03-86648e87e963": {
+      "status": "unclear"
+    },
+    "lever:palantir:40840cef-bbd7-4557-bb21-cbdcf4be616e": {
+      "status": "unclear"
+    },
+    "lever:palantir:76a60923-bb49-40f5-b061-7c7eb1299602": {
+      "status": "unclear"
+    },
+    "lever:palantir:fd3603a9-7016-45c6-9c8d-04c9279ab85e": {
+      "status": "unclear"
+    },
+    "talnet:bank-of-america:15242": {
+      "basis": "insight programme; the posting does not say otherwise",
+      "status": "eligible"
+    },
+    "talnet:jefferies:1833": {
+      "status": "unclear"
+    },
+    "talnet:jefferies:1930": {
+      "status": "ineligible",
+      "why": "…mic background and be in your penultimate or final year of study, with an anticipated grad…"
+    },
+    "talnet:jefferies:1933": {
+      "basis": "description: \"…rogramme is aimed at students in their first year of study (or second year of a four-year…\"",
+      "status": "eligible"
+    },
+    "talnet:jefferies:1967": {
+      "status": "ineligible",
+      "why": "You should have a strong academic background and be in your penultimate year of study, p"
+    },
+    "talnet:jefferies:1997": {
+      "status": "ineligible",
+      "why": "Students in their penultimate year of university with an anticipated graduation date of Oc…"
+    },
+    "talnet:jefferies:2018": {
+      "status": "ineligible",
+      "why": "Students in their penultimate year of university with an anticipated graduation date of Oc…"
+    },
+    "talnet:jefferies:2034": {
+      "status": "ineligible",
+      "why": "…kground and be completing the junior year of a four-year Bachelor's degree or equivalent p…"
+    },
+    "talnet:jefferies:2038": {
+      "status": "ineligible",
+      "why": "…kground and be completing the junior year of a four-year Bachelor's degree or equivalent p…"
+    },
+    "talnet:jefferies:2045": {
+      "status": "ineligible",
+      "why": "…kground and be completing the junior year of a four-year Bachelor's degree or equivalent p…"
+    },
+    "talnet:jefferies:2052": {
+      "status": "ineligible",
+      "why": "Students in their penultimate year of university with an anticipated graduation date of Oc…"
+    },
+    "talnet:jefferies:2053": {
+      "status": "ineligible",
+      "why": "Students in their penultimate year of university with an anticipated graduation date of Oc…"
+    },
+    "talnet:morgan-stanley:20936": {
+      "status": "unclear"
+    },
+    "talnet:morgan-stanley:21611": {
+      "status": "unclear"
+    },
+    "talnet:morgan-stanley:21615": {
+      "status": "unclear"
+    },
+    "talnet:morgan-stanley:21636": {
+      "status": "unclear"
+    },
+    "talnet:morgan-stanley:22340": {
+      "status": "unclear"
+    },
+    "talnet:morgan-stanley:22453": {
+      "basis": "description: \"Freshmen/1st Year , Junior/3rd Year (choose if you are in a 4 year program), Senior/4th Ye…\"",
+      "status": "eligible"
+    },
+    "talnet:morgan-stanley:22461": {
+      "basis": "insight programme; the posting does not say otherwise",
+      "status": "eligible"
+    },
+    "talnet:nomura:1478": {
+      "basis": "description: \"…h achieving candidate in your first year of university or second year of a four-year cours…\"",
+      "status": "eligible"
+    }
+  },
+  "eligibility_rules": "9bc7b15a981f5c27",
   "jobs": {
+    "greenhouse:addepar:8910310002": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "addepar",
+      "eligibility": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "fields": [
+        "data"
+      ],
+      "fingerprint": "addepar|portfolio data analyst intern summer 2027|edinburgh uk",
+      "first_seen": "2026-11-16T17:06:58+00:00",
+      "last_seen": "2026-11-16",
+      "locations": [
+        "Edinburgh, UK"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": "2026-11-10",
+      "region": "uk",
+      "role_type": "summer_internship",
+      "source": "greenhouse",
+      "status": "open",
+      "title": "Portfolio Data Analyst Intern - Summer 2027",
+      "url": "https://job-boards.greenhouse.io/addepar1/jobs/8910310002"
+    },
+    "greenhouse:addepar:8927507002": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "addepar",
+      "eligibility": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "fields": [
+        "software"
+      ],
+      "fingerprint": "addepar|software engineering intern summer 2027|edinburgh uk",
+      "first_seen": "2026-11-16T17:06:58+00:00",
+      "last_seen": "2026-11-16",
+      "locations": [
+        "Edinburgh, UK"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": "2026-11-10",
+      "region": "uk",
+      "role_type": "summer_internship",
+      "source": "greenhouse",
+      "status": "open",
+      "title": "Software Engineering Intern - Summer 2027",
+      "url": "https://job-boards.greenhouse.io/addepar1/jobs/8927507002"
+    },
+    "greenhouse:addepar:8935678002": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "addepar",
+      "eligibility": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "fields": [
+        "data"
+      ],
+      "fingerprint": "addepar|data projects intern summer 2027|edinburgh uk",
+      "first_seen": "2026-11-16T17:06:58+00:00",
+      "last_seen": "2026-11-16",
+      "locations": [
+        "Edinburgh, UK"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": "2026-11-10",
+      "region": "uk",
+      "role_type": "summer_internship",
+      "source": "greenhouse",
+      "status": "open",
+      "title": "Data Projects Intern - Summer 2027",
+      "url": "https://job-boards.greenhouse.io/addepar1/jobs/8935678002"
+    },
     "greenhouse:gsa-capital:8518528002": {
       "aliases": [],
       "closed_at": null,
       "company": "gsa-capital",
+      "eligibility": "description: \"First year undergraduate or postgraduate women in STEM disciplines from any university glo…\"",
       "fields": [
         "software",
         "quant"
@@ -383,6 +812,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "gsa-capital",
+      "eligibility": "description: \"First year undergraduate or postgraduate students in STEM disciplines from any university…\"",
       "fields": [
         "software",
         "quant"
@@ -407,6 +837,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "maven-securities",
+      "eligibility": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
       "fields": [
         "quant"
       ],
@@ -430,6 +861,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "maven-securities",
+      "eligibility": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
       "fields": [
         "software"
       ],
@@ -453,6 +885,7 @@
       "aliases": [],
       "closed_at": "2026-11-16",
       "company": "point72",
+      "eligibility": "",
       "fields": [],
       "fingerprint": "point72|2027 point72 academy spring insight programme uk|london uk",
       "first_seen": "2026-11-15T01:46:12+00:00",
@@ -474,6 +907,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "bank-of-america",
+      "eligibility": "insight programme; the posting does not say otherwise",
       "fields": [],
       "fingerprint": "bank-of-america|bank of america early insights event|",
       "first_seen": "2026-11-15T19:15:50+00:00",
@@ -493,6 +927,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "jefferies",
+      "eligibility": "description: \"…rogramme is aimed at students in their first year of study (or second year of a four-year…\"",
       "fields": [],
       "fingerprint": "jefferies|2027 equity research spring week programme london|",
       "first_seen": "2026-11-15T19:15:50+00:00",
@@ -512,6 +947,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "morgan-stanley",
+      "eligibility": "description: \"Freshmen/1st Year , Junior/3rd Year (choose if you are in a 4 year program), Senior/4th Ye…\"",
       "fields": [
         "software"
       ],
@@ -533,6 +969,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "morgan-stanley",
+      "eligibility": "insight programme; the posting does not say otherwise",
       "fields": [
         "software"
       ],
@@ -554,6 +991,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "nomura",
+      "eligibility": "description: \"…h achieving candidate in your first year of university or second year of a four-year cours…\"",
       "fields": [],
       "fingerprint": "nomura|2027 discover nomura programme insight programme|london",
       "first_seen": "2026-11-15T19:15:50+00:00",
@@ -575,6 +1013,7 @@
       "aliases": [],
       "closed_at": null,
       "company": "mufg",
+      "eligibility": "",
       "fields": [],
       "fingerprint": "mufg|2027 mufg insight event breaking barriers social mobility insight day in person|london",
       "first_seen": "2026-11-15T19:15:50+00:00",
