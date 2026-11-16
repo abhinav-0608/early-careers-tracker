@@ -29,10 +29,10 @@ The grad boards whose terms forbid scraping (Trackr, Gradcracker) and the one be
 challenge (Bright Network) also have their own email alerts (section 3).
 
 Written 2026-11-16, in place of stage 4 (DESIGN.md section 13: grad boards and community
-repos are not used). The tracker watches 422 companies, all in this profile's scope; 353
-are polled and 69 are `unsupported`. This report says where the remaining coverage is, and
-what each piece would take. **Nothing here has been built or added to `companies.yaml`.**
-Each item needs a decision first.
+repos are not used). The tracker watches 422 companies, all in this profile's scope; 352
+are polled and 70 are `unsupported` (counts updated 2026-11-16). This report says where the
+remaining coverage is, and what each piece would take. Items built since are marked
+**Built** with the decision that allowed them; everything else still needs a decision.
 
 How it was checked: everything in part 1 comes from `companies.yaml` and DESIGN.md. For
 part 2, each candidate host's `robots.txt` was requested **once**, with the tracker's
@@ -42,7 +42,7 @@ or endpoint below has been tried yet.
 
 ## 1. Gaps among the companies already listed
 
-### FAANG+ 🔥 companies that cannot be polled (6 of 23)
+### FAANG+ 🔥 companies that cannot be polled (7 of 23)
 
 | Company | Why | Way in |
 |---|---|---|
@@ -51,6 +51,7 @@ or endpoint below has been tried yet.
 | Citadel, Citadel Securities | Cloudflare browser challenge | None without a headless browser (decision 10) |
 | Revolut | Browser security check; robots.txt disallows `/api/` and query strings | None |
 | Tesla | Akamai "Access Denied" to non-browsers | None |
+| JPMorgan Chase | Switched off 2026-11-16: jpmorgan.com's terms forbid robots that monitor or copy its pages or data | Written permission (decision 30) |
 
 These are final under the rules in DESIGN.md. Their own job alerts (email) are the way to
 hear about them.
@@ -74,7 +75,7 @@ cheapest gains are generalising those.
 
 | System | Companies | robots.txt (checked 2026-11-16) | Work | Verdict |
 |---|---|---|---|---|
-| **Eightfold** | Netflix, Qualcomm, Millennium, American Express | Netflix, Qualcomm, Millennium: `Disallow: /` but `Allow: /api/pcsx` and `/careers`, the same as Microsoft's. American Express: no robots.txt (404) | **Built 2026-11-16** (DESIGN.md decision 29) | **Qualcomm is now polled.** Netflix and Millennium refuse the search API (403) and stay unsupported; American Express's real careers host is unknown |
+| **Eightfold** | Netflix, Qualcomm, Millennium, American Express | Netflix, Qualcomm, Millennium: `Disallow: /` but `Allow: /api/pcsx` and `/careers`, the same as Microsoft's. American Express: no robots.txt (404) | **Built 2026-11-16** (DESIGN.md decision 29) | Qualcomm waits on its terms of use, which could not be read. Netflix and Millennium refuse the search API (403) and stay unsupported; American Express's real careers host is unknown |
 | **Oracle Cloud HCM** | Schroders, Lazard, BNY, Oracle (also Uber, Fortinet; hosts not recorded) | No robots.txt on any of the four hosts (404), as with JPMorgan's (403) | Turn `custom/jpmorgan.py` into a generic Oracle Recruiting Cloud adapter (host, site number, optional filter per company) | **Recommended.** 4 to 6 companies, three of them banks or asset managers |
 | **iCIMS, newer "globalcareers" hosts** | Atlassian, MSCI | `/jobs/` search allowed; only referral, login, candidate and intro paths are disallowed | A new iCIMS adapter reading the job search pages | Possible; 2 companies |
 | iCIMS, older hosts | Arm (early careers), Booking.com, GitHub, Susquehanna (SIG) | `Disallow: /` on every one | None (decision 12) | Stay unsupported. Arm and SIG run early-careers programmes, so their own alerts are worth signing up for |

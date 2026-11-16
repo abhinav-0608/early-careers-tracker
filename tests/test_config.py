@@ -198,7 +198,7 @@ def test_every_polled_company_has_what_its_adapter_needs(config):
     by_key = {company.key: company for company in config.companies}
     for key in ("morgan-stanley", "google", "google-deepmind"):
         assert adapter_for(by_key[key]) is not None, key
-    # JPMorgan: switched off 2026-11-16 (its terms; DESIGN.md decision 31). Qualcomm:
+    # JPMorgan: switched off 2026-11-16 (its terms; DESIGN.md decision 30). Qualcomm:
     # waits for its terms to be read (decision 29).
     for key in (
         "goldman-sachs",

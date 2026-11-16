@@ -719,8 +719,9 @@ pages that list roles, is `unsupported` with the reason in its `note`.
 | Tesla | Unsupported | `www.tesla.com` answers every request, robots.txt included, with an Akamai "Access Denied" (403) unless it comes from a browser |
 
 Counts are from 2026-11-15. Anthropic (Greenhouse), OpenAI (Ashby) and Palantir (Lever)
-were already covered. Of the 23 FAANG+ 🔥 companies, 17 are polled and 6 are not
-(Goldman Sachs, Citadel, Citadel Securities, Revolut, Meta, Tesla).
+were already covered. Of the 23 FAANG+ 🔥 companies, 16 are polled and 7 are not
+(Goldman Sachs, Citadel, Citadel Securities, Revolut, Meta, Tesla, and JPMorgan since
+2026-11-16, decision 30).
 
 **Politeness, enforced in `http.py` so no adapter can skip it:**
 
