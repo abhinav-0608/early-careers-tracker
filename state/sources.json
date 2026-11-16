@@ -856,6 +856,33 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "custom:amazon": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:29:00+00:00",
+      "last_alert_at": null
+    },
+    "custom:amd": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:29:00+00:00",
+      "last_alert_at": null
+    },
+    "custom:apple": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:29:00+00:00",
+      "last_alert_at": null
+    },
     "custom:google": {
       "alerted": false,
       "consecutive_failures": 0,
@@ -875,6 +902,14 @@
       "last_alert_at": null
     },
     "custom:jpmorgan-chase": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "last_alert_at": null
+    },
+    "custom:microsoft": {
       "alerted": false,
       "consecutive_failures": 0,
       "empty_runs": 0,
@@ -2178,6 +2213,33 @@
       "has_returned_jobs": true,
       "last_alert_at": null
     },
+    "smartrecruiters:armis": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:29:00+00:00",
+      "last_alert_at": null
+    },
+    "smartrecruiters:canva": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:29:00+00:00",
+      "last_alert_at": null
+    },
+    "smartrecruiters:servicenow": {
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": true,
+      "interval_polled_at": "2026-11-16T04:29:00+00:00",
+      "last_alert_at": null
+    },
     "talnet:bank-of-america": {
       "alerted": false,
       "consecutive_failures": 0,
@@ -2296,7 +2358,7 @@
     },
     "workday:capital-one": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
@@ -2348,9 +2410,9 @@
     },
     "workday:expedia": {
       "alerted": false,
-      "consecutive_failures": 0,
+      "consecutive_failures": 1,
       "empty_runs": 0,
-      "failing_since": null,
+      "failing_since": "2026-11-16T04:29:10+00:00",
       "has_returned_jobs": true,
       "last_alert_at": null
     },
@@ -2365,7 +2427,7 @@
     },
     "workday:factset": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:30:53+00:00",
       "has_returned_jobs": true,
@@ -2408,7 +2470,7 @@
     },
     "workday:g-research": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
@@ -2433,7 +2495,7 @@
     },
     "workday:ig-group": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
@@ -2578,7 +2640,7 @@
     },
     "workday:postman": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
@@ -2618,7 +2680,7 @@
     },
     "workday:salesforce": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
