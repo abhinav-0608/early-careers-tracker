@@ -1,7 +1,7 @@
 {
   "backoff": {
-    "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-16T07:01:05+00:00",
+    "wd1.myworkdayjobs.com": {
+      "retry_at": "2026-11-16T07:31:09+00:00",
       "strikes": 1
     },
     "wd103.myworkdayjobs.com": {
@@ -15,6 +15,10 @@
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-16T08:01:12+00:00",
       "strikes": 3
+    },
+    "wd3.myworkdayjobs.com": {
+      "retry_at": "2026-11-16T07:31:09+00:00",
+      "strikes": 1
     }
   },
   "robots": {
@@ -57,6 +61,26 @@
         "Disallow: /cn/*/aow/*",
         "Disallow: /tmall*",
         "Allow: /ac/globalnav/2.0/*/images/ac-globalnav/globalnav/search/*"
+      ]
+    },
+    "apply.careers.microsoft.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-16T07:01:00+00:00",
+      "rules": [
+        "Disallow: /",
+        "Allow: /$",
+        "Allow: /careers",
+        "Allow: /api/apply",
+        "Allow: /api/pcsx",
+        "Allow: /candidate/login",
+        "Allow: /login",
+        "Allow: /events/candidate",
+        "Allow: /events/open",
+        "Allow: /api/events",
+        "Allow: /careerhub/explore/jobs",
+        "Allow: /api/career_hub",
+        "Allow: /static/gen",
+        "Allow: /gen"
       ]
     },
     "apply.workable.com": {
@@ -733,16 +757,6 @@
         "Disallow: /*/channel/"
       ]
     },
-    "mq.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /CareersatMQ/",
-        "Allow: /CareersatMQHealth/",
-        "Disallow: /OpportunityatMQ/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "ms.wd5.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
@@ -873,16 +887,6 @@
         "Allow: /referral19/",
         "Allow: /sourced/",
         "Allow: /immigration/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "sonyglobal.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /SonyGlobalCareers/",
-        "Allow: /SonyJapanCareers/",
-        "Allow: /Sony_Europe_Careers/",
         "Disallow: /refreshFacet/"
       ]
     },
