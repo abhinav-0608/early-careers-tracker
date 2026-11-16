@@ -27,10 +27,8 @@ http:
 polling:
   # Kinds of source that are switched off: not polled at all, and not reported as failing.
   # Same names as under every_minutes.
-  disabled:
-    - workable            # built from the documented response but never checked against
-                          # the live API (the host was rate-limiting). Verify one board,
-                          # then delete this line
+  # How an adapter that is built but not yet proven ships dark. Nothing is off today.
+  disabled: []
   # Minimum minutes between polls of a source. 0 = every run (every 15 minutes).
   # A key is an ATS name, or the module name of a custom adapter. A source that is not
   # due is skipped: that is not a failure, and nothing is closed because of it.

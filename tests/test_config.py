@@ -198,7 +198,7 @@ def test_every_polled_company_has_what_its_adapter_needs(config):
         assert by_key[key].ats == "unsupported" and by_key[key].note, key
     # Workable has an adapter but is switched off until it has met the live API.
     assert sum(company.ats == "workable" for company in polled) == 6
-    assert "workable" in config.settings.disabled_sources
+    assert config.settings.disabled_sources == frozenset()  # Workable verified 2026-11-16
     assert "careers.smartrecruiters.com" in config.settings.hosts_without_robots_txt
 
 
@@ -263,8 +263,8 @@ def test_shipped_polling_intervals_slow_down_only_the_expensive_sources(config):
         ("google: 60", "google: hourly", "google: expected int, got str"),
         ("workday: 0 ", "workday: 60", "workday must be 0; set 'workday_search'"),
         ("every_minutes:", "every_minute:", "polling: unknown key 'every_minute'"),
-        ("    - workable ", "    - workabel ", "polling.disabled: no source is called 'workabel'"),
-        ("    - workable ", "    - workday_search ", "disabled: no source is called 'workday_s"),
+        ("disabled: []", "disabled: [workabel]", "disabled: no source is called 'workabel'"),
+        ("disabled: []", "disabled: [workday_search]", "no source is called 'workday_search'"),
     ],
 )
 def test_a_mistake_in_the_polling_intervals_is_rejected(tmp_path, old, new, message):

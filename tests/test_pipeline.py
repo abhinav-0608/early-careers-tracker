@@ -314,7 +314,7 @@ def test_a_rate_limited_source_closes_nothing_and_keeps_its_jobs(tracker, web):
 
 
 def test_a_source_switched_off_in_settings_is_not_polled_or_reported(tracker, web, tmp_path):
-    """polling.disabled: how Workable ships until it has been checked against a live board."""
+    """polling.disabled: how Workable shipped until it was checked against a live board."""
     settings = replace(tracker.config.settings, disabled_sources=frozenset({"lever"}))
     web.broken_hosts.add("api.lever.co")  # would be a failure if it were asked
 

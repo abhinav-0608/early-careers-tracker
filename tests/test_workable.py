@@ -39,6 +39,25 @@ def test_parse_maps_every_field():
     assert len(jobs) == 2
 
 
+def test_parse_reads_the_recorded_live_board():
+    """Hugging Face's board as apply.workable.com returned it on 2026-11-16."""
+    jobs = workable.parse(HUGGING_FACE, load_fixture("workable/huggingface.json"))
+
+    assert len(jobs) == 6
+    first = jobs[0]
+    assert first.job_id == "81B46579FE"
+    assert first.title == "Open-Source Machine Learning Engineer - EMEA Remote"
+    assert first.url == "https://apply.workable.com/j/81B46579FE"
+    assert first.locations == ("Paris, Île-de-France, France",)
+    assert first.department == "Open Source"
+    assert first.posted_at == date(2026, 5, 29)
+    assert first.remote_hint is True
+    # A location with no city is just the country; one marked hidden is still read.
+    assert jobs[3].locations == ("France",)
+    assert jobs[2].locations == ("Paris, Île-de-France, France",)
+    assert len({job.key for job in jobs}) == 6
+
+
 def test_parse_falls_back_to_the_single_location_and_reads_the_remote_flag():
     remote = workable.parse(HUGGING_FACE, load_fixture("workable/board.json"))[1]
     assert remote.locations == ("United States",)  # no "locations" list, no city

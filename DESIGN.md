@@ -329,7 +329,7 @@ http:
   hosts_without_robots_txt:  # checked by hand: /robots.txt redirects to an ordinary page
     - careers.smartrecruiters.com
 polling:
-  disabled: [workable]       # kinds of source switched off: not polled, not reported
+  disabled: []               # kinds of source switched off: not polled, not reported
   every_minutes:             # minimum minutes between polls of a source; 0 = every run
     greenhouse: 0
     lever: 0
@@ -540,7 +540,7 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Lever | `GET api.lever.co/v0/postings/{board}?mode=json` | Whole board in one response |
 | Ashby | `GET api.ashbyhq.com/posting-api/job-board/{board}` | Remote is read from `workplaceType`; `isRemote` is unreliable (true on hundreds of hybrid jobs) |
 | SmartRecruiters | `GET careers.smartrecruiters.com/{id}` (+ `/api/groups`, `/api/more`) | The HTML job board a candidate sees, grouped by location and paged. **Not** the postings API, which robots.txt disallows (see below). No date, no department |
-| Workable | `GET apply.workable.com/api/v1/widget/accounts/{id}` | Whole board in one response. Not yet checked against the live API, and switched off until it is (see below) |
+| Workable | `GET apply.workable.com/api/v1/widget/accounts/{id}` | Whole board in one response. Polled hourly, five seconds between requests (see below) |
 | Workday | `POST {tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` | Paginated, 20 per page; `searchText` narrows large tenants. No usable date ("Posted 3 Days Ago") |
 | tal.net (Oleeo) | `GET {tenant}.tal.net/vx/{board}/candidate/jobboard/vacancy/{site}/adv/` | The HTML job board a candidate sees; 50 per page (`?start=50`). No date. `Crawl-delay: 10` |
 | Custom: JPMorgan | `GET jpmc.fa.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions` | Oracle Recruiting Cloud, 200 per page, narrowed to one job family |
@@ -552,9 +552,8 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
 
 Greenhouse, Lever, Ashby, SmartRecruiters, Workday, tal.net, JPMorgan, Google, Amazon,
-Apple, Microsoft and AMD were verified against the live sites on 2026-11-15 and their test
-fixtures are trimmed copies of those responses. Workable is the exception: its adapter and
-fixture follow Workable's documented response and have not met the live API yet (below).
+Apple, Microsoft and AMD were verified against the live sites on 2026-11-15, and Workable
+on 2026-11-16 (one board, below); their test fixtures are copies of those responses.
 
 **SmartRecruiters: the public board, not the API.** SmartRecruiters publishes postings in
 two places, and they are treated differently because their owners have said different
@@ -589,16 +588,18 @@ The adapter refuses a page that is not a board, so a company that switches to it
 site later shows up as a failing source instead of silently reading the wrong thing.
 
 **Workable rate limits.** `apply.workable.com` sits behind a rate limit, by IP address,
-that blocked a few hundred requests made about a second apart during stage 2. Hours later
-it was still answering 429 on every path, `robots.txt` included, with a `Retry-After` of
-about seven hours, so the adapter could not be checked against the live API when it was
-written (stage 3b). It is therefore **switched off** (`polling.disabled` in
-`settings.yaml`): the six Workable companies are not polled and not reported as failing.
-To enable it: check one board against the live API once the limit has lifted, correct
-the adapter if the shape differs, and delete that line. It will then be polled gently:
-five seconds between requests to that host (`http.host_delay_seconds`) and at most once
-an hour, which is seven requests an hour including `robots.txt`. Whether GitHub's
-runners are rate-limited too is only known once it runs there.
+that blocked a few hundred requests made about a second apart during stage 2: 429 on
+every path, `robots.txt` included, with a `Retry-After` of about seven hours. The
+adapter was therefore written from Workable's documented response and shipped switched
+off (`polling.disabled`). On 2026-11-16, after the time `Retry-After` named had passed,
+it was checked: `robots.txt` allows everything (`User-agent: *`, an empty `Disallow`,
+and `Content-Signal: search=yes, ai-input=yes, ai-train=no`), and one board (Hugging
+Face, 6 roles) came back in exactly the shape the adapter expected, so it was switched
+on. The other five board ids are first confirmed by the poll itself; a wrong one shows
+up as a failing source. Workable is polled gently: five seconds between requests to
+that host (`http.host_delay_seconds`) and at most once an hour, which is six requests
+an hour (seven on the day robots.txt is re-read). A 429 backs the host off for as long
+as it asks.
 
 **Workday at scale.** Large tenants hold thousands of postings at 20 per page. Fetching all
 of them every 15 minutes is rude and slow. A site with up to 200 postings is read in full
@@ -752,7 +753,7 @@ were already covered. Of the 23 dream-tier companies, 17 are polled and 6 are no
     baselined and the other half alerted.
 - **Switching a source off.** A kind of source listed under `polling.disabled` (same names
   as the intervals) is not polled at all: no request, no result, no health record. It
-  is how an adapter that is built but not yet proven ships dark (Workable today).
+  is how an adapter that is built but not yet proven ships dark (Workable, for a day).
 - LinkedIn, Indeed and Glassdoor are refused by hostname in `http.py`, as a hard guard.
 
 ## 6. Filtering
@@ -1025,8 +1026,9 @@ them; which one (the owner's, most likely) is settled when the table is built in
   empty result, a malformed one, and the requests `fetch` makes (filters, paging, page
   limit and its log line). Apple: a role listed once per location is merged; the
   robots.txt redirect chain of the live site. AMD: the crawl delay between its requests;
-  nothing points at the iCIMS host. Workable: the documented shape (hand-written fixture),
-  a rate-limited host left alone after one request, the five-second gap. The real
+  nothing points at the iCIMS host. Workable: the recorded Hugging Face board, plus a
+  hand-written one for several locations and for no locations list; a rate-limited host
+  left alone after one request, the five-second gap. The real
   robots.txt files of SmartRecruiters' API, Microsoft, Amazon and AMD.
 - **SmartRecruiters** (`test_smartrecruiters.py`): the recorded board, groups page and
   "more" page; every page of groups is read and a long group is completed; a job under
@@ -1084,11 +1086,11 @@ As you specified, stopping after each for review:
      582. The floor is Greenhouse: 150 boards on one host, one second apart.
    - **Stage 3b, built:** the SmartRecruiters adapter, reading the public board (Canva,
      ServiceNow, Armis); custom adapters for Amazon, Apple, Microsoft and AMD; the
-     Workable adapter (6 companies), switched off until it has been checked against the
-     live API. **Unsupported:** Wise, Legal & General and Check Point (their
-     SmartRecruiters boards redirect to their own sites), Meta and Tesla (section 5).
-     347 companies are polled, up from 340; 6 more have an adapter that is switched
-     off; 69 are unsupported.
+     Workable adapter (6 companies), switched off for its first day and enabled on
+     2026-11-16 once one board had been checked against the live API. **Unsupported:**
+     Wise, Legal & General and Check Point (their SmartRecruiters boards redirect to
+     their own sites), Meta and Tesla (section 5). 353 companies are polled, up from
+     340; 69 are unsupported.
    - **Measured again** (2026-11-15, everything due, from the development machine): 3 min
      45 s and 1,021 requests to 79 hosts before SmartRecruiters was added, of which the
      four new custom sources are 22 (5.7 MB) plus 5 to apple.com for the robots.txt
@@ -1189,6 +1191,7 @@ As you specified, stopping after each for review:
 15. **Meta is unsupported, citing the notice in its robots.txt** (2026-11-15), although
     no Disallow line covers its job search.
 16. **Workable ships switched off** (2026-11-15): verify one live board, then enable.
+    Verified and enabled on 2026-11-16.
 17. **No baseline notification for zero matches** (2026-11-15).
 18. **robots.txt is cached for 24 hours** in `state/hosts.json` (2026-11-16), re-read
     early only after a failed fetch from that host.

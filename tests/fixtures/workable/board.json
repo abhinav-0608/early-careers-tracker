@@ -1,6 +1,6 @@
 {
   "name": "Example Labs",
-  "description": "Written by hand to the shape of Workable's documented widget response. Not a recorded response: apply.workable.com was rate-limiting when the adapter was built.",
+  "description": "Written by hand to the shape of Workable's widget response, for the cases the recorded board (huggingface.json) does not have: several locations, and no locations list.",
   "jobs": [
     {
       "title": "Software Engineering Intern (Summer 2027) ",

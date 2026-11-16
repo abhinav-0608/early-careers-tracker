@@ -18,8 +18,6 @@
 #   regions      where the company hires, of uk / us / india (informational)
 #   ats          greenhouse | lever | ashby | smartrecruiters | workable | workday | talnet
 #                                                      polled through the adapter of that name
-#                                                      (workable is switched off in
-#                                                      settings.yaml until it is verified)
 #                custom                                own careers site, one module each under
 #                                                      sources/custom/ (amazon, amd, apple,
 #                                                      google, jpmorgan, microsoft)
@@ -734,7 +732,7 @@
   ats: workable
   board: huggingface
   careers_url: https://huggingface.co/jobs
-  verified: 2026-11-15
+  verified: 2026-11-16
 
 - key: stability-ai
   name: Stability AI
@@ -1754,7 +1752,7 @@
   ats: workable
   board: capula-investment-management-ltd
   careers_url: https://www.capulaglobal.com/careers
-  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+  note: "Board id taken from the company's public Workable page in stage 2; first checked against the API by the poll itself"
 
 - key: jain-global
   name: Jain Global
@@ -1787,7 +1785,7 @@
   ats: workable
   board: trexquant
   careers_url: https://trexquant.com/careers
-  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+  note: "Board id taken from the company's public Workable page in stage 2; first checked against the API by the poll itself"
 
 - key: stevens-capital
   name: Stevens Capital Management
@@ -2508,7 +2506,7 @@
   ats: workable
   board: starling-bank
   careers_url: https://www.starlingbank.com/careers/
-  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+  note: "Board id taken from the company's public Workable page in stage 2; first checked against the API by the poll itself"
 
 - key: checkout-com
   name: Checkout.com
@@ -3558,7 +3556,7 @@
   ats: workable
   board: trailofbits
   careers_url: https://www.trailofbits.com/careers/
-  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+  note: "Board id taken from the company's public Workable page in stage 2; first checked against the API by the poll itself"
 
 - key: bishop-fox
   name: Bishop Fox
@@ -3767,7 +3765,7 @@
   ats: workable
   board: portswigger
   careers_url: https://portswigger.net/careers
-  note: "Board id taken from the company's public Workable page; the API was rate-limiting (HTTP 429) when this was checked"
+  note: "Board id taken from the company's public Workable page in stage 2; first checked against the API by the poll itself"
 
 - key: immersive
   name: Immersive

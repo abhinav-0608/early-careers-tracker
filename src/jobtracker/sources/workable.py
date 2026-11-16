@@ -4,16 +4,18 @@ API: GET https://apply.workable.com/api/v1/widget/accounts/{board}
 Public and unauthenticated; this is the endpoint behind the careers widget a company
 embeds on its own site. It returns the whole board in one response.
 
-**Not yet checked against the live API.** apply.workable.com rate-limits by IP address,
-and the address this adapter was written from had been limited since stage 2 (HTTP 429
-on every path, robots.txt included, with a Retry-After of several hours). The field
-names below are those of Workable's documented widget response, and the test fixture
-is written by hand to that shape rather than recorded. Until a first live poll has
-confirmed it, treat a Workable parsing error as "the shape is wrong", not as an outage.
+Checked against one live board (Hugging Face) on 2026-11-16; the response matched the
+documented widget shape this was written from, and is recorded as a test fixture. The
+host's robots.txt allows everything (an empty Disallow).
 
-Because of that rate limit the handful of Workable boards are polled gently: a longer
-gap between requests to this host and a polling interval, both in settings.yaml. When
-the host answers 429 for its robots.txt the client fetches nothing from it that run.
+apply.workable.com rate-limits by IP address: a few hundred requests a second apart in
+stage 2 earned a 429 on every path with a Retry-After of seven hours. So the handful of
+Workable boards are polled gently: a longer gap between requests to this host and a
+polling interval, both in settings.yaml. A 429 backs the host off for as long as it
+asks (see http.py).
+
+A location marked "hidden" (the company does not display it, usually on a remote job)
+is still read: it is in the public response and is what places the job in a region.
 """
 
 from __future__ import annotations
