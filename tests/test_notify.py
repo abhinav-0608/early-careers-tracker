@@ -368,6 +368,15 @@ def test_a_long_title_is_cut_on_a_word_in_its_button(config, me):
     assert action.label == "Apply: Normal Co – Insight into Technology…"
     assert notification.message.startswith(f"Normal Co — {title}")  # the list is whole
 
+    # A word that ends exactly at the cut is kept.
+    notification = baseline_notification(
+        [stored_job(1, title="Quant Research Spring Week 2027 (London)")],
+        me,
+        with_companies(config),
+        filters_changed=False,
+    )
+    assert notification.actions[0].label == "Apply: Normal Co – Quant Research Spring Week 2027…"
+
 
 def test_buttons_are_sent_as_ntfy_view_actions_but_never_logged(settings, caplog):
     caplog.set_level("INFO")

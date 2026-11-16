@@ -1095,7 +1095,9 @@ notification, each opening a link. A summary (a baseline or "N new roles") of **
 fewer** gives each role a button, `Apply: <Company> – <title>` with the title cut to 32
 characters on a word, and its tap opens the first role's posting. A summary of **more than
 3** keeps the tap on the README's open-roles table (`#open-roles`), which has them all, and
-gives buttons only to its FAANG+ 🔥 roles, which it lists first, up to three. A private
+gives buttons only to its FAANG+ 🔥 roles, which it lists first, up to three. In practice
+that is a baseline: an "N new roles" summary never holds FAANG+ roles, which always get
+their own alerts, so a long one has no buttons. A private
 company's roles (section 2a) get buttons too, since ntfy is the owner's own channel; like
 the tap, buttons are never written to a log on a real send (a dry run logs them locally).
 
@@ -1566,6 +1568,6 @@ none should be without a decision to grow the scope.
     a baseline of a few roles, and opening the README to find each link was a detour. Up
     to 3 roles: a button each, and the tap opens the first. More than 3: the tap stays on
     the README, which lists them all, and the three buttons ntfy allows go to the FAANG+
-    🔥 roles, which matter most. Normal roles beyond the first three of a long summary have
-    no button rather than an arbitrary few. The URLs are the ones the tracker already
+    🔥 roles, which matter most. In a summary of more than 3 roles no normal role gets a
+    button, rather than an arbitrary few of them. The URLs are the ones the tracker already
     sends as an alert's click; nothing new is fetched.

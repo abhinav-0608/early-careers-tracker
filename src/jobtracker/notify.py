@@ -296,7 +296,10 @@ def _apply_label(job: StoredJob, config: Config) -> str:
     """ "Apply: Morgan Stanley – 2027 Technology Spring…": short enough for a button."""
     title = job.title
     if len(title) > BUTTON_TITLE_CHARS:
-        cut = title[: BUTTON_TITLE_CHARS - 1].rsplit(" ", 1)[0].rstrip(" -–—|,:(")
+        cut = title[: BUTTON_TITLE_CHARS - 1]
+        if title[BUTTON_TITLE_CHARS - 1] != " ":  # mid-word: back to the last whole word
+            cut = cut.rsplit(" ", 1)[0]
+        cut = cut.rstrip(" -–—|,:(")
         title = (cut or title[: BUTTON_TITLE_CHARS - 1]) + "…"
     return f"Apply: {_company_name(job, config)} – {title}"
 
