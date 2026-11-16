@@ -165,6 +165,16 @@ limit, and board health (a board is up or down for everyone). A profile watching
 companies makes the run longer for all. Also by nature: the repo is public, so every
 profile's filters, scope and matched jobs are readable by anyone. Only topics are secret.
 
+**Private companies** (`private: true` in companies.yaml; decision 32) are the exception:
+their terms let the owner keep extracts for their own information but not pass them on. They
+are polled and alerted in full to the profile's ntfy topic, and nothing public names their
+roles. Each posting's id is replaced by a hash as soon as it is fetched (so job keys in
+state and logs are opaque), the dedupe fingerprint is a hash (reposts are still
+recognised), saved records keep no title, link, location or quoted posting text (they are
+whole in memory during a run, which is all alerts need), log lines give `(private)` for
+the role, and the README leaves the roles out. Counts per source still appear, and the
+host's robots.txt rules are cached in `state/hosts.json` as for any host. See privacy.py.
+
 **A profile that cannot run** shows as a warning on the Actions run page and in the logs,
 and the run still succeeds so that the other profiles' state is committed. The run fails
 (exit 1, which triggers the existing failure alert) only when no profile got through. A
@@ -525,6 +535,7 @@ ones. Enabling a later role type is flipping `enabled: true`. No code changes.
   tags: []
   regions: [uk, us]
   opt_in: false          # true = only profiles naming this company watch it (section 2a)
+  private: false         # true = alerts only; its roles never appear in public output (2a)
   ats: greenhouse        # greenhouse | lever | ashby | smartrecruiters | workable |
                          # workday | talnet | custom | unsupported
   board: janestreet      # board id in the ATS's API (module name for custom)
@@ -616,7 +627,7 @@ returns the function that fetches a company, or `None` if it cannot be polled.
 | Custom: Apple | `GET jobs.apple.com/en-gb/search` | JSON embedded in the page, 20 per page (about 320 KB a page); narrowed to one team |
 | Eightfold | `GET {host}/api/pcsx/search?domain={board}` | 10 per page; narrowed to the "Intern" experience level. `host` and `board` (the site's domain) per company. Used by Microsoft; Qualcomm waits on its terms (decision 29) |
 | Custom: Microsoft | `GET apply.careers.microsoft.com/api/pcsx/search` | Eightfold on Microsoft's own hostname, read by the Eightfold adapter; kept a custom source so its job keys are unchanged |
-| Custom: HSBC | `GET apply.careers.hsbc.com/emergingtalent/search/` | SAP SuccessFactors career pages, server-rendered, 25 per page: HSBC's whole early-careers site (37 roles, two requests). robots.txt disallows only apply, alerts and `/services/` |
+| Custom: HSBC | `GET apply.careers.hsbc.com/emergingtalent/search/` | SAP SuccessFactors career pages, server-rendered, 25 per page: HSBC's whole early-careers site (37 roles, two requests, plus posting pages for eligibility). robots.txt disallows only apply, alerts and `/services/`. **Private** (decision 32): alerts only |
 | Custom: AMD | `GET careers.amd.com/api/jobs` | iCIMS Attract; 100 per page with full descriptions; one category and three keyword searches. `Crawl-delay: 5` |
 | Boards | One module per board | Stage 4, only after a terms and robots.txt report |
 
@@ -1520,10 +1531,20 @@ none should be without a decision to grow the scope.
     Jefferies' publish no location, though their titles often name one. Reading the title
     like a location would let a title naming only New York drop a role, which would change
     what alerts; so it is used only when it gives a region the role passes in.
-32. **HSBC is polled from its early-careers site** (2026-11-16, owner's decision on the
-    gap report): `apply.careers.hsbc.com/emergingtalent`, whose robots.txt allows the
-    search and posting pages and whose terms allow copying extracts for personal
-    information. Of the other three UK banks chosen with it, NatWest
+32. **HSBC is polled privately: alerts only** (2026-11-16, owner's decisions on the gap
+    report and on its terms). `apply.careers.hsbc.com/emergingtalent`: robots.txt allows
+    the search and posting pages. Its terms ("Trademarks and copyright") say nothing about
+    automated access, but: "You may imprint, copy, download or temporarily store extracts
+    from the Site ... for your personal information ... You may not distribute these
+    materials to others. Any other use is prohibited unless you first request and obtain
+    our written permission. In particular, no one may use a part of the Site ... on any
+    other website, or link any other website to the Site ... without our prior written
+    permission." The tracker's README, committed state and Actions logs are public, so
+    publishing HSBC's roles there would distribute them. The owner chose to poll it with
+    the alerts going only to the owner's own topic and nothing public naming its roles (the
+    private mode, section 2a); had the terms restricted automated access, or been unclear
+    on it, HSBC would have stayed off. The parser fails on a changed page rather than
+    returning fewer roles. Of the other three UK banks chosen with it, NatWest
     (`jobs.natwestgroup.com`: a Cloudflare challenge even for robots.txt) and BNP Paribas
     (`group.bnpparibas`: Akamai "Access Denied" for robots.txt) refuse the tracker and
     stay unsupported, and UBS was skipped by the owner (a browser-like session handshake

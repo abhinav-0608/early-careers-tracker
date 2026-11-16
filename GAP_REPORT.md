@@ -86,7 +86,7 @@ cheapest gains are generalising those.
 | Avature | Bloomberg, Two Sigma | **No answer** from either host, twice (25-second timeout) | None while robots.txt cannot be read: the client fetches nothing from such a host | Stay unsupported for now. Bloomberg runs UK student programmes, so this gap matters |
 | SAP SuccessFactors | SAP, Moody's | Not checked | Not checked | Later |
 | Phenom | Brevan Howard, Circle | Not checked | Not checked | Later |
-| Own sites | HSBC (**polled since 2026-11-16**); UBS (skipped by the owner), BNP Paribas and NatWest (both refuse the tracker: bot protection) are on the manual alert list; IBM, BAE Systems Digital Intelligence, D. E. Shaw and others | Not checked here | One custom adapter each, as in stage 3b | Worth it only for the banks with UK spring weeks (HSBC, UBS, BNP Paribas, NatWest), one at a time |
+| Own sites | HSBC (**polled since 2026-11-16, privately: alerts only**, as its terms forbid passing its pages on); UBS (skipped by the owner), BNP Paribas and NatWest (both refuse the tracker: bot protection) are on the manual alert list; IBM, BAE Systems Digital Intelligence, D. E. Shaw and others | Not checked here | One custom adapter each, as in stage 3b | Worth it only for the banks with UK spring weeks (HSBC, UBS, BNP Paribas, NatWest), one at a time |
 | Disallowed Workday sites | Citi, RBC, PIMCO, Franklin Templeton, eBay, Zoom, Palo Alto Networks, Darktrace | Disallowed | None (decision 7) | Stay unsupported |
 
 **Suggested order:** a generic Eightfold adapter (4 companies), then a generic Oracle adapter

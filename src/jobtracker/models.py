@@ -35,7 +35,7 @@ class Company:
     # True = alerts only. The company's terms allow extracts for the owner's own
     # information but not passing them on, and this repository is public: its roles are
     # kept out of the README, out of log lines, and out of committed state except as
-    # opaque ids and hashes (privacy.py, DESIGN.md decision 31).
+    # opaque ids and hashes (privacy.py, DESIGN.md decision 32).
     private: bool = False
 
     @property

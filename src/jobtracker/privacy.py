@@ -11,7 +11,7 @@ these companies:
 - stored records keep no title, link, location or quoted posting text;
 - log lines name the company but never the role, and the README leaves the roles out.
 
-See DESIGN.md decision 31.
+See DESIGN.md decision 32.
 """
 
 from __future__ import annotations

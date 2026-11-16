@@ -1908,7 +1908,7 @@
   ats: custom
   board: hsbc
   # Alerts only: its terms allow extracts for personal information but not passing
-  # them on (DESIGN.md decision 31), so its roles stay out of the public README, logs
+  # them on (DESIGN.md decision 32), so its roles stay out of the public README, logs
   # and state.
   private: true
   careers_url: https://www.hsbc.com/careers
