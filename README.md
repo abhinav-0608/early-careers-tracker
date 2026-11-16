@@ -62,10 +62,10 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 Last updated 2026-11-16.
 
 <details>
-<summary>69 companies in scope cannot be polled</summary>
+<summary>70 companies in scope cannot be polled</summary>
 
 - **Akamai**: Own careers site (akamaicareers.inflightcloud.com)
-- **American Express**: Eightfold (aexp.eightfold.ai)
+- **American Express**: Said to use Eightfold, but aexp.eightfold.ai is not its careers host (404, 2026-11-16) and the real one is unknown
 - **Arm**: iCIMS (experienced-arm.icims.com, earlycareers-arm.icims.com)
 - **Atlassian**: iCIMS (careers-atlassian.icims.com)
 - **BAE Systems Digital Intelligence**: Own careers site (jobs.baesystems.com)
@@ -97,22 +97,23 @@ Last updated 2026-11-16.
 - **HSBC**: Own careers site (mycareer.hsbc.com)
 - **IBM**: Own careers site (careers.ibm.com)
 - **Intuit**: Own careers site
+- **JPMorgan Chase**: Switched off 2026-11-16: jpmorgan.com's terms forbid any robot that monitors or copies its pages or data without written permission, and may cover its careers site (Oracle Recruiting Cloud, jpmc.fa.oraclecloud.com). custom/jpmorgan.py is kept: ats: custom, board: jpmorgan turns it back on
 - **KKR**: Workday tenant (kkr.wd5) exposes no public site name
 - **Klarna**: No public job-board endpoint found (checked 2026-11-15)
 - **Lazard**: Oracle Cloud HCM (icbpjb.fa.ocs.oraclecloud.com)
 - **Legal & General**: SmartRecruiters (board id legalandgeneral). Its postings API is disallowed by robots.txt on api.smartrecruiters.com, and its public board redirects to careers.legalandgeneral.com, a separate site with no adapter. Checked 2026-11-15
 - **LinkedIn**: Hosted on linkedin.com, which this project never fetches
 - **Meta**: robots.txt on www.metacareers.com opens with a notice that automated collection of data is prohibited without written permission. Checked 2026-11-15
-- **Millennium**: Eightfold careers site (mlp.eightfold.ai); its Workday sites are empty
+- **Millennium**: Eightfold careers site (mlp.eightfold.ai) refuses its search API with 403 (2026-11-16); its Workday sites are empty
 - **Moody's**: SAP SuccessFactors
 - **MSCI**: iCIMS (globalcareers-msci.icims.com)
 - **NatWest Group**: Own careers site (jobs.natwestgroup.com); no public job-board endpoint found (checked 2026-11-15)
 - **NCC Group**: Pinpoint (nccgroup.pinpointhq.com), no adapter
-- **Netflix**: Eightfold careers site (netflix.eightfold.ai); its Workday site is disallowed by robots.txt
+- **Netflix**: Eightfold careers site (netflix.eightfold.ai) refuses its search API with 403 (2026-11-16); its Workday site is disallowed by robots.txt
 - **Oracle**: Oracle Cloud HCM (eeho.fa.us2.oraclecloud.com)
 - **Palo Alto Networks**: Workday site 'panwexternalcareers' is disallowed by the tenant's robots.txt
 - **PIMCO**: Workday site 'pimco-careers' is disallowed by the tenant's robots.txt
-- **Qualcomm**: Eightfold careers site (qualcomm.eightfold.ai); its Workday site is empty
+- **Qualcomm**: Eightfold careers site (qualcomm.eightfold.ai; robots.txt allows the search API), but its terms of use could not be read (the page renders only in a browser, 2026-11-16). If they allow it: ats: eightfold, host: qualcomm.eightfold.ai, board: qualcomm.com
 - **Rapid7**: Own careers site (careers.rapid7.com)
 - **RBC Capital Markets**: Workday site 'RBCGLOBAL1' is disallowed by the tenant's robots.txt
 - **Retool**: Gem ATS (jobs.gem.com), no adapter

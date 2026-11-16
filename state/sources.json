@@ -904,14 +904,6 @@
       "interval_polled_at": "2026-11-16T22:15:00+00:00",
       "last_alert_at": null
     },
-    "custom:jpmorgan-chase": {
-      "alerted": false,
-      "consecutive_failures": 0,
-      "empty_runs": 0,
-      "failing_since": null,
-      "has_returned_jobs": true,
-      "last_alert_at": null
-    },
     "custom:microsoft": {
       "alerted": false,
       "consecutive_failures": 2,
