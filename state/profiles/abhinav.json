@@ -107,9 +107,9 @@
     "ashby:writer": "10b0cf2721ab4e39",
     "ashby:zapier": "10b0cf2721ab4e39",
     "ashby:zilch": "10b0cf2721ab4e39",
-    "custom:amazon": "e574528ec087c1a7",
-    "custom:amd": "e574528ec087c1a7",
-    "custom:apple": "e574528ec087c1a7",
+    "custom:amazon": "10b0cf2721ab4e39",
+    "custom:amd": "10b0cf2721ab4e39",
+    "custom:apple": "10b0cf2721ab4e39",
     "custom:google": "10b0cf2721ab4e39",
     "custom:google-deepmind": "10b0cf2721ab4e39",
     "custom:jpmorgan-chase": "10b0cf2721ab4e39",
@@ -276,9 +276,9 @@
     "lever:valkyrie-trading": "10b0cf2721ab4e39",
     "lever:wintermute": "10b0cf2721ab4e39",
     "lever:zopa": "10b0cf2721ab4e39",
-    "smartrecruiters:armis": "e574528ec087c1a7",
-    "smartrecruiters:canva": "e574528ec087c1a7",
-    "smartrecruiters:servicenow": "e574528ec087c1a7",
+    "smartrecruiters:armis": "10b0cf2721ab4e39",
+    "smartrecruiters:canva": "10b0cf2721ab4e39",
+    "smartrecruiters:servicenow": "10b0cf2721ab4e39",
     "talnet:bank-of-america": "10b0cf2721ab4e39",
     "talnet:jefferies": "10b0cf2721ab4e39",
     "talnet:morgan-stanley": "10b0cf2721ab4e39",
@@ -391,6 +391,45 @@
       "status": "unclear"
     },
     "ashby:sierra:7af8aa4e-ba84-49ba-bc53-19358f4564ff": {
+      "status": "unclear"
+    },
+    "custom:amazon:10554586": {
+      "status": "unclear"
+    },
+    "custom:amazon:10567687": {
+      "status": "unclear"
+    },
+    "custom:amazon:10567694": {
+      "status": "unclear"
+    },
+    "custom:amazon:10578090": {
+      "status": "unclear"
+    },
+    "custom:amazon:10588762": {
+      "status": "unclear"
+    },
+    "custom:amazon:10588998": {
+      "status": "unclear"
+    },
+    "custom:amazon:10602219": {
+      "status": "unclear"
+    },
+    "custom:apple:200682357": {
+      "status": "unclear"
+    },
+    "custom:apple:200690125": {
+      "status": "unclear"
+    },
+    "custom:apple:200693133": {
+      "status": "unclear"
+    },
+    "custom:apple:200694477": {
+      "status": "unclear"
+    },
+    "custom:apple:200694489": {
+      "status": "unclear"
+    },
+    "custom:apple:200694490": {
       "status": "unclear"
     },
     "custom:google:109375266236572358": {
