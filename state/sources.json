@@ -911,9 +911,9 @@
     },
     "custom:microsoft": {
       "alerted": false,
-      "consecutive_failures": 0,
+      "consecutive_failures": 1,
       "empty_runs": 0,
-      "failing_since": null,
+      "failing_since": "2026-11-16T13:45:44+00:00",
       "has_returned_jobs": true,
       "last_alert_at": null
     },
@@ -2278,7 +2278,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T12:45:00+00:00",
+      "interval_polled_at": "2026-11-16T13:45:00+00:00",
       "last_alert_at": null
     },
     "workable:hugging-face": {
@@ -2287,7 +2287,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T12:45:00+00:00",
+      "interval_polled_at": "2026-11-16T13:45:00+00:00",
       "last_alert_at": null
     },
     "workable:portswigger": {
@@ -2296,7 +2296,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T12:45:00+00:00",
+      "interval_polled_at": "2026-11-16T13:45:00+00:00",
       "last_alert_at": null
     },
     "workable:starling-bank": {
@@ -2305,7 +2305,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T12:45:00+00:00",
+      "interval_polled_at": "2026-11-16T13:45:00+00:00",
       "last_alert_at": null
     },
     "workable:trail-of-bits": {
@@ -2314,7 +2314,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T12:45:00+00:00",
+      "interval_polled_at": "2026-11-16T13:45:00+00:00",
       "last_alert_at": null
     },
     "workable:trexquant": {
@@ -2323,7 +2323,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T12:45:00+00:00",
+      "interval_polled_at": "2026-11-16T13:45:00+00:00",
       "last_alert_at": null
     },
     "workday:abrdn": {
