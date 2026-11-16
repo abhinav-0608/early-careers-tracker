@@ -862,7 +862,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T09:30:00+00:00",
+      "interval_polled_at": "2026-11-16T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:amd": {
@@ -871,7 +871,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T09:30:00+00:00",
+      "interval_polled_at": "2026-11-16T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:apple": {
@@ -880,7 +880,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T09:30:00+00:00",
+      "interval_polled_at": "2026-11-16T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -2219,7 +2219,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T09:30:00+00:00",
+      "interval_polled_at": "2026-11-16T10:30:00+00:00",
       "last_alert_at": null
     },
     "smartrecruiters:canva": {
@@ -2228,7 +2228,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T09:30:00+00:00",
+      "interval_polled_at": "2026-11-16T10:30:00+00:00",
       "last_alert_at": null
     },
     "smartrecruiters:servicenow": {
@@ -2237,7 +2237,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T09:30:00+00:00",
+      "interval_polled_at": "2026-11-16T10:30:00+00:00",
       "last_alert_at": null
     },
     "talnet:bank-of-america": {
@@ -2361,7 +2361,7 @@
     },
     "workday:barclays": {
       "alerted": false,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
@@ -2455,7 +2455,7 @@
     },
     "workday:deutsche-bank": {
       "alerted": false,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
@@ -2557,7 +2557,7 @@
     },
     "workday:intel": {
       "alerted": false,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
@@ -2743,7 +2743,7 @@
     },
     "workday:samsung": {
       "alerted": false,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
