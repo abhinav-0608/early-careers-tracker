@@ -283,12 +283,12 @@
     "talnet:jefferies": "10b0cf2721ab4e39",
     "talnet:morgan-stanley": "10b0cf2721ab4e39",
     "talnet:nomura": "10b0cf2721ab4e39",
-    "workable:capula": "e574528ec087c1a7",
-    "workable:hugging-face": "e574528ec087c1a7",
-    "workable:portswigger": "e574528ec087c1a7",
-    "workable:starling-bank": "e574528ec087c1a7",
-    "workable:trail-of-bits": "e574528ec087c1a7",
-    "workable:trexquant": "e574528ec087c1a7",
+    "workable:capula": "10b0cf2721ab4e39",
+    "workable:hugging-face": "10b0cf2721ab4e39",
+    "workable:portswigger": "10b0cf2721ab4e39",
+    "workable:starling-bank": "10b0cf2721ab4e39",
+    "workable:trail-of-bits": "10b0cf2721ab4e39",
+    "workable:trexquant": "10b0cf2721ab4e39",
     "workday:abrdn": "e574528ec087c1a7",
     "workday:adobe": "e574528ec087c1a7",
     "workday:arctic-wolf": "e574528ec087c1a7",
@@ -771,6 +771,12 @@
     "talnet:nomura:1478": {
       "basis": "description: \"…h achieving candidate in your first year of university or second year of a four-year cours…\"",
       "status": "eligible"
+    },
+    "workable:capula:96EBCF5617": {
+      "status": "unclear"
+    },
+    "workable:capula:A15A62A8BE": {
+      "status": "unclear"
     }
   },
   "eligibility_rules": "9bc7b15a981f5c27",
