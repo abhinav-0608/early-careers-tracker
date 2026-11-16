@@ -465,14 +465,17 @@
     },
     "greenhouse:addepar:8910310002": {
       "basis": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "note": "All years welcome · prefers penultimate/final",
       "status": "eligible"
     },
     "greenhouse:addepar:8927507002": {
       "basis": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "note": "All years welcome · prefers penultimate/final",
       "status": "eligible"
     },
     "greenhouse:addepar:8935678002": {
       "basis": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "note": "All years welcome · prefers penultimate/final",
       "status": "eligible"
     },
     "greenhouse:anduril:5255902007": {
@@ -540,6 +543,7 @@
     },
     "greenhouse:gsa-capital:8518528002": {
       "basis": "description: \"First year undergraduate or postgraduate women in STEM disciplines from any university glo…\"",
+      "note": "",
       "status": "eligible"
     },
     "greenhouse:gsa-capital:8570661002": {
@@ -552,6 +556,7 @@
     },
     "greenhouse:gsa-capital:8870173002": {
       "basis": "description: \"First year undergraduate or postgraduate students in STEM disciplines from any university…\"",
+      "note": "",
       "status": "eligible"
     },
     "greenhouse:helsing:4941957101": {
@@ -598,10 +603,12 @@
     },
     "greenhouse:maven-securities:8229982": {
       "basis": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
+      "note": "",
       "status": "eligible"
     },
     "greenhouse:maven-securities:8230037": {
       "basis": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
+      "note": "",
       "status": "eligible"
     },
     "greenhouse:optiver:8713435002": {
@@ -711,6 +718,7 @@
     },
     "talnet:jefferies:1933": {
       "basis": "description: \"…rogramme is aimed at students in their first year of study (or second year of a four-year…\"",
+      "note": "",
       "status": "eligible"
     },
     "talnet:jefferies:1967": {
@@ -762,6 +770,7 @@
     },
     "talnet:morgan-stanley:22453": {
       "basis": "description: \"Freshmen/1st Year , Junior/3rd Year (choose if you are in a 4 year program), Senior/4th Ye…\"",
+      "note": "",
       "status": "eligible"
     },
     "talnet:morgan-stanley:22461": {
@@ -770,6 +779,7 @@
     },
     "talnet:nomura:1478": {
       "basis": "description: \"…h achieving candidate in your first year of university or second year of a four-year cours…\"",
+      "note": "",
       "status": "eligible"
     },
     "workable:capula:96EBCF5617": {
@@ -786,6 +796,7 @@
       "closed_at": null,
       "company": "addepar",
       "eligibility": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "eligibility_note": "All years welcome · prefers penultimate/final",
       "fields": [
         "data"
       ],
@@ -810,6 +821,7 @@
       "closed_at": null,
       "company": "addepar",
       "eligibility": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "eligibility_note": "All years welcome · prefers penultimate/final",
       "fields": [
         "software"
       ],
@@ -834,6 +846,7 @@
       "closed_at": null,
       "company": "addepar",
       "eligibility": "description: \"…r a related field (penultimate or final year ideal, though all years are welcome to apply)\"",
+      "eligibility_note": "All years welcome · prefers penultimate/final",
       "fields": [
         "data"
       ],

@@ -35,9 +35,9 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 
 | Company | Role | Location | First seen | |
 |---|---|---|---|---|
-| Addepar | Data Projects Intern - Summer 2027 ✅ | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8935678002) |
-| Addepar | Portfolio Data Analyst Intern - Summer 2027 ✅ | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8910310002) |
-| Addepar | Software Engineering Intern - Summer 2027 ✅ | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8927507002) |
+| Addepar | Data Projects Intern - Summer 2027 ✅ All years welcome · prefers penultimate/final | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8935678002) |
+| Addepar | Portfolio Data Analyst Intern - Summer 2027 ✅ All years welcome · prefers penultimate/final | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8910310002) |
+| Addepar | Software Engineering Intern - Summer 2027 ✅ All years welcome · prefers penultimate/final | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8927507002) |
 
 ### Location unclear
 
@@ -56,6 +56,8 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 | Bank of America | Bank of America / Early Insights Event ✅ | Unclear | 2026-11-15 | [Apply](https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/2/opp/15242-Bank-of-America-Early-Insights-Event/en-GB) |
 
 ✅ the posting says first-year students can apply.
+
+“prefers …”: the posting welcomes first years but names the years it would rather have.
 
 Last updated 2026-11-16.
 
