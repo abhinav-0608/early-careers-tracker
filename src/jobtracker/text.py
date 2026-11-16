@@ -62,5 +62,14 @@ class KeywordSet:
                 best = (keyword, match.start())
         return best
 
+    def find_all(self, normalised_text: str) -> list[tuple[str, int, int]]:
+        """Every keyword match in the text: (keyword, start, end), in order of position."""
+        found = [
+            (keyword, match.start(), match.end())
+            for keyword, pattern in self._patterns
+            for match in pattern.finditer(normalised_text)
+        ]
+        return sorted(found, key=lambda item: item[1])
+
     def __bool__(self) -> bool:
         return bool(self.keywords)

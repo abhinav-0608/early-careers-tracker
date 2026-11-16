@@ -51,6 +51,9 @@ class StoredJob:
     # Why a first-year student may apply, e.g. 'title: "First Year"'. "" when the
     # profile does not check eligibility for this role type.
     eligibility: str = ""
+    # "All years welcome · prefers penultimate/final" when the posting says which years it
+    # would rather have (eligibility.py). Not written to the file when "".
+    eligibility_note: str = ""
 
     @property
     def source_key(self) -> str:
@@ -204,6 +207,8 @@ def save_profile_state(state: ProfileState, state_dir: Path | str, profile_key: 
     for key, job in state.jobs.items():
         record = asdict(job)
         del record["key"]  # already the dictionary key
+        if not record["eligibility_note"]:
+            del record["eligibility_note"]  # rare: keep the file small and stable
         jobs[key] = record
     data = {"version": VERSION, "jobs": jobs, "baselines": state.baselines}
     if state.eligibility_rules:

@@ -306,3 +306,9 @@ def test_dry_run_sends_nothing(settings):
         raise AssertionError("dry run must not make requests")
 
     assert make_notifier(settings, handler, dry_run=True).send_job("me", NOTIFICATION) is True
+
+
+def test_a_summary_line_carries_the_preference_note(config, me):
+    note = "All years welcome · prefers penultimate/final"
+    job = stored_job(1, eligibility='description: "x"', eligibility_note=note)
+    assert role_line(job, me, with_companies(config)).endswith(f"· ✅ {note}")

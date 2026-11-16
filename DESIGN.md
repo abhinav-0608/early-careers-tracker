@@ -248,6 +248,11 @@ rules change (`eligibility_rules` is their hash), so a rule change is applied to
 posting; a verdict is forgotten when its posting leaves the board. Both keys are written
 only for a profile that has eligibility rules.
 
+`eligibility_note` on a job, and `note` on a remembered verdict, hold a stated preference
+for later years ("All years welcome · prefers penultimate/final", section 6a). The job
+field is written only when it is not empty; a verdict settled by a description always has
+`note`, "" included, which shows the description was looked at for one.
+
 ### state/sources.json
 
 Board health, shared by every profile: a board is fetched once and is up or down for
@@ -934,6 +939,20 @@ are counted (`ineligible` in `profile_source_summary`) and each is logged once, 
 `eligibility_dropped` with its reason, in the run its verdict is reached; and
 `python -m jobtracker explain` prints the verdict for each match.
 
+**A stated preference for later years.** A posting can welcome first years and still say
+whom it would rather have: "penultimate or final year ideal, though all years are welcome
+to apply" (Addepar). It stays eligible, and its ✅ reads `✅ All years welcome · prefers
+penultimate/final` everywhere it appears (alert, summary line, README); "First years
+welcome" replaces "All years welcome" when the offer names first years rather than every
+year. A later-years phrase counts as a preference only with preference wording within six
+words of it ("ideal", "preferred", "ideally", "especially", "primarily" and a few more,
+kept in `eligibility.py` beside the negation words), and not when it is part of the offer
+("first or penultimate") or negated. Without that wording, "open to first year and
+penultimate year students" is an equal offer and gets a plain ✅. Only a description can
+carry a note: a title that settles eligibility means the description is never read.
+Verdicts settled by a description before notes existed are read once more to find one;
+if that read fails, the old verdict stands, so no open role is put at risk by it.
+
 **Known limits.** Keyword matching cannot read every phrasing: a posting that offers places
 to "students graduating in 2029" says nothing a keyword list can tell is first-year (the
 config shows where a graduation year can be added). A description edited after it was read
@@ -1038,7 +1057,8 @@ alert, and the remaining normal jobs are sent as one summary, "N new roles". At 
 everything is individual.
 
 **Summaries list every role**, one line each: `🔥 Company — Role · Location · ✅` (the 🔥
-and ✅ only where they apply; a second location shows as "+1"). That holds for the "N new
+and ✅ only where they apply, the ✅ with its preference note when there is one, section
+6a; a second location shows as "+1"). That holds for the "N new
 roles" summary and for a baseline, which used to give a count per company. ntfy refuses a
 message over 4,096 bytes, so a list is cut at 3,800 bytes on a whole line and ends
 "+N more"; the click opens the README's open-roles table (`#open-roles`), which has them
@@ -1172,7 +1192,8 @@ Regenerated each run (`readme.py`) between two marker comments, so the hand-writ
 description at the top is never touched; if the markers are missing they are added at the
 end. Open matching roles grouped by region, then role type; columns: company, role,
 location, first seen, apply link. FAANG+ 🔥 rows come first in each group, marked 🔥 with
-bold company names, and a role a first year may apply to ends with ✅. A footer gives the
+bold company names, and a role a first year may apply to ends with ✅ (and its preference
+note, section 6a, with a line explaining "prefers …" under the table). A footer gives the
 date of the last run (date granularity, to avoid a commit every run) and, collapsed, the
 companies in scope that cannot be polled, each with its reason. The heading "Open roles"
 is the `#open-roles` anchor that alert summaries link to.
@@ -1247,7 +1268,9 @@ its alerts. `poll.yml` commits `README.md` together with `state/`.
 
 - **First-year eligibility** (`test_eligibility.py`, `test_pipeline.py`): titles that
   settle it; descriptions that offer it to first years, restrict it to later years
-  (including a negated offer), or do not say; the rule per list; then in the pipeline: an
+  (including a negated offer), or do not say; a preference for later years noted only with
+  preference wording close by, not for an equal offer, a phrase inside the offer or a
+  negated one; the rule per list; then in the pipeline: an
   internship open to first years alerts with its reason and its description is read once;
   one that does not say is dropped and never re-read; an unreadable description is retried
   on two more runs and then given up on, or alerts if it becomes readable; a first baseline
@@ -1460,3 +1483,8 @@ none should be without a decision to grow the scope.
     days (section 5, Pauses). A 429 no longer discards a host's cached robots.txt.
 27. **Health alerts are grouped by platform and cause, at most once a day per group**
     (2026-11-16, section 9).
+28. **A ✅ shows a stated preference for later years** (2026-11-16): "✅ All years welcome ·
+    prefers penultimate/final" instead of a plain ✅, still eligible. The preference
+    words are kept in code, not in `filters.yaml`, so adding them did not change the
+    rules hash and re-read every description; only verdicts already settled by a
+    description are read once more (section 6a).

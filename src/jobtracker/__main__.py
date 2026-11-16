@@ -289,6 +289,8 @@ def explain_eligibility(
         except Exception as exc:  # noqa: BLE001 - explain must keep going
             return f"description could not be read ({type(exc).__name__})"
     verdict = eligibility.assess(role, job.title, text, filters)
+    if verdict.eligible and verdict.note:
+        return f"eligible: {verdict.note} ({verdict.basis})"
     if verdict.eligible:
         return f"eligible ({verdict.basis})"
     return f"dropped: {verdict.reason}"

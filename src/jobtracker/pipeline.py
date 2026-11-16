@@ -394,7 +394,7 @@ def run_profile(
                     )
                 continue
             counts.matched += 1
-            outcome = reconciler.observe(job, decision, baseline, verdict.basis)
+            outcome = reconciler.observe(job, decision, baseline, verdict.basis, verdict.note)
             if outcome == NEW:
                 counts.new += 1
             elif outcome == REPOST:
@@ -449,8 +449,18 @@ def _needs_reading(
         return False  # the title settles it, or this role type is not checked
     if job.description is not None or job.key in read:
         return False  # already in hand
-    settled = state.eligibility.get(job.key, {}).get("status")
-    return settled in (None, eligibility.UNKNOWN)
+    remembered = state.eligibility.get(job.key, {})
+    return remembered.get("status") in (None, eligibility.UNKNOWN) or _before_notes(remembered)
+
+
+def _before_notes(remembered: dict) -> bool:
+    """A description verdict stored before notes on preferred years existed (2026-11-16).
+    Its description is read once more to find any; if that read fails, it stands as it is."""
+    return (
+        remembered.get("status") == eligibility.ELIGIBLE
+        and remembered.get("basis", "").startswith(f"{eligibility.DESCRIPTION}:")
+        and "note" not in remembered
+    )
 
 
 def _verdict(
@@ -464,14 +474,19 @@ def _verdict(
         return eligibility.assess(role, job.title, None, filters)
 
     remembered = state.eligibility.get(job.key, {})
-    if remembered.get("status") == eligibility.ELIGIBLE:
+    text = job.description if job.description is not None else read.get(job.key)
+    if remembered.get("status") == eligibility.ELIGIBLE and (
+        not _before_notes(remembered) or text is None
+    ):
         return eligibility.Eligibility(
-            eligibility.ELIGIBLE, eligibility.REMEMBERED, remembered.get("basis", "")
+            eligibility.ELIGIBLE,
+            eligibility.REMEMBERED,
+            remembered.get("basis", ""),
+            note=remembered.get("note", ""),
         )
     if remembered.get("status") in eligibility.DROPPED:
         return eligibility.Eligibility(remembered["status"], evidence=remembered.get("why", ""))
 
-    text = job.description if job.description is not None else read.get(job.key)
     verdict = eligibility.assess(
         role, job.title, None if text is None else descriptions.plain_text(text), filters
     )
@@ -485,6 +500,8 @@ def _verdict(
     record = {"status": verdict.status}
     if verdict.eligible:
         record["basis"] = verdict.basis
+        if verdict.source == eligibility.DESCRIPTION:
+            record["note"] = verdict.note  # "" too: says the description was looked at
     elif verdict.evidence:
         record["why"] = verdict.evidence
     state.eligibility[job.key] = record

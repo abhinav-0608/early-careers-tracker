@@ -24,6 +24,7 @@ from jobtracker.state import (
     load_profile_state,
     load_sources,
     save_hosts,
+    save_profile_state,
 )
 
 JOB_TOPIC = "secret-job-topic"
@@ -697,3 +698,69 @@ def test_the_run_in_which_eligibility_rules_change_has_a_larger_description_budg
     web.description_fetches.clear()
     tracker(NOW + 2 * RUN, config=config)  # an ordinary run: back to the usual one
     assert len(web.description_fetches) == 1
+
+
+ADDEPAR = (
+    "<p>Currently pursuing a degree in Computer Science or a related field (penultimate or "
+    "final year ideal, though all years are welcome to apply)</p>"
+)
+PREFERS = "All years welcome · prefers penultimate/final"
+
+
+def test_a_stated_preference_for_later_years_is_shown_beside_the_tick(tracker, web):
+    tracker()
+    web.published.clear()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = ADDEPAR
+
+    tracker(NOW + RUN)
+    (alert,) = web.published
+    assert alert["message"].splitlines()[-1].startswith(f"✅ {PREFERS} (description: ")
+    assert tracker.state().jobs[INTERN_KEY].eligibility_note == PREFERS
+    assert tracker.state().eligibility[INTERN_KEY]["note"] == PREFERS
+
+    tracker(NOW + 2 * RUN)  # remembered with its note: not read again
+    assert web.description_fetches.count(INTERN_PATH) == 1
+    assert tracker.state().jobs[INTERN_KEY].eligibility_note == PREFERS
+
+
+def _forget_note(tracker):
+    """Make the stored verdict look as it did before notes existed."""
+    state = tracker.state()
+    del state.eligibility[INTERN_KEY]["note"]
+    state.jobs[INTERN_KEY].eligibility_note = ""
+    save_profile_state(state, tracker.state_dir, OWNER)
+
+
+def test_a_verdict_stored_before_notes_existed_is_read_once_more(tracker, web):
+    tracker()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = ADDEPAR
+    tracker(NOW + RUN)
+    _forget_note(tracker)
+    web.published.clear()
+
+    tracker(NOW + 2 * RUN)
+    assert web.description_fetches.count(INTERN_PATH) == 2
+    assert tracker.state().jobs[INTERN_KEY].eligibility_note == PREFERS
+    assert web.published == []  # a known role: nothing is sent again
+    tracker(NOW + 3 * RUN)
+    assert web.description_fetches.count(INTERN_PATH) == 2  # and only once
+
+
+def test_if_that_read_fails_the_old_verdict_stands_and_the_role_stays_open(tracker, web):
+    tracker()
+    web.add_greenhouse_job(INTERN_ID, "Software Engineer Intern")
+    web.descriptions[str(INTERN_ID)] = ADDEPAR
+    tracker(NOW + RUN)
+    _forget_note(tracker)
+    web.descriptions_down = True
+
+    for later in (2, 3, 4):
+        tracker(NOW + later * RUN)
+    job = tracker.state().jobs[INTERN_KEY]
+    assert job.status == "open" and job.eligibility.startswith("description: ")
+    assert job.eligibility_note == ""
+    web.descriptions_down = False
+    tracker(NOW + 5 * RUN)
+    assert tracker.state().jobs[INTERN_KEY].eligibility_note == PREFERS

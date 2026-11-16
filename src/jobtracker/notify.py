@@ -166,7 +166,7 @@ def job_notification(job: StoredJob, profile: Profile, config: Config) -> Notifi
 
     lines = [_location_text(job), f"{role.label if role else job.role_type} · {when}"]
     if job.eligibility:
-        lines.append(eligibility.label(job.eligibility))
+        lines.append(eligibility.label(job.eligibility, job.eligibility_note))
     return Notification(
         title=f"{FIRE + ' ' if is_faang_plus else ''}{_company_name(job, config)} – {job.title}",
         message="\n".join(lines),
@@ -181,7 +181,7 @@ def role_line(job: StoredJob, profile: Profile, config: Config) -> str:
     """One role on one line: "🔥 Morgan Stanley — Spring Insight Programme · London · ✅"."""
     parts = [f"{_company_name(job, config)} — {job.title}", _short_location(job)]
     if job.eligibility:
-        parts.append(TICK)
+        parts.append(eligibility.mark(job.eligibility_note))
     return (f"{FIRE} " if profile.is_faang_plus(job.company) else "") + " · ".join(parts)
 
 

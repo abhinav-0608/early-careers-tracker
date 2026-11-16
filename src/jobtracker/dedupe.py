@@ -58,14 +58,17 @@ class Reconciler:
         for record in self._jobs.values():
             self._index(record)
 
-    def observe(self, job: Job, decision: Decision, baseline: bool, eligibility: str = "") -> str:
+    def observe(
+        self, job: Job, decision: Decision, baseline: bool, eligibility: str = "", note: str = ""
+    ) -> str:
         """Record one matching job seen in this run and return what it turned out to be.
 
-        `eligibility` is why a first-year student may apply ("" if that is not checked).
+        `eligibility` is why a first-year student may apply ("" if that is not checked),
+        and `note` any later years the posting says it prefers.
         """
         record = self._recent(self._jobs.get(job.key))
         if record is not None:
-            self._refresh(record, job, decision, eligibility)
+            self._refresh(record, job, decision, eligibility, note)
             return KNOWN
 
         record = self._recent(self._jobs.get(self._key_by_alias.get(job.key, "")))
@@ -77,10 +80,10 @@ class Reconciler:
 
         record = self._find_by_fingerprint(fingerprint(job))
         if record is not None:
-            self._adopt_repost(record, job, decision, eligibility)
+            self._adopt_repost(record, job, decision, eligibility, note)
             return REPOST
 
-        self._add(job, decision, notified=baseline, eligibility=eligibility)
+        self._add(job, decision, notified=baseline, eligibility=eligibility, note=note)
         return BASELINED if baseline else NEW
 
     def close_missing(
@@ -159,11 +162,12 @@ class Reconciler:
             record.closed_at = None
 
     def _refresh(
-        self, record: StoredJob, job: Job, decision: Decision, eligibility: str = ""
+        self, record: StoredJob, job: Job, decision: Decision, eligibility: str = "", note: str = ""
     ) -> None:
         """Bring a known record up to date with the posting as it is now."""
         self._mark_seen(record)
         record.eligibility = eligibility
+        record.eligibility_note = note
         record.title = job.title
         record.locations = list(job.locations)
         record.url = job.url
@@ -178,7 +182,7 @@ class Reconciler:
             self._keys_by_fingerprint.setdefault(new_fingerprint, []).append(record.key)
 
     def _adopt_repost(
-        self, record: StoredJob, job: Job, decision: Decision, eligibility: str = ""
+        self, record: StoredJob, job: Job, decision: Decision, eligibility: str = "", note: str = ""
     ) -> None:
         """Move a record to the id of its newer posting, remembering the old id."""
         del self._jobs[record.key]
@@ -187,9 +191,11 @@ class Reconciler:
         record.source = job.source
         self._jobs[record.key] = record
         self._index(record)
-        self._refresh(record, job, decision, eligibility)
+        self._refresh(record, job, decision, eligibility, note)
 
-    def _add(self, job: Job, decision: Decision, notified: bool, eligibility: str = "") -> None:
+    def _add(
+        self, job: Job, decision: Decision, notified: bool, eligibility: str = "", note: str = ""
+    ) -> None:
         record = StoredJob(
             key=job.key,
             source=job.source,
@@ -206,6 +212,7 @@ class Reconciler:
             posted_at=job.posted_at.isoformat() if job.posted_at else None,
             notified=notified,
             eligibility=eligibility,
+            eligibility_note=note,
         )
         self._jobs[record.key] = record  # replaces any stale record with the same key
         self._index(record)

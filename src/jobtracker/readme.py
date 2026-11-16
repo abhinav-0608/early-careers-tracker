@@ -18,6 +18,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from pathlib import Path
 
+from jobtracker import eligibility
 from jobtracker.config import UNSUPPORTED, Config, Profile
 from jobtracker.filters import UNCLEAR
 from jobtracker.notify import FIRE, TICK
@@ -57,6 +58,12 @@ def open_roles(state: ProfileState, profile: Profile, config: Config, today: dat
 
     if any(job.eligibility for job in jobs):
         lines += [f"{TICK} the posting says first-year students can apply.", ""]
+    if any(job.eligibility and job.eligibility_note for job in jobs):
+        lines[-1:-1] = [
+            "",
+            "“prefers …”: the posting welcomes first years but names the years it would"
+            " rather have.",
+        ]
     lines.append(f"Last updated {today.isoformat()}.")
 
     unsupported = sorted(
@@ -98,7 +105,9 @@ def _row(job: StoredJob, profile: Profile, config: Config) -> str:
     name = _cell(company.name if company else job.company)
     if profile.is_faang_plus(job.company):
         name = f"{FIRE} **{name}**"
-    title = _cell(job.title) + (f" {TICK}" if job.eligibility else "")
+    title = _cell(job.title) + (
+        f" {eligibility.mark(job.eligibility_note)}" if job.eligibility else ""
+    )
     location = _cell("; ".join(job.locations[:2]) or "Unclear")
     if len(job.locations) > 2:
         location += f" +{len(job.locations) - 2}"

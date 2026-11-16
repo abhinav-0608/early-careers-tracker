@@ -13,6 +13,7 @@ from jobtracker.eligibility import (
     UNKNOWN,
     assess,
     label,
+    mark,
     needs_description,
 )
 
@@ -143,3 +144,53 @@ def test_a_role_type_in_no_list_is_not_checked(filters):
 def test_label():
     assert label('title: "First Year"') == '✅ First-year eligible (title: "First Year")'
     assert label("") == ""
+
+
+# --- a preference for later years, beside the ✅ ------------------------------------------
+
+ADDEPAR = (
+    "Currently pursuing a degree in Computer Science or a related field (penultimate or "
+    "final year ideal, though all years are welcome to apply)"
+)
+
+
+@pytest.mark.parametrize(
+    ("description", "note"),
+    [
+        (ADDEPAR, "All years welcome · prefers penultimate/final"),
+        (
+            "Open to first year students. Final year students are preferred.",
+            "First years welcome · prefers final",
+        ),
+        (
+            "Students from any year may apply, ideally penultimate.",
+            "All years welcome · prefers penultimate",
+        ),
+        # Named, but as an equal offer: no preference.
+        ("Open to first year and penultimate year students.", ""),
+        ("Open to first, second or penultimate year students.", ""),
+        # Part of the first-year phrase itself.
+        ("Open to first or penultimate year students, ideally.", ""),
+        # Negated.
+        ("Students of any year may apply; we do not prefer final years.", ""),
+        ("We welcome students from any year of study.", ""),
+    ],
+)
+def test_an_eligible_posting_notes_the_later_years_it_prefers(filters, description, note):
+    verdict = check(filters, "summer_internship", "Software Engineering Intern", description)
+    assert verdict.status == ELIGIBLE
+    assert verdict.note == note
+
+
+def test_a_title_that_settles_it_has_no_note(filters):
+    verdict = check(
+        filters, "summer_internship", "Summer Internship for 1st Year Students", ADDEPAR
+    )
+    assert (verdict.source, verdict.note) == (TITLE, "")
+
+
+def test_label_and_mark_with_a_note():
+    note = "All years welcome · prefers penultimate/final"
+    assert label('description: "x"', note) == f'✅ {note} (description: "x")'
+    assert mark(note) == f"✅ {note}"
+    assert mark() == "✅"

@@ -109,3 +109,14 @@ def test_update_adds_the_markers_at_the_end_when_missing(tmp_path):
     path.write_text("# Title\n\nHand-written.\n")
     readme.update(path, "table")
     assert path.read_text() == f"# Title\n\nHand-written.\n\n{readme.START}\ntable\n{readme.END}\n"
+
+
+def test_a_noted_preference_is_shown_beside_the_tick_and_explained(world):
+    config, me = world
+    note = "All years welcome · prefers penultimate/final"
+    job = stored(
+        "a", "normalco", "SWE Intern", eligibility='description: "x"', eligibility_note=note
+    )
+    text = readme.open_roles(ProfileState(jobs={"a": job}), me, config, TODAY)
+    assert f"| SWE Intern ✅ {note} |" in text
+    assert "“prefers …”: the posting welcomes first years but names the years it would" in text
