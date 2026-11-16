@@ -883,7 +883,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -905,8 +905,8 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T21:15:47+00:00",
       "has_returned_jobs": true,
@@ -2273,7 +2273,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "workable:hugging-face": {
@@ -2282,7 +2282,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "workable:portswigger": {
@@ -2291,7 +2291,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "workable:starling-bank": {
@@ -2300,7 +2300,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "workable:trail-of-bits": {
@@ -2309,7 +2309,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "workable:trexquant": {
@@ -2318,7 +2318,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-16T21:56:00+00:00",
+      "interval_polled_at": "2026-11-16T23:00:00+00:00",
       "last_alert_at": null
     },
     "workday:abrdn": {

@@ -19,6 +19,8 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 
 | Company | Role | Location | First seen | |
 |---|---|---|---|---|
+| 🔥 **Morgan Stanley** | 2027 Technology Spring Insight (Glasgow) ✅ | Unclear | 2026-11-15 | [Apply](https://morganstanley.tal.net/vx/lang-en-GB/mobile-0/brand-2/candidate/so/pm/1/pl/2/opp/22453-2027-Technology-Spring-Insight-Glasgow/en-GB) |
+| Jefferies | 2027 Equity Research Spring Week Programme - London ✅ | Unclear | 2026-11-15 | [Apply](https://jefferies.tal.net/vx/lang-en-GB/mobile-0/appcentre-1/brand-4/candidate/so/pm/1/pl/2/opp/1933-2027-Equity-Research-Spring-Week-Programme-London/en-GB) |
 | Maven Securities | Women in Technology Spring Week 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8230037) |
 | Maven Securities | Women in Trading Spring Week 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8229982) |
 
@@ -26,6 +28,7 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 
 | Company | Role | Location | First seen | |
 |---|---|---|---|---|
+| 🔥 **Morgan Stanley** | Insight into Technology Apprenticeships at Morgan Stanley (Glasgow) ✅ | Unclear | 2026-11-15 | [Apply](https://morganstanley.tal.net/vx/lang-en-GB/mobile-0/brand-2/candidate/so/pm/1/pl/2/opp/22461-Insight-into-Technology-Apprenticeships-at-Morgan-Stanley-Glasgow/en-GB) |
 | GSA Capital | General Trading & Technology Insight Programme - 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/gsacapital/jobs/8870173002) |
 | GSA Capital | Women in Trading & Technology Insight Programme - 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/gsacapital/jobs/8518528002) |
 | MUFG | 2027 MUFG Insight Event - Breaking Barriers: Social Mobility Insight Day (in person) | London | 2026-11-15 | [Apply](https://mufgub.wd3.myworkdayjobs.com/MUFG-Careers/job/London/XMLNAME-2027-MUFG-Insight-Event---Breaking-Barriers--Social-Mobility-Insight-Day--in-person-_10078593-WD-1) |
@@ -41,18 +44,10 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 
 ### Location unclear
 
-#### Spring week
-
-| Company | Role | Location | First seen | |
-|---|---|---|---|---|
-| 🔥 **Morgan Stanley** | 2027 Technology Spring Insight (Glasgow) ✅ | Unclear | 2026-11-15 | [Apply](https://morganstanley.tal.net/vx/lang-en-GB/mobile-0/brand-2/candidate/so/pm/1/pl/2/opp/22453-2027-Technology-Spring-Insight-Glasgow/en-GB) |
-| Jefferies | 2027 Equity Research Spring Week Programme - London ✅ | Unclear | 2026-11-15 | [Apply](https://jefferies.tal.net/vx/lang-en-GB/mobile-0/appcentre-1/brand-4/candidate/so/pm/1/pl/2/opp/1933-2027-Equity-Research-Spring-Week-Programme-London/en-GB) |
-
 #### Insight programme
 
 | Company | Role | Location | First seen | |
 |---|---|---|---|---|
-| 🔥 **Morgan Stanley** | Insight into Technology Apprenticeships at Morgan Stanley (Glasgow) ✅ | Unclear | 2026-11-15 | [Apply](https://morganstanley.tal.net/vx/lang-en-GB/mobile-0/brand-2/candidate/so/pm/1/pl/2/opp/22461-Insight-into-Technology-Apprenticeships-at-Morgan-Stanley-Glasgow/en-GB) |
 | Bank of America | Bank of America / Early Insights Event ✅ | Unclear | 2026-11-15 | [Apply](https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/2/opp/15242-Bank-of-America-Early-Insights-Event/en-GB) |
 
 ✅ the posting says first-year students can apply.
