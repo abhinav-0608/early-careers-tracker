@@ -46,6 +46,28 @@ def test_a_page_that_is_not_a_results_page_is_an_error_not_an_empty_board():
         hsbc.parse(HSBC, "<html><body>Maintenance</body></html>")
 
 
+# A changed page must fail the source, never shrink it: a short list would close the
+# missing roles after two runs with no health alert.
+def test_results_without_a_count_are_an_error():
+    reworded = PAGE.replace("Showing", "Displaying")
+    assert reworded != PAGE
+    with pytest.raises(ValueError, match="no result count"):
+        hsbc.parse(HSBC, reworded)
+
+
+def test_a_count_with_no_readable_rows_is_an_error():
+    unreadable = PAGE.replace('<li class="job-tile', '<li class="job-card')
+    with pytest.raises(ValueError, match="none could be read"):
+        hsbc.parse(HSBC, unreadable)
+
+
+def test_a_row_without_a_title_is_an_error():
+    first = next(hsbc._TILE.finditer(PAGE)).group(0)
+    untitled = PAGE.replace(first, first.replace('class="jobTitle-link', 'class="role-link'))
+    with pytest.raises(ValueError, match="has no title"):
+        hsbc.parse(HSBC, untitled)
+
+
 def test_fetch_reads_every_page_newest_first(settings):
     queries = []
 

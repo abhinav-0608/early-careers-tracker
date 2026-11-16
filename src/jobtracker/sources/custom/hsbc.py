@@ -59,15 +59,27 @@ def total(page: str) -> int:
 
 
 def parse(company: Company, page: str) -> list[Job]:
+    """The roles on one results page.
+
+    Anything that does not look like the page this was written against raises, so that a
+    redesign is a failed source (and a health alert) rather than a short list whose
+    missing roles would be closed: no result count, a count with no rows, or a row
+    without a title.
+    """
     if "job-tile" not in page and not _TOTAL.search(page):
         raise ValueError("HSBC search page has neither results nor a result count")
+    if not _TOTAL.search(page):
+        raise ValueError("HSBC search page has results but no result count")
+    tiles = list(_TILE.finditer(page))
+    if total(page) > 0 and not tiles:
+        raise ValueError("HSBC search page counts results but none could be read")
     jobs = []
-    for match in _TILE.finditer(page):
+    for match in tiles:
         job_id, path = match.group(1), html.unescape(match.group(2))
         tile = match.group(0)
         title = _TITLE.search(tile)
         if not title:
-            continue
+            raise ValueError(f"HSBC result {job_id} has no title")
         opened = _field(tile, job_id, "customfield1")
         jobs.append(
             Job(
