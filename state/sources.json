@@ -2463,12 +2463,12 @@
       "last_alert_at": null
     },
     "workday:expedia": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T04:29:10+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-16T06:01:12+00:00"
     },
     "workday:f5": {
       "alerted": false,
