@@ -5,8 +5,7 @@
     "Lever: failing (HTTP 500)": "2026-11-17T11:31:01+00:00",
     "Lever: failing (HTTP 502)": "2026-11-17T11:31:01+00:00",
     "Lever: failing (HTTP 504)": "2026-11-17T11:31:01+00:00",
-    "Lever: timing out": "2026-11-17T11:31:01+00:00",
-    "Microsoft: rate limited (429)": "2026-11-16T19:01:11+00:00"
+    "Lever: timing out": "2026-11-17T11:31:01+00:00"
   },
   "sources": {
     "ashby:1password": {
