@@ -50,12 +50,12 @@
     },
     "api.ashbyhq.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": []
     },
     "api.lever.co": {
       "crawl_delay": 1.0,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Allow: /"
       ]
@@ -132,7 +132,7 @@
     },
     "bankcampuscareers.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -542,14 +542,14 @@
     },
     "careers.amd.com": {
       "crawl_delay": 5.0,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Allow: /"
       ]
     },
     "careers.smartrecruiters.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": []
     },
     "cboe.wd1.myworkdayjobs.com": {
@@ -683,7 +683,7 @@
     },
     "jefferies.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -766,7 +766,7 @@
     },
     "morganstanley.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -804,7 +804,7 @@
     },
     "nomuracampus.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -994,7 +994,7 @@
     },
     "www.amazon.jobs": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
+      "fetched_at": "2026-11-17T04:30:00+00:00",
       "rules": [
         "Disallow: /internal",
         "Disallow: /en/internal",
