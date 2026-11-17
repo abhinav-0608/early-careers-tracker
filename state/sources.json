@@ -2128,7 +2128,7 @@
     },
     "lever:ansatz-capital": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2136,7 +2136,7 @@
     },
     "lever:apollo-research": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2144,7 +2144,7 @@
     },
     "lever:belvedere-trading": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2152,7 +2152,7 @@
     },
     "lever:cred": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2160,7 +2160,7 @@
     },
     "lever:meesho": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2168,7 +2168,7 @@
     },
     "lever:octopus-energy": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2176,7 +2176,7 @@
     },
     "lever:palantir": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2184,7 +2184,7 @@
     },
     "lever:spotify": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2192,7 +2192,7 @@
     },
     "lever:sysdig": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2200,7 +2200,7 @@
     },
     "lever:valkyrie-trading": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2208,7 +2208,7 @@
     },
     "lever:wintermute": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
@@ -2216,7 +2216,7 @@
     },
     "lever:zopa": {
       "alerted": true,
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-17T10:45:46+00:00",
       "has_returned_jobs": true,
