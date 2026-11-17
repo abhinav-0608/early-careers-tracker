@@ -866,7 +866,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-17T08:31:00+00:00",
+      "interval_polled_at": "2026-11-17T09:31:00+00:00",
       "last_alert_at": null
     },
     "custom:amd": {
@@ -875,7 +875,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-17T08:31:00+00:00",
+      "interval_polled_at": "2026-11-17T09:31:00+00:00",
       "last_alert_at": null
     },
     "custom:apple": {
@@ -914,12 +914,12 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": true,
-      "consecutive_failures": 3,
+      "alerted": false,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-17T02:01:07+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-17T01:01:00+00:00",
+      "interval_polled_at": "2026-11-17T09:31:00+00:00",
       "last_alert_at": null
     },
     "greenhouse:abnormal-ai": {
@@ -2224,7 +2224,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-17T08:31:00+00:00",
+      "interval_polled_at": "2026-11-17T09:31:00+00:00",
       "last_alert_at": null
     },
     "smartrecruiters:canva": {
@@ -2233,7 +2233,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-17T08:31:00+00:00",
+      "interval_polled_at": "2026-11-17T09:31:00+00:00",
       "last_alert_at": null
     },
     "smartrecruiters:servicenow": {
@@ -2242,7 +2242,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-17T08:31:00+00:00",
+      "interval_polled_at": "2026-11-17T09:31:00+00:00",
       "last_alert_at": null
     },
     "talnet:bank-of-america": {
