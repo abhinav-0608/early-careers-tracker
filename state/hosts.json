@@ -85,7 +85,7 @@
     },
     "apply.careers.microsoft.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-16T17:15:00+00:00",
+      "fetched_at": "2026-11-17T17:31:00+00:00",
       "rules": [
         "Disallow: /",
         "Allow: /$",
