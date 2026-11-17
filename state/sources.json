@@ -993,9 +993,9 @@
     },
     "greenhouse:anduril": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-17T17:45:45+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
       "last_alert_at": null
     },
