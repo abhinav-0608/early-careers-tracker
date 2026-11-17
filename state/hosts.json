@@ -3,14 +3,6 @@
     "apply.careers.microsoft.com": {
       "retry_at": "2026-11-17T21:00:57+00:00",
       "strikes": 1
-    },
-    "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T20:31:02+00:00",
-      "strikes": 5
-    },
-    "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-16T20:45:43+00:00",
-      "strikes": 5
     }
   },
   "robots": {
