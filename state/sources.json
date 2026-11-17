@@ -1193,8 +1193,8 @@
     },
     "greenhouse:copper": {
       "alerted": true,
-      "consecutive_failures": 2,
-      "empty_runs": 2,
+      "consecutive_failures": 3,
+      "empty_runs": 3,
       "failing_since": "2026-11-17T13:15:43+00:00",
       "has_returned_jobs": true,
       "last_alert_at": "2026-11-17T13:31:02+00:00"
