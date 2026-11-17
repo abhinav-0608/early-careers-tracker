@@ -1192,12 +1192,12 @@
       "last_alert_at": null
     },
     "greenhouse:copper": {
-      "alerted": true,
-      "consecutive_failures": 3,
-      "empty_runs": 7,
-      "failing_since": "2026-11-17T13:15:43+00:00",
-      "has_returned_jobs": true,
-      "last_alert_at": "2026-11-17T13:31:02+00:00"
+      "alerted": false,
+      "consecutive_failures": 0,
+      "empty_runs": 0,
+      "failing_since": null,
+      "has_returned_jobs": false,
+      "last_alert_at": null
     },
     "greenhouse:coreweave": {
       "alerted": false,
