@@ -504,13 +504,6 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "boards-api.greenhouse.io": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-17T00:01:00+00:00",
-      "rules": [
-        "Disallow: /embed/"
-      ]
-    },
     "broadcom.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
