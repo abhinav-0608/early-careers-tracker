@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-18T05:31:08+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-18T06:30:57+00:00",
+      "strikes": 2
     }
   },
   "robots": {
@@ -85,7 +85,7 @@
     },
     "apply.workable.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-17T05:01:00+00:00",
+      "fetched_at": "2026-11-18T05:30:00+00:00",
       "rules": []
     },
     "arcticwolf.wd1.myworkdayjobs.com": {
@@ -988,7 +988,7 @@
     },
     "www.google.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-17T05:15:00+00:00",
+      "fetched_at": "2026-11-18T05:30:00+00:00",
       "rules": [
         "Disallow: /search",
         "Allow: /search/about",
