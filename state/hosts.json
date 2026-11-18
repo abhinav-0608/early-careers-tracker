@@ -1,5 +1,10 @@
 {
-  "backoff": {},
+  "backoff": {
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-18T05:31:08+00:00",
+      "strikes": 1
+    }
+  },
   "robots": {
     "abrdn.wd3.myworkdayjobs.com": {
       "crawl_delay": null,
