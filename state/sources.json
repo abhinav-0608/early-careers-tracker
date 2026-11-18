@@ -1,7 +1,4 @@
 {
-  "alert_groups": {
-    "Microsoft: rate limited (429)": "2026-11-17T22:01:07+00:00"
-  },
   "pauses": {
     "workday": {
       "probe": "lbg.wd3.myworkdayjobs.com: HTTP 429, a Cloudflare challenge; next attempt after 2026-11-18 17:31 UTC",
