@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-18T08:31:09+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-18T12:30:58+00:00",
+      "strikes": 4
     }
   },
   "robots": {
