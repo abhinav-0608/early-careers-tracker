@@ -1,5 +1,10 @@
 {
-  "backoff": {},
+  "backoff": {
+    "wd3.myworkdayjobs.com": {
+      "retry_at": "2026-11-18T17:31:11+00:00",
+      "strikes": 1
+    }
+  },
   "robots": {
     "abrdn.wd3.myworkdayjobs.com": {
       "crawl_delay": null,
@@ -477,13 +482,6 @@
         "Allow: /X_GhostSite_CHARLESSTERLINGGROUP/",
         "Allow: /X_GhostSite_MavenPartnership/",
         "Disallow: /refreshFacet/"
-      ]
-    },
-    "boards-api.greenhouse.io": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-18T02:30:00+00:00",
-      "rules": [
-        "Disallow: /embed/"
       ]
     },
     "broadcom.wd1.myworkdayjobs.com": {
