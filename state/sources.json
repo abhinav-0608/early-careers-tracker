@@ -889,7 +889,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-19T13:45:00+00:00",
+      "interval_polled_at": "2026-11-19T14:45:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -993,9 +993,9 @@
     },
     "greenhouse:anduril": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-19T14:31:04+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
       "last_alert_at": null
     },
