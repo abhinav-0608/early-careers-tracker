@@ -89,7 +89,7 @@
     },
     "apply.workable.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-18T05:30:00+00:00",
+      "fetched_at": "2026-11-19T05:31:00+00:00",
       "rules": []
     },
     "arcticwolf.wd1.myworkdayjobs.com": {
@@ -522,14 +522,14 @@
     },
     "careers.amd.com": {
       "crawl_delay": 5.0,
-      "fetched_at": "2026-11-18T04:31:00+00:00",
+      "fetched_at": "2026-11-19T05:31:00+00:00",
       "rules": [
         "Allow: /"
       ]
     },
     "careers.smartrecruiters.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-18T04:31:00+00:00",
+      "fetched_at": "2026-11-19T05:31:00+00:00",
       "rules": []
     },
     "cboe.wd1.myworkdayjobs.com": {
@@ -974,7 +974,7 @@
     },
     "www.amazon.jobs": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-18T04:31:00+00:00",
+      "fetched_at": "2026-11-19T05:31:00+00:00",
       "rules": [
         "Disallow: /internal",
         "Disallow: /en/internal",
@@ -992,7 +992,7 @@
     },
     "www.google.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-18T05:30:00+00:00",
+      "fetched_at": "2026-11-19T05:31:00+00:00",
       "rules": [
         "Disallow: /search",
         "Allow: /search/about",
