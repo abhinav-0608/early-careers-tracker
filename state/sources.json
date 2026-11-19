@@ -1,4 +1,7 @@
 {
+  "alert_groups": {
+    "Microsoft: rate limited (429)": "2026-11-19T02:01:09+00:00"
+  },
   "pauses": {
     "workday": {
       "probe": "lbg.wd3.myworkdayjobs.com: HTTP 429, a Cloudflare challenge; next attempt after 2026-11-19 00:01 UTC",
@@ -916,13 +919,13 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-19T00:30:58+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-18T23:30:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-19T02:01:09+00:00"
     },
     "greenhouse:abnormal-ai": {
       "alerted": false,
