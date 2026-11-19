@@ -42,7 +42,7 @@
     },
     "apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-18T19:45:00+00:00",
+      "fetched_at": "2026-11-19T19:45:00+00:00",
       "rules": [
         "Disallow: /*shop/browse/overlay/*",
         "Disallow: /*shop/iphone/payments/overlay/*",
@@ -672,7 +672,7 @@
     },
     "jobs.apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-18T19:45:00+00:00",
+      "fetched_at": "2026-11-19T19:45:00+00:00",
       "rules": []
     },
     "jpmc.fa.oraclecloud.com": {
