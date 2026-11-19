@@ -920,11 +920,11 @@
     },
     "custom:microsoft": {
       "alerted": false,
-      "consecutive_failures": 2,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-19T19:30:59+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-19T18:31:00+00:00",
+      "interval_polled_at": "2026-11-19T21:01:00+00:00",
       "last_alert_at": null
     },
     "greenhouse:abnormal-ai": {
