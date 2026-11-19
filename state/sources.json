@@ -4,8 +4,8 @@
   },
   "pauses": {
     "workday": {
-      "probe": "lbg.wd3.myworkdayjobs.com: HTTP 429, a Cloudflare challenge; next attempt after 2026-11-19 23:01 UTC",
-      "probed_at": "2026-11-19T17:01:32+00:00"
+      "probe": "lbg.wd3.myworkdayjobs.com: HTTP 429, a Cloudflare challenge; next attempt after 2026-11-20 05:01 UTC",
+      "probed_at": "2026-11-19T23:01:17+00:00"
     }
   },
   "sources": {
@@ -920,9 +920,9 @@
     },
     "custom:microsoft": {
       "alerted": false,
-      "consecutive_failures": 0,
+      "consecutive_failures": 1,
       "empty_runs": 0,
-      "failing_since": null,
+      "failing_since": "2026-11-19T23:01:17+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-19T22:01:00+00:00",
       "last_alert_at": null
@@ -993,9 +993,9 @@
     },
     "greenhouse:anduril": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-19T22:45:49+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
       "last_alert_at": null
     },
