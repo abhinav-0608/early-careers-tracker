@@ -24,7 +24,6 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 | Bank of America | 2027 Spring Insight – Global Payments Solutions & Enterprise Credit – London ✅ | London | 2026-11-20 | [Apply](https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15298-2027-Spring-Insight-Global-Payments-Solutions-Enterprise-Credit-London/en-GB) |
 | Jefferies | 2027 Equity Research Spring Week Programme - London ✅ | Unclear | 2026-11-15 | [Apply](https://jefferies.tal.net/vx/lang-en-GB/mobile-0/appcentre-1/brand-4/candidate/so/pm/1/pl/2/opp/1933-2027-Equity-Research-Spring-Week-Programme-London/en-GB) |
 | Maven Securities | Women in Technology Spring Week 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8230037) |
-| Maven Securities | Women in Trading Spring Week 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8229982) |
 
 #### Insight programme
 

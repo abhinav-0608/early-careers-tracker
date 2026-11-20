@@ -1012,7 +1012,7 @@
     },
     "greenhouse:maven-securities:8229982": {
       "aliases": [],
-      "closed_at": null,
+      "closed_at": "2026-11-20",
       "company": "maven-securities",
       "eligibility": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
       "fields": [
@@ -1024,13 +1024,13 @@
       "locations": [
         "London"
       ],
-      "missing_runs": 1,
+      "missing_runs": 0,
       "notified": true,
       "posted_at": "2026-10-09",
       "region": "uk",
       "role_type": "spring_week",
       "source": "greenhouse",
-      "status": "open",
+      "status": "closed",
       "title": "Women in Trading Spring Week 2027",
       "url": "https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8229982"
     },
