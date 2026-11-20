@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-20T17:01:10+00:00",
-      "strikes": 5
+      "retry_at": "2026-11-20T23:01:08+00:00",
+      "strikes": 6
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-20T18:31:00+00:00",
@@ -17,8 +17,8 @@
       "strikes": 4
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T17:01:09+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-20T23:01:08+00:00",
+      "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-20T18:31:00+00:00",
@@ -506,13 +506,6 @@
         "Allow: /X_GhostSite_CHARLESSTERLINGGROUP/",
         "Allow: /X_GhostSite_MavenPartnership/",
         "Disallow: /refreshFacet/"
-      ]
-    },
-    "boards-api.greenhouse.io": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-20T06:45:00+00:00",
-      "rules": [
-        "Disallow: /embed/"
       ]
     },
     "broadcom.wd1.myworkdayjobs.com": {
