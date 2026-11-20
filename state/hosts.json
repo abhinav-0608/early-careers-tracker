@@ -5,28 +5,28 @@
       "strikes": 6
     },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T18:31:00+00:00",
-      "strikes": 5
+      "retry_at": "2026-11-21T00:31:00+00:00",
+      "strikes": 6
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-20T19:01:09+00:00",
       "strikes": 5
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T18:30:58+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-20T19:01:00+00:00",
+      "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-20T23:01:08+00:00",
       "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T18:31:00+00:00",
-      "strikes": 5
+      "retry_at": "2026-11-21T00:31:00+00:00",
+      "strikes": 6
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T18:31:00+00:00",
-      "strikes": 5
+      "retry_at": "2026-11-21T00:31:00+00:00",
+      "strikes": 6
     }
   },
   "robots": {
