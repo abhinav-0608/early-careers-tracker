@@ -635,11 +635,6 @@
       "status": "ineligible",
       "why": "You must be a penultimate-year undergraduate or master’s student"
     },
-    "greenhouse:maven-securities:8229982": {
-      "basis": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
-      "note": "",
-      "status": "eligible"
-    },
     "greenhouse:maven-securities:8230037": {
       "basis": "description: \"A student in your first year of a three-year course, or second year of a four-year course,…\"",
       "note": "",
@@ -1029,7 +1024,7 @@
       "locations": [
         "London"
       ],
-      "missing_runs": 0,
+      "missing_runs": 1,
       "notified": true,
       "posted_at": "2026-10-09",
       "region": "uk",
