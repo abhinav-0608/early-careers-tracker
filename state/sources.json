@@ -885,9 +885,9 @@
     },
     "custom:apple": {
       "alerted": false,
-      "consecutive_failures": 0,
+      "consecutive_failures": 1,
       "empty_runs": 0,
-      "failing_since": null,
+      "failing_since": "2026-11-20T00:45:45+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-19T23:45:00+00:00",
       "last_alert_at": null
