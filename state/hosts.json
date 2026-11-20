@@ -5,28 +5,28 @@
       "strikes": 3
     },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T06:30:59+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-20T08:31:00+00:00",
+      "strikes": 3
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-20T07:01:15+00:00",
       "strikes": 2
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T06:30:59+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-20T08:31:00+00:00",
+      "strikes": 3
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T06:30:59+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-20T07:01:00+00:00",
+      "strikes": 1
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T06:30:59+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-20T08:31:00+00:00",
+      "strikes": 3
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T06:30:59+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-20T08:31:00+00:00",
+      "strikes": 3
     }
   },
   "robots": {
@@ -109,7 +109,7 @@
     },
     "apply.workable.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-19T05:31:00+00:00",
+      "fetched_at": "2026-11-20T06:31:00+00:00",
       "rules": []
     },
     "arcticwolf.wd1.myworkdayjobs.com": {
@@ -508,13 +508,6 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "boards-api.greenhouse.io": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-20T01:15:00+00:00",
-      "rules": [
-        "Disallow: /embed/"
-      ]
-    },
     "broadcom.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
@@ -542,14 +535,14 @@
     },
     "careers.amd.com": {
       "crawl_delay": 5.0,
-      "fetched_at": "2026-11-19T05:31:00+00:00",
+      "fetched_at": "2026-11-20T06:31:00+00:00",
       "rules": [
         "Allow: /"
       ]
     },
     "careers.smartrecruiters.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-19T05:31:00+00:00",
+      "fetched_at": "2026-11-20T06:31:00+00:00",
       "rules": []
     },
     "cboe.wd1.myworkdayjobs.com": {
@@ -873,6 +866,22 @@
         "Disallow: /refreshFacet/"
       ]
     },
+    "salesforce.wd12.myworkdayjobs.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-20T06:31:00+00:00",
+      "rules": [
+        "Allow: /External_Career_Site/",
+        "Allow: /Futureforce_NewGradRoles/",
+        "Allow: /Mulesoft_Careersite/",
+        "Allow: /Futureforce_Internships/",
+        "Allow: /Salesforce_Research/",
+        "Allow: /Tableau/",
+        "Allow: /Datorama/",
+        "Allow: /Heroku/",
+        "Allow: /Slack/",
+        "Disallow: /refreshFacet/"
+      ]
+    },
     "santander.wd3.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
@@ -1003,7 +1012,7 @@
     },
     "www.amazon.jobs": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-19T05:31:00+00:00",
+      "fetched_at": "2026-11-20T06:31:00+00:00",
       "rules": [
         "Disallow: /internal",
         "Disallow: /en/internal",
@@ -1021,7 +1030,7 @@
     },
     "www.google.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-19T05:31:00+00:00",
+      "fetched_at": "2026-11-20T06:31:00+00:00",
       "rules": [
         "Disallow: /search",
         "Allow: /search/about",
