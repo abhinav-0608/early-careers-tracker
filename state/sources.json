@@ -1,11 +1,15 @@
 {
   "alert_groups": {
-    "Apple: timing out": "2026-11-20T01:01:22+00:00"
+    "Apple: timing out": "2026-11-20T01:01:22+00:00",
+    "Microsoft: rate limited (429)": "2026-11-20T05:01:25+00:00",
+    "Workday: blocked (Cloudflare 429)": "2026-11-20T05:01:25+00:00"
   },
   "pauses": {
     "workday": {
-      "probe": "lbg.wd3.myworkdayjobs.com: HTTP 429, a Cloudflare challenge; next attempt after 2026-11-20 05:01 UTC",
-      "probed_at": "2026-11-19T23:01:17+00:00"
+      "announced": "resumed",
+      "probe": "ok",
+      "probed_at": "2026-11-20T05:01:25+00:00",
+      "resumed_at": "2026-11-20T05:01:25+00:00"
     }
   },
   "sources": {
@@ -889,7 +893,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-20T04:01:00+00:00",
+      "interval_polled_at": "2026-11-20T05:01:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -919,13 +923,13 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-20T03:30:58+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-20T02:31:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "greenhouse:abnormal-ai": {
       "alerted": false,
@@ -2337,12 +2341,12 @@
       "last_alert_at": null
     },
     "workday:abrdn": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:adobe": {
       "alerted": true,
@@ -2351,7 +2355,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:arctic-wolf": {
       "alerted": true,
@@ -2359,24 +2363,24 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:baillie-gifford": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:barclays": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:blackrock": {
       "alerted": true,
@@ -2385,7 +2389,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:blackstone": {
       "alerted": true,
@@ -2393,7 +2397,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:broadcom": {
       "alerted": true,
@@ -2402,15 +2406,15 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:browserstack": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:capital-group": {
       "alerted": true,
@@ -2418,7 +2422,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:capital-one": {
       "alerted": true,
@@ -2427,7 +2431,7 @@
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-15T22:15:00+00:00",
-      "last_alert_at": "2026-11-15T23:15:38+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:cboe-global-markets": {
       "alerted": true,
@@ -2435,7 +2439,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:cisco": {
       "alerted": true,
@@ -2444,7 +2448,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:cme-group": {
       "alerted": true,
@@ -2452,7 +2456,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:crowdstrike": {
       "alerted": true,
@@ -2461,16 +2465,16 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:deutsche-bank": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:expedia": {
       "alerted": true,
@@ -2478,7 +2482,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T04:29:10+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T06:01:12+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:f5": {
       "alerted": true,
@@ -2487,7 +2491,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:factset": {
       "alerted": true,
@@ -2495,15 +2499,15 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:30:53+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-15T23:45:40+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:fidelity-international": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:fidelity-investments": {
       "alerted": true,
@@ -2512,7 +2516,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:fis": {
       "alerted": true,
@@ -2521,7 +2525,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:fiserv": {
       "alerted": true,
@@ -2530,7 +2534,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:g-research": {
       "alerted": true,
@@ -2538,7 +2542,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-15T23:15:38+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:houlihan-lokey": {
       "alerted": true,
@@ -2546,7 +2550,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:hp": {
       "alerted": true,
@@ -2555,7 +2559,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:ig-group": {
       "alerted": true,
@@ -2563,7 +2567,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-15T23:15:38+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:intel": {
       "alerted": true,
@@ -2572,7 +2576,7 @@
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:invesco": {
       "alerted": true,
@@ -2581,7 +2585,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:jain-global": {
       "alerted": true,
@@ -2589,40 +2593,40 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:lloyds-banking-group": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:lseg": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:macquarie": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:mandg": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:mastercard": {
       "alerted": true,
@@ -2631,7 +2635,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:mimecast": {
       "alerted": true,
@@ -2639,7 +2643,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:mizuho": {
       "alerted": true,
@@ -2647,7 +2651,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:morgan-stanley-experienced": {
       "alerted": true,
@@ -2656,16 +2660,16 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:mufg": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:nasdaq": {
       "alerted": true,
@@ -2673,7 +2677,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:northern-trust": {
       "alerted": true,
@@ -2682,7 +2686,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:nvidia": {
       "alerted": true,
@@ -2691,7 +2695,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:paypal": {
       "alerted": true,
@@ -2700,7 +2704,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:postman": {
       "alerted": true,
@@ -2708,7 +2712,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-15T23:15:38+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:proofpoint": {
       "alerted": true,
@@ -2716,7 +2720,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:qualys": {
       "alerted": true,
@@ -2724,15 +2728,15 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:rothschild-and-co": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:sailpoint": {
       "alerted": true,
@@ -2740,7 +2744,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:salesforce": {
       "alerted": true,
@@ -2749,25 +2753,25 @@
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-15T22:15:00+00:00",
-      "last_alert_at": "2026-11-15T23:15:38+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:samsung": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:santander-uk": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:snap": {
       "alerted": true,
@@ -2776,7 +2780,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:sony": {
       "alerted": true,
@@ -2784,7 +2788,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:sp-global": {
       "alerted": true,
@@ -2793,7 +2797,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:state-street": {
       "alerted": true,
@@ -2802,7 +2806,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:t-rowe-price": {
       "alerted": true,
@@ -2810,16 +2814,16 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:td": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:trellix": {
       "alerted": true,
@@ -2827,15 +2831,15 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:trend-micro": {
-      "alerted": false,
+      "alerted": true,
       "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": null
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:vanguard": {
       "alerted": true,
@@ -2844,7 +2848,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:visa": {
       "alerted": true,
@@ -2853,7 +2857,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:wellington-management": {
       "alerted": true,
@@ -2861,7 +2865,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:wells-fargo": {
       "alerted": true,
@@ -2870,7 +2874,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T15:01:11+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     },
     "workday:workday": {
       "alerted": true,
@@ -2879,7 +2883,7 @@
       "failing_since": "2026-11-16T07:15:39+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-16T08:46:03+00:00"
+      "last_alert_at": "2026-11-20T05:01:25+00:00"
     }
   },
   "version": 2
