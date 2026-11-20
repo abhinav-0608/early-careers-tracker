@@ -1,7 +1,6 @@
 {
   "alert_groups": {
-    "Apple: timing out": "2026-11-20T01:01:22+00:00",
-    "Microsoft: rate limited (429)": "2026-11-19T02:01:09+00:00"
+    "Apple: timing out": "2026-11-20T01:01:22+00:00"
   },
   "pauses": {
     "workday": {
@@ -885,13 +884,13 @@
       "last_alert_at": null
     },
     "custom:apple": {
-      "alerted": true,
-      "consecutive_failures": 3,
+      "alerted": false,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-20T00:45:45+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-19T23:45:00+00:00",
-      "last_alert_at": "2026-11-20T01:01:22+00:00"
+      "interval_polled_at": "2026-11-20T02:01:00+00:00",
+      "last_alert_at": null
     },
     "custom:google": {
       "alerted": false,
