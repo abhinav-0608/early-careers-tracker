@@ -5,28 +5,28 @@
       "strikes": 4
     },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T08:31:00+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-20T12:31:00+00:00",
+      "strikes": 4
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-20T09:01:07+00:00",
       "strikes": 3
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T08:31:00+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-20T09:01:00+00:00",
+      "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T08:31:07+00:00",
+      "retry_at": "2026-11-20T09:01:00+00:00",
       "strikes": 1
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T08:31:00+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-20T12:31:00+00:00",
+      "strikes": 4
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-20T08:31:00+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-20T12:31:00+00:00",
+      "strikes": 4
     }
   },
   "robots": {
@@ -592,6 +592,15 @@
         "Allow: /DBWebsite/",
         "Allow: /PBWebsite/",
         "Allow: /DWSWebsite/",
+        "Disallow: /refreshFacet/"
+      ]
+    },
+    "expedia.wd108.myworkdayjobs.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-20T08:31:00+00:00",
+      "rules": [
+        "Allow: /search/",
+        "Disallow: /private/",
         "Disallow: /refreshFacet/"
       ]
     },
