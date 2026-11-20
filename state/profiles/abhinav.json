@@ -740,6 +740,18 @@
       "basis": "insight programme; the posting does not say otherwise",
       "status": "eligible"
     },
+    "talnet:bank-of-america:15295": {
+      "basis": "spring week; the posting does not say otherwise",
+      "status": "eligible"
+    },
+    "talnet:bank-of-america:15298": {
+      "basis": "spring week; the posting does not say otherwise",
+      "status": "eligible"
+    },
+    "talnet:bank-of-america:15299": {
+      "basis": "spring week; the posting does not say otherwise",
+      "status": "eligible"
+    },
     "talnet:jefferies:1833": {
       "status": "unclear"
     },
@@ -1092,6 +1104,76 @@
       "status": "open",
       "title": "Bank of America | Early Insights Event",
       "url": "https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/2/opp/15242-Bank-of-America-Early-Insights-Event/en-GB"
+    },
+    "talnet:bank-of-america:15295": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "bank-of-america",
+      "eligibility": "spring week; the posting does not say otherwise",
+      "fields": [
+        "quant"
+      ],
+      "fingerprint": "bank-of-america|2027 spring insight global markets london|london",
+      "first_seen": "2026-11-20T08:01:07+00:00",
+      "last_seen": "2026-11-20",
+      "locations": [
+        "London"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": null,
+      "region": "uk",
+      "role_type": "spring_week",
+      "source": "talnet",
+      "status": "open",
+      "title": "2027 Spring Insight – Global Markets – London",
+      "url": "https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15295-2027-Spring-Insight-Global-Markets-London/en-GB"
+    },
+    "talnet:bank-of-america:15298": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "bank-of-america",
+      "eligibility": "spring week; the posting does not say otherwise",
+      "fields": [],
+      "fingerprint": "bank-of-america|2027 spring insight global payments solutions enterprise credit london|london",
+      "first_seen": "2026-11-20T08:01:07+00:00",
+      "last_seen": "2026-11-20",
+      "locations": [
+        "London"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": null,
+      "region": "uk",
+      "role_type": "spring_week",
+      "source": "talnet",
+      "status": "open",
+      "title": "2027 Spring Insight – Global Payments Solutions & Enterprise Credit – London",
+      "url": "https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15298-2027-Spring-Insight-Global-Payments-Solutions-Enterprise-Credit-London/en-GB"
+    },
+    "talnet:bank-of-america:15299": {
+      "aliases": [],
+      "closed_at": null,
+      "company": "bank-of-america",
+      "eligibility": "spring week; the posting does not say otherwise",
+      "fields": [
+        "software"
+      ],
+      "fingerprint": "bank-of-america|2027 spring insight operations technology finance chester|chester",
+      "first_seen": "2026-11-20T08:01:07+00:00",
+      "last_seen": "2026-11-20",
+      "locations": [
+        "Chester"
+      ],
+      "missing_runs": 0,
+      "notified": true,
+      "posted_at": null,
+      "region": "unclear",
+      "role_type": "spring_week",
+      "source": "talnet",
+      "status": "open",
+      "title": "2027 Spring Insight – Operations, Technology & Finance – Chester",
+      "url": "https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15299-2027-Spring-Insight-Operations-Technology-Finance-Chester/en-GB"
     },
     "talnet:jefferies:1933": {
       "aliases": [],

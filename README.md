@@ -20,6 +20,8 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 | Company | Role | Location | First seen | |
 |---|---|---|---|---|
 | 🔥 **Morgan Stanley** | 2027 Technology Spring Insight (Glasgow) ✅ | Unclear | 2026-11-15 | [Apply](https://morganstanley.tal.net/vx/lang-en-GB/mobile-0/brand-2/candidate/so/pm/1/pl/2/opp/22453-2027-Technology-Spring-Insight-Glasgow/en-GB) |
+| Bank of America | 2027 Spring Insight – Global Markets – London ✅ | London | 2026-11-20 | [Apply](https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15295-2027-Spring-Insight-Global-Markets-London/en-GB) |
+| Bank of America | 2027 Spring Insight – Global Payments Solutions & Enterprise Credit – London ✅ | London | 2026-11-20 | [Apply](https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15298-2027-Spring-Insight-Global-Payments-Solutions-Enterprise-Credit-London/en-GB) |
 | Jefferies | 2027 Equity Research Spring Week Programme - London ✅ | Unclear | 2026-11-15 | [Apply](https://jefferies.tal.net/vx/lang-en-GB/mobile-0/appcentre-1/brand-4/candidate/so/pm/1/pl/2/opp/1933-2027-Equity-Research-Spring-Week-Programme-London/en-GB) |
 | Maven Securities | Women in Technology Spring Week 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8230037) |
 | Maven Securities | Women in Trading Spring Week 2027 ✅ | London | 2026-11-15 | [Apply](https://job-boards.greenhouse.io/mavensecuritiesholdingltd/jobs/8229982) |
@@ -43,6 +45,12 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 | Addepar | Software Engineering Intern - Summer 2027 ✅ All years welcome · prefers penultimate/final | Edinburgh, UK | 2026-11-16 | [Apply](https://job-boards.greenhouse.io/addepar1/jobs/8927507002) |
 
 ### Location unclear
+
+#### Spring week
+
+| Company | Role | Location | First seen | |
+|---|---|---|---|---|
+| Bank of America | 2027 Spring Insight – Operations, Technology & Finance – Chester ✅ | Chester | 2026-11-20 | [Apply](https://bankcampuscareers.tal.net/vx/lang-en-GB/mobile-0/brand-4/candidate/so/pm/1/pl/1/opp/15299-2027-Spring-Insight-Operations-Technology-Finance-Chester/en-GB) |
 
 #### Insight programme
 
