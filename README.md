@@ -54,7 +54,7 @@ and its trade-offs are written up in [DESIGN.md](DESIGN.md).
 
 “prefers …”: the posting welcomes first years but names the years it would rather have.
 
-Last updated 2026-11-19.
+Last updated 2026-11-20.
 
 <details>
 <summary>69 companies in scope cannot be polled</summary>
