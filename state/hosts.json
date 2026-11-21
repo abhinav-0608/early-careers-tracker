@@ -73,7 +73,7 @@
     },
     "apply.careers.hsbc.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T23:15:00+00:00",
+      "fetched_at": "2026-11-21T23:15:00+00:00",
       "rules": [
         "Disallow: /applybutton/",
         "Disallow: /talentcommunity/",
