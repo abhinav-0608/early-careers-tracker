@@ -1,12 +1,8 @@
 {
   "backoff": {
-    "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-21T00:31:08+00:00",
-      "strikes": 1
-    },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T00:31:00+00:00",
-      "strikes": 6
+      "retry_at": "2026-11-21T06:31:02+00:00",
+      "strikes": 7
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-21T01:01:08+00:00",
@@ -21,12 +17,12 @@
       "strikes": 6
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T00:31:00+00:00",
-      "strikes": 6
+      "retry_at": "2026-11-21T06:31:02+00:00",
+      "strikes": 7
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T00:31:00+00:00",
-      "strikes": 6
+      "retry_at": "2026-11-21T01:01:02+00:00",
+      "strikes": 1
     }
   },
   "robots": {
@@ -836,6 +832,17 @@
         "Allow: /northerntrust/",
         "Allow: /ntcampus/",
         "Disallow: /ntextprv/",
+        "Disallow: /refreshFacet/"
+      ]
+    },
+    "nvidia.wd5.myworkdayjobs.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-21T00:31:00+00:00",
+      "rules": [
+        "Allow: /NVIDIAExternalCareerSite/",
+        "Disallow: /NVIDIAExternalCareerSiteResearch/",
+        "Disallow: /talentcommunity/",
+        "Disallow: /NVIDIARecruitAds/",
         "Disallow: /refreshFacet/"
       ]
     },
