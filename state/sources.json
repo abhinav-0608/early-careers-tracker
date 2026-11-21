@@ -1,6 +1,5 @@
 {
   "alert_groups": {
-    "Apple: timing out": "2026-11-20T01:01:22+00:00",
     "Microsoft: rate limited (429)": "2026-11-20T05:01:25+00:00",
     "Workday: blocked (Cloudflare 429)": "2026-11-20T05:01:25+00:00"
   },
