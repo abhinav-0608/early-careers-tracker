@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-21T05:31:17+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-21T06:30:56+00:00",
+      "strikes": 2
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-21T06:31:02+00:00",
@@ -13,7 +13,7 @@
       "strikes": 7
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T05:31:17+00:00",
+      "retry_at": "2026-11-21T06:00:56+00:00",
       "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
@@ -595,12 +595,12 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "expedia.wd108.myworkdayjobs.com": {
+    "factset.wd108.myworkdayjobs.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T08:31:00+00:00",
+      "fetched_at": "2026-11-21T05:30:00+00:00",
       "rules": [
-        "Allow: /search/",
-        "Disallow: /private/",
+        "Allow: /FactSetCareers/",
+        "Allow: /Mesh/",
         "Disallow: /refreshFacet/"
       ]
     },
