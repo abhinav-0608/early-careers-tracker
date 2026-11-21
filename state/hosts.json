@@ -21,8 +21,8 @@
       "strikes": 7
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T02:01:04+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-21T04:01:12+00:00",
+      "strikes": 3
     }
   },
   "robots": {
@@ -58,7 +58,7 @@
     },
     "apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-19T19:45:00+00:00",
+      "fetched_at": "2026-11-21T02:01:00+00:00",
       "rules": [
         "Disallow: /*shop/browse/overlay/*",
         "Disallow: /*shop/iphone/payments/overlay/*",
@@ -706,7 +706,7 @@
     },
     "jobs.apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T02:01:00+00:00",
+      "fetched_at": "2026-11-21T02:01:00+00:00",
       "rules": []
     },
     "jpmc.fa.oraclecloud.com": {
