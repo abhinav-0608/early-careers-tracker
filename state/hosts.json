@@ -1,12 +1,12 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-21T06:30:56+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-21T08:31:06+00:00",
+      "strikes": 3
     },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T06:31:02+00:00",
-      "strikes": 7
+      "retry_at": "2026-11-21T12:31:06+00:00",
+      "strikes": 8
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-21T07:01:04+00:00",
@@ -21,8 +21,8 @@
       "strikes": 7
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T06:31:02+00:00",
-      "strikes": 7
+      "retry_at": "2026-11-21T12:31:06+00:00",
+      "strikes": 8
     },
     "wd5.myworkdayjobs.com": {
       "retry_at": "2026-11-21T08:00:18+00:00",
@@ -109,7 +109,7 @@
     },
     "apply.workable.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T06:31:00+00:00",
+      "fetched_at": "2026-11-21T06:31:00+00:00",
       "rules": []
     },
     "arcticwolf.wd1.myworkdayjobs.com": {
@@ -508,6 +508,13 @@
         "Disallow: /refreshFacet/"
       ]
     },
+    "boards-api.greenhouse.io": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-21T06:31:00+00:00",
+      "rules": [
+        "Disallow: /embed/"
+      ]
+    },
     "broadcom.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
@@ -535,14 +542,14 @@
     },
     "careers.amd.com": {
       "crawl_delay": 5.0,
-      "fetched_at": "2026-11-20T06:31:00+00:00",
+      "fetched_at": "2026-11-21T06:31:00+00:00",
       "rules": [
         "Allow: /"
       ]
     },
     "careers.smartrecruiters.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T06:31:00+00:00",
+      "fetched_at": "2026-11-21T06:31:00+00:00",
       "rules": []
     },
     "cboe.wd1.myworkdayjobs.com": {
@@ -1032,7 +1039,7 @@
     },
     "www.amazon.jobs": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T06:31:00+00:00",
+      "fetched_at": "2026-11-21T06:31:00+00:00",
       "rules": [
         "Disallow: /internal",
         "Disallow: /en/internal",
@@ -1050,7 +1057,7 @@
     },
     "www.google.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T06:31:00+00:00",
+      "fetched_at": "2026-11-21T06:31:00+00:00",
       "rules": [
         "Disallow: /search",
         "Allow: /search/about",
