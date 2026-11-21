@@ -831,7 +831,7 @@
       ],
       "fingerprint": "hsbc|sha256-20f5b0a2d8ee319e751c8b45e7d7b37a",
       "first_seen": "2026-11-16T23:13:40+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -853,7 +853,7 @@
       ],
       "fingerprint": "hsbc|sha256-0b22bf471473739b28e435777dc36c44",
       "first_seen": "2026-11-16T23:13:40+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -873,7 +873,7 @@
       "fields": [],
       "fingerprint": "hsbc|sha256-a5593b3b6c7d05f25cfaaee246d4c570",
       "first_seen": "2026-11-16T23:13:40+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -896,7 +896,7 @@
       ],
       "fingerprint": "addepar|portfolio data analyst intern summer 2027|edinburgh uk",
       "first_seen": "2026-11-16T17:06:58+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "Edinburgh, UK"
       ],
@@ -921,7 +921,7 @@
       ],
       "fingerprint": "addepar|software engineering intern summer 2027|edinburgh uk",
       "first_seen": "2026-11-16T17:06:58+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "Edinburgh, UK"
       ],
@@ -946,7 +946,7 @@
       ],
       "fingerprint": "addepar|data projects intern summer 2027|edinburgh uk",
       "first_seen": "2026-11-16T17:06:58+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "Edinburgh, UK"
       ],
@@ -971,7 +971,7 @@
       ],
       "fingerprint": "gsa-capital|women in trading technology insight programme 2027|london",
       "first_seen": "2026-11-15T08:28:57+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "London"
       ],
@@ -996,7 +996,7 @@
       ],
       "fingerprint": "gsa-capital|general trading technology insight programme 2027|london",
       "first_seen": "2026-11-15T08:28:57+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "London"
       ],
@@ -1044,7 +1044,7 @@
       ],
       "fingerprint": "maven-securities|women in technology spring week 2027|london",
       "first_seen": "2026-11-15T08:28:57+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "London"
       ],
@@ -1088,7 +1088,7 @@
       "fields": [],
       "fingerprint": "bank-of-america|bank of america early insights event|",
       "first_seen": "2026-11-15T19:15:50+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -1110,7 +1110,7 @@
       ],
       "fingerprint": "bank-of-america|2027 spring insight global markets london|london",
       "first_seen": "2026-11-20T08:01:07+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "London"
       ],
@@ -1132,7 +1132,7 @@
       "fields": [],
       "fingerprint": "bank-of-america|2027 spring insight global payments solutions enterprise credit london|london",
       "first_seen": "2026-11-20T08:01:07+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "London"
       ],
@@ -1156,7 +1156,7 @@
       ],
       "fingerprint": "bank-of-america|2027 spring insight operations technology finance chester|chester",
       "first_seen": "2026-11-20T08:01:07+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "Chester"
       ],
@@ -1178,7 +1178,7 @@
       "fields": [],
       "fingerprint": "jefferies|2027 equity research spring week programme london|",
       "first_seen": "2026-11-15T19:15:50+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -1200,7 +1200,7 @@
       ],
       "fingerprint": "morgan-stanley|2027 technology spring insight glasgow|",
       "first_seen": "2026-11-15T19:15:50+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -1222,7 +1222,7 @@
       ],
       "fingerprint": "morgan-stanley|insight into technology apprenticeships at morgan stanley glasgow|",
       "first_seen": "2026-11-15T19:15:50+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [],
       "missing_runs": 0,
       "notified": true,
@@ -1242,7 +1242,7 @@
       "fields": [],
       "fingerprint": "nomura|2027 discover nomura programme insight programme|london",
       "first_seen": "2026-11-15T19:15:50+00:00",
-      "last_seen": "2026-11-20",
+      "last_seen": "2026-11-21",
       "locations": [
         "London"
       ],
