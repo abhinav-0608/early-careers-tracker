@@ -5,12 +5,12 @@
       "strikes": 7
     },
     "wd103.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T01:01:08+00:00",
-      "strikes": 6
+      "retry_at": "2026-11-21T07:01:04+00:00",
+      "strikes": 7
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T01:01:12+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-21T05:01:04+00:00",
+      "strikes": 4
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-21T05:01:12+00:00",
@@ -21,8 +21,8 @@
       "strikes": 7
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-21T01:01:02+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-21T02:01:04+00:00",
+      "strikes": 2
     }
   },
   "robots": {
