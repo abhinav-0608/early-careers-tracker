@@ -13,7 +13,7 @@
       "strikes": 6
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T02:01:04+00:00",
+      "retry_at": "2026-11-22T02:31:03+00:00",
       "strikes": 1
     },
     "wd3.myworkdayjobs.com": {
@@ -21,8 +21,8 @@
       "strikes": 11
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T02:01:04+00:00",
-      "strikes": 7
+      "retry_at": "2026-11-22T08:01:03+00:00",
+      "strikes": 8
     }
   },
   "robots": {
@@ -58,7 +58,7 @@
     },
     "apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-21T02:01:00+00:00",
+      "fetched_at": "2026-11-22T02:01:00+00:00",
       "rules": [
         "Disallow: /*shop/browse/overlay/*",
         "Disallow: /*shop/iphone/payments/overlay/*",
@@ -715,7 +715,7 @@
     },
     "jobs.apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-21T02:01:00+00:00",
+      "fetched_at": "2026-11-22T02:01:00+00:00",
       "rules": []
     },
     "jpmc.fa.oraclecloud.com": {
