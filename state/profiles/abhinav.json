@@ -811,6 +811,14 @@
     },
     "workable:capula:A15A62A8BE": {
       "status": "unclear"
+    },
+    "workday:intel:JR0287000": {
+      "status": "unknown",
+      "tries": 1
+    },
+    "workday:intel:JR0287533": {
+      "status": "unknown",
+      "tries": 1
     }
   },
   "eligibility_rules": "9bc7b15a981f5c27",

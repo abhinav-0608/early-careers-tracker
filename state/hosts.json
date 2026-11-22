@@ -1,8 +1,8 @@
 {
   "backoff": {
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T18:30:54+00:00",
-      "strikes": 13
+      "retry_at": "2026-11-22T19:00:57+00:00",
+      "strikes": 1
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-22T19:01:07+00:00",
@@ -17,8 +17,8 @@
       "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T18:30:54+00:00",
-      "strikes": 13
+      "retry_at": "2026-11-23T00:30:57+00:00",
+      "strikes": 14
     },
     "wd5.myworkdayjobs.com": {
       "retry_at": "2026-11-22T21:30:56+00:00",
@@ -686,6 +686,14 @@
         "Disallow: /refreshFacet/"
       ]
     },
+    "intel.wd1.myworkdayjobs.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-22T18:30:00+00:00",
+      "rules": [
+        "Allow: /External/",
+        "Disallow: /refreshFacet/"
+      ]
+    },
     "invesco.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-16T04:29:00+00:00",
@@ -932,6 +940,16 @@
         "Allow: /referral19/",
         "Allow: /sourced/",
         "Allow: /immigration/",
+        "Disallow: /refreshFacet/"
+      ]
+    },
+    "sonyglobal.wd1.myworkdayjobs.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-22T18:30:00+00:00",
+      "rules": [
+        "Allow: /SonyGlobalCareers/",
+        "Allow: /SonyJapanCareers/",
+        "Allow: /Sony_Europe_Careers/",
         "Disallow: /refreshFacet/"
       ]
     },
