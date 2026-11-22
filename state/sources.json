@@ -1,5 +1,6 @@
 {
   "alert_groups": {
+    "Microsoft: rate limited (429)": "2026-11-22T08:01:05+00:00",
     "Workday: blocked (Cloudflare 429)": "2026-11-22T06:01:05+00:00"
   },
   "pauses": {
@@ -891,7 +892,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-22T07:01:00+00:00",
+      "interval_polled_at": "2026-11-22T08:01:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -921,13 +922,13 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-22T06:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-22T05:30:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-22T08:01:05+00:00"
     },
     "greenhouse:abnormal-ai": {
       "alerted": false,
