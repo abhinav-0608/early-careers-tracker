@@ -1,8 +1,6 @@
 {
   "alert_groups": {
-    "Microsoft: rate limited (429)": "2026-11-21T06:31:06+00:00",
-    "Workday: blocked (Cloudflare 429)": "2026-11-21T05:30:56+00:00",
-    "Workday: failing (HTTP 502)": "2026-11-21T05:30:56+00:00"
+    "Microsoft: rate limited (429)": "2026-11-21T06:31:06+00:00"
   },
   "pauses": {
     "workday": {
