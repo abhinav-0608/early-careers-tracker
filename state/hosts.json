@@ -46,7 +46,7 @@
     },
     "api.ashbyhq.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-21T04:45:00+00:00",
+      "fetched_at": "2026-11-22T04:45:00+00:00",
       "rules": []
     },
     "api.lever.co": {
@@ -128,7 +128,7 @@
     },
     "bankcampuscareers.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-21T04:45:00+00:00",
+      "fetched_at": "2026-11-22T04:45:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -706,7 +706,7 @@
     },
     "jefferies.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-21T04:45:00+00:00",
+      "fetched_at": "2026-11-22T04:45:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -789,7 +789,7 @@
     },
     "morganstanley.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-21T04:45:00+00:00",
+      "fetched_at": "2026-11-22T04:45:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
@@ -827,7 +827,7 @@
     },
     "nomuracampus.tal.net": {
       "crawl_delay": 10.0,
-      "fetched_at": "2026-11-21T04:45:00+00:00",
+      "fetched_at": "2026-11-22T04:45:00+00:00",
       "rules": [
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
