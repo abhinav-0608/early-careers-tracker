@@ -1,28 +1,24 @@
 {
   "backoff": {
-    "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-22T00:30:58+00:00",
-      "strikes": 6
-    },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T00:30:58+00:00",
-      "strikes": 10
+      "retry_at": "2026-11-22T06:30:53+00:00",
+      "strikes": 11
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-22T01:01:05+00:00",
       "strikes": 10
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T00:30:58+00:00",
-      "strikes": 5
+      "retry_at": "2026-11-22T06:30:53+00:00",
+      "strikes": 6
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-22T01:01:05+00:00",
       "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-22T00:30:58+00:00",
-      "strikes": 10
+      "retry_at": "2026-11-22T06:30:53+00:00",
+      "strikes": 11
     },
     "wd5.myworkdayjobs.com": {
       "retry_at": "2026-11-22T02:01:04+00:00",
@@ -89,7 +85,7 @@
     },
     "apply.careers.microsoft.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-20T23:01:00+00:00",
+      "fetched_at": "2026-11-22T00:30:00+00:00",
       "rules": [
         "Disallow: /",
         "Allow: /$",
