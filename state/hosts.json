@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-23T04:31:04+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-23T06:30:54+00:00",
+      "strikes": 3
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-23T08:01:02+00:00",
@@ -13,8 +13,8 @@
       "strikes": 15
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-23T04:30:55+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-23T05:00:54+00:00",
+      "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-23T07:01:03+00:00",
@@ -30,24 +30,6 @@
     }
   },
   "robots": {
-    "abrdn.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /abrdn/",
-        "Allow: /Finimize/",
-        "Allow: /AberdeenEarlyCareer/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "adobe.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /external_experienced/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "api.ashbyhq.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-22T04:45:00+00:00",
@@ -112,24 +94,6 @@
       "fetched_at": "2026-11-22T07:30:00+00:00",
       "rules": []
     },
-    "arcticwolf.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "bailliegifford.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /BaillieGiffordCareers/",
-        "Allow: /BaillieGiffordEarlyCareers/",
-        "Allow: /BaillieGiffordClientManager/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "bankcampuscareers.tal.net": {
       "crawl_delay": 10.0,
       "fetched_at": "2026-11-22T04:45:00+00:00",
@@ -139,405 +103,11 @@
         "Disallow: /*/channel/"
       ]
     },
-    "barclays.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External_Career_Site_Barclays/",
-        "Disallow: /Private/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "blackrock.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /BlackRock_Professional/",
-        "Disallow: /BlackRock_AIG/",
-        "Disallow: /BlackRock_Early_Careers_Program/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "blackstone.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Blackstone_Campus_Careers/",
-        "Allow: /Blackstone_InternalCareers/",
-        "Allow: /Blackstone_Careers/",
-        "Allow: /Schwarzman_Scholars/",
-        "Allow: /UK_Notre_Dame/",
-        "Allow: /UK_London_Business_School/",
-        "Allow: /BX_External_Site/",
-        "Allow: /Blackstone_Technology/",
-        "Allow: /Boston_Career_Fairs/",
-        "Allow: /Marni_TEST_Site/",
-        "Allow: /FWL-Goretti/",
-        "Allow: /Marni_Test_Ghost_Posting_Site/",
-        "Allow: /HEC_Paris/",
-        "Allow: /X_GhostSite_Ajilon/",
-        "Allow: /X_GhostSite_AlaneBaranelloAssociates/",
-        "Allow: /X_GhostSite_ALS_International_HK/",
-        "Allow: /X_GhostSite_AntelopeJapan/",
-        "Allow: /X_GhostSite_ArcherDykstraAssociates/",
-        "Allow: /X_GhostSite_ArrowSearchPartners/",
-        "Allow: /X_GhostSite_Aspiro/",
-        "Allow: /X_GhostSite_AtlasSearch/",
-        "Allow: /X_GhostSite_AvenellSearch/",
-        "Allow: /X_GhostSite_AxiomSolutions/",
-        "Allow: /X_GhostSite_Azon/",
-        "Allow: /X_GhostSite_Badenoch_Clark/",
-        "Allow: /X_GhostSite_BarclaySimpson/",
-        "Allow: /X_GhostSite_BeaconHillStaffingGroupLLC/",
-        "Allow: /X_GhostSite_BerkeleyScott/",
-        "Allow: /X_GhostSite_Blackwood/",
-        "Allow: /X_GhostSite_Blueprint/",
-        "Allow: /X_GhostSite_BoutiqueAUS/",
-        "Allow: /X_GhostSite_BowenPartners/",
-        "Allow: /X_GhostSite_BPASearch/",
-        "Allow: /X_GhostSite_BraddockMatthewsLLC/",
-        "Allow: /X_GhostSite_Bruin/",
-        "Allow: /X_GhostSite_CadenceCounsel/",
-        "Allow: /X_GhostSite_CardeaGroup/",
-        "Allow: /X_GhostSite_CareerConnections/",
-        "Allow: /X_GhostSite_CareerGroup/",
-        "Allow: /X_GhostSite_CareerLegal/",
-        "Allow: /X_GhostSite_CareerPartnersInc/",
-        "Allow: /X_GhostSite_CarringtonFox/",
-        "Allow: /X_GhostSite_CitiStaffingLLC/",
-        "Allow: /X_GhostSite_ClarityStaffing/",
-        "Allow: /X_GhostSite_ClearPointGroup/",
-        "Allow: /X_GhostSite_CodaSearch/",
-        "Allow: /X_GhostSite_ColemanCo/",
-        "Allow: /X_GhostSite_CoreStaffingServicesInc/",
-        "Allow: /X_GhostSite_Curzon/",
-        "Allow: /X_GhostSite_DartmouthPartners/",
-        "Allow: /X_GhostSite_DavidBarrettPartners/",
-        "Allow: /X_GhostSite_DeverellSmith/",
-        "Allow: /X_GhostSite_DiversifiedSearch/",
-        "Allow: /X_GhostSite_DMCPartners/",
-        "Allow: /X_GhostSite_DorePartnership/",
-        "Allow: /X_GhostSite_DurlstonPartners/",
-        "Allow: /X_GhostSite_EastWestConsultingKKJapan/",
-        "Allow: /X_GhostSite_EgonZehnderInternational/",
-        "Allow: /X_GhostSite_EmeraldGroup/",
-        "Allow: /X_GhostSite_EmpireSearchPartnersLLC/",
-        "Allow: /X_GhostSite_EthosBeathChapman/",
-        "Allow: /X_GhostSite_ExecutiveAccessAPAC/",
-        "Allow: /X_GhostSite_Eximius/",
-        "Allow: /X_GhostSite_FairfaxSearch/",
-        "Allow: /X_GhostSite_FergusonPartnersLP/",
-        "Allow: /X_GhostSite_FidesSearch/",
-        "Allow: /X_GhostSite_Finsearch/",
-        "Allow: /X_GhostSite_FKInternational/",
-        "Allow: /X_GhostSite_FMWorld/",
-        "Allow: /X_GhostSite_FortnumExecutive/",
-        "Allow: /X_GhostSite_FrazerJohn/",
-        "Allow: /X_GhostSite_FrazerJones/",
-        "Allow: /X_GhostSite_Freshminds/",
-        "Allow: /X_GhostSite_GilbertTweed/",
-        "Allow: /X_GhostSite_GlobalTalentAcquisitionLLC/",
-        "Allow: /X_GhostSite_GlocapSearchLLC/",
-        "Allow: /X_GhostSite_GoodmanMasson/",
-        "Allow: /X_GhostSite_GoToFreedom/",
-        "Allow: /X_GhostSite_GoughRecruitmentNSW/",
-        "Allow: /X_GhostSite_GreenfieldSARL/",
-        "Allow: /X_GhostSite_HawkSearchKK/",
-        "Allow: /X_GhostSite_HaysHK/",
-        "Allow: /X_GhostSite_Hays_JP/",
-        "Allow: /X_GhostSite_HCapital/",
-        "Allow: /X_GhostSite_HectorandStreak/",
-        "Allow: /X_GhostSite_HeidrickStrugglesInc/",
-        "Allow: /X_GhostSite_HenkelSearchPartners/",
-        "Allow: /X_GhostSite_HeraSearchLimited/",
-        "Allow: /X_GhostSite_HeronLegal/",
-        "Allow: /X_GhostSite_HeymanAssociates/",
-        "Allow: /X_GhostSite_HuxleyAssociates/",
-        "Allow: /X_GhostSite_HybridgePartners/",
-        "Allow: /X_GhostSite_IamRecruitingLimited/",
-        "Allow: /X_GhostSite_InfusiveSolutionsInc/",
-        "Allow: /X_GhostSite_Ink/",
-        "Allow: /X_GhostSite_InnovativeGroupAssociatesInc/",
-        "Allow: /X_GhostSite_InSiteSearch/",
-        "Allow: /X_GhostSite_IntegralSearchSelectionLimited/",
-        "Allow: /X_GhostSite_iSearch/",
-        "Allow: /X_GhostSite_JCConsulting/",
-        "Allow: /X_GhostSite_JHBSearch/",
-        "Allow: /X_GhostSite_JKPartners/",
-        "Allow: /X_GhostSite_JossSearch/",
-        "Allow: /X_GhostSite_JSCareers/",
-        "Allow: /X_GhostSite_JSBPartners/",
-        "Allow: /X_GhostSite_JTHAdvisors/",
-        "Allow: /X_GhostSite_JWMichaelsCompany/",
-        "Allow: /X_GhostSite_KEAConsultants/",
-        "Allow: /X_GhostSite_KennedyPearce/",
-        "Allow: /X_GhostSite_KForce/",
-        "Allow: /X_GhostSite_KilcullenCompany/",
-        "Allow: /X_GhostSite_KornFerry/",
-        "Allow: /X_GhostSite_KosmosRecruitment/",
-        "Allow: /X_GhostSite_KSInternationalSGP/",
-        "Allow: /X_GhostSite_LandingPoint/",
-        "Allow: /X_GhostSite_Leathwaite/",
-        "Allow: /X_GhostSite_LimitlessTalent/",
-        "Allow: /X_GhostSite_LongRidgePartnersInc/",
-        "Allow: /X_GhostSite_MarksSatin/",
-        "Allow: /X_GhostSite_MarniTest/",
-        "Allow: /X_GhostSite_MasonAlexander/",
-        "Allow: /X_GhostSite_MaxwellStephens/",
-        "Allow: /X_GhostSite_McTammanyPartners/",
-        "Allow: /X_GhostSite_MercuryPartners/",
-        "Allow: /X_GhostSite_MichaelPageHK/",
-        "Allow: /X_GhostSite_MichaelPageIndia/",
-        "Allow: /X_GhostSite_MichaelPagUK/",
-        "Allow: /X_GhostSite_MichaelPageInternational/",
-        "Allow: /X_GhostSite_MirageRecruitment/",
-        "Allow: /X_GhostSite_MissionStaffingInc/",
-        "Allow: /X_GhostSite_MitchellMartin/",
-        "Allow: /X_GhostSite_MorganMcKinley/",
-        "Allow: /X_GhostSite_MSHInternational/",
-        "Allow: /X_GhostSite_NorthboundExecutiveSearch/",
-        "Allow: /X_GhostSite_Oakleaf/",
-        "Allow: /X_GhostSite_OmertaGroup/",
-        "Allow: /X_GhostSite_OnRamps/",
-        "Allow: /X_GhostSite_OpenSystemsTechnologies/",
-        "Allow: /X_GhostSite_OptionsGroup/",
-        "Allow: /X_GhostSite_PagePersonnelHK/",
-        "Allow: /X_GhostSite_ParagonExecutive/",
-        "Allow: /X_GhostSite_ParagonPersonnel/",
-        "Allow: /X_GhostSite_ParagonSearch/",
-        "Allow: /X_GhostSite_ParkAvenuePartners/",
-        "Allow: /X_GhostSite_PBRRealEstate/",
-        "Allow: /X_GhostSite_ProfileHK/",
-        "Allow: /X_GhostSite_RandstadAUS/",
-        "Allow: /X_GhostSite_RandstadProfessionals/",
-        "Allow: /X_GhostSite_RCRLtd/",
-        "Allow: /X_GhostSite_RedPathHK/",
-        "Allow: /X_GhostSite_RedPathPartners/",
-        "Allow: /X_GhostSite_Reed/",
-        "Allow: /X_GhostSite_RGFTalentSolutions/",
-        "Allow: /X_GhostSite_RICSRecruit/",
-        "Allow: /X_GhostSite_RobertHalfHK/",
-        "Allow: /X_GhostSite_RobertWalters/",
-        "Allow: /X_GhostSite_RobertWaltersJP/",
-        "Allow: /X_GhostSite_RobertWaltersAUS/",
-        "Allow: /X_GhostSite_RobertWaltersHK/",
-        "Allow: /X_GhostSite_RopnerFredriks/",
-        "Allow: /X_GhostSite_RussellReynoldsAssociatesInc/",
-        "Allow: /X_GhostSite_RutherfordSearch/",
-        "Allow: /X_GhostSite_SartreGroup/",
-        "Allow: /X_GhostSite_SegalenAssocies/",
-        "Allow: /X_GhostSite_SelbyJennings/",
-        "Allow: /X_GhostSite_SGPartners/",
-        "Allow: /X_GhostSite_SheffieldHaworth/",
-        "Allow: /X_GhostSite_SolomonPageGroup/",
-        "Allow: /X_GhostSite_SousouPartners/",
-        "Allow: /X_GhostSite_SousouPartnersUK/",
-        "Allow: /X_GhostSite_SpecializedGroup/",
-        "Allow: /X_GhostSite_SpencerStuart/",
-        "Allow: /X_GhostSite_Swap/",
-        "Allow: /X_GhostSite_Talentvis/",
-        "Allow: /X_GhostSite_TaylorBennett/",
-        "Allow: /X_GhostSite_TaylorRoot/",
-        "Allow: /X_GhostSite_TheExecuSearchGroup/",
-        "Allow: /X_GhostSite_TheGoodkindGroup/",
-        "Allow: /X_GhostSite_TheHigginsGroupInc/",
-        "Allow: /X_GhostSite_TheLaurusGroup/",
-        "Allow: /X_GhostSite_ThePanel/",
-        "Allow: /X_GhostSite_ThePrincetonGroup/",
-        "Allow: /X_GhostSite_ThornBaker/",
-        "Allow: /X_GhostSite_TIPPSearch/",
-        "Allow: /X_GhostSite_TognZhaoLimited/",
-        "Allow: /X_GhostSite_TreasuryRecruitment/",
-        "Allow: /X_GhostSite_UpgradeCapital/",
-        "Allow: /X_GhostSite_VictoriaWallAssociates/",
-        "Allow: /X_GhostSite_Vito/",
-        "Allow: /X_GhostSite_Volt/",
-        "Allow: /X_GhostSite_WalkerHamillExecutiveSearchSelection/",
-        "Allow: /X_GhostSite_WallStreetOptions/",
-        "Allow: /X_GhostSite_WellingtonAssociates/",
-        "Allow: /X_GhostSite_WhiteCapSearch/",
-        "Allow: /X_GhostSite_WilkinsonPartners/",
-        "Allow: /X_GhostSite_WilliamBlakeGroup/",
-        "Allow: /X_GhostSite_Jensen_Partners/",
-        "Allow: /X-Ghost_Site-Lutine_Bell/",
-        "Allow: /X-Ghost_Site-Gordian_Search/",
-        "Allow: /X-GhostSite-TCK/",
-        "Allow: /X-GhostSite-DanosConsulting/",
-        "Allow: /X-GhostSite-FundsTalent/",
-        "Allow: /X-GhostSite-SpringRecruitment/",
-        "Allow: /X-GhostSite-CardinalSearchPartners/",
-        "Allow: /X-GhostSite-Aegistech/",
-        "Allow: /X-GhostSite-LoganSinclair/",
-        "Allow: /X-GhostSite-HaysAgency/",
-        "Allow: /X-GhostSite-Meytier/",
-        "Allow: /X-GhostSite-Wyntalent/",
-        "Allow: /UK_SEO/",
-        "Allow: /X-GhostSite-MichaelPageJP/",
-        "Allow: /X-GhostSite-CarterPierce/",
-        "Allow: /X-GhostSite-TheMethodStaffing/",
-        "Allow: /X-GhostSite-SegreraAssociates/",
-        "Allow: /X_GhostSite_RobertWaltersEMEA/",
-        "Allow: /X-GhostSite-VantagePointKK/",
-        "Allow: /X-GhostSite-AZMAAssociatesJapan/",
-        "Allow: /X-GhostSite-GlobalSageJapan/",
-        "Allow: /X-GhostSite-TheBachrachGroup/",
-        "Allow: /X-GhostSite-Vignetic/",
-        "Allow: /X-GhostSite-Incendium/",
-        "Allow: /X-GhostSite-StrategicRecruiting/",
-        "Allow: /X-GhostSite-Infinia/",
-        "Allow: /X-GhostSite-eClerx/",
-        "Allow: /X-GhostSite-HudsonGatePartners/",
-        "Allow: /X-GhostSite-Aquent/",
-        "Allow: /X-GhostSite-WhistlerPartners/",
-        "Allow: /Hiring_our_Heroes/",
-        "Allow: /X-GhostSite-AbacusGroup/",
-        "Allow: /X-GhostSite-InfinityConsultingSolutions/",
-        "Allow: /X-GhostSite-ApexStaffing/",
-        "Allow: /X-GhostSite-USEast/",
-        "Allow: /X-GhostSite-Andiamo/",
-        "Allow: /X-GhostSite-DataPrime/",
-        "Allow: /X-GhostSite-CornerstoneStaffing/",
-        "Allow: /X-GhostSite-VMAGroup/",
-        "Allow: /X-GhostSite-EllwoodAtfield/",
-        "Allow: /X-GhostSite-JMD/",
-        "Allow: /X-GhostSite-PureSearch/",
-        "Allow: /X-GhostSite-AltaAssociates/",
-        "Allow: /X-GhostSite-BusinessOne/",
-        "Allow: /X-GhostSite-TheAtlanticGroup/",
-        "Allow: /X-GhostSite-SSQ/",
-        "Allow: /X-GhostSite-OdgersBerndtson/",
-        "Allow: /X-GhostSite-Artico/",
-        "Allow: /X-GhostSite-Tangerine/",
-        "Allow: /X-GhostSite-WatermanStern/",
-        "Allow: /X-GhostSite-WTECHSearch/",
-        "Allow: /X-GhostSite-ElliottJames/",
-        "Allow: /X-GhostSite-BeijingBoleYoucai/",
-        "Allow: /X-GhostSite-ShanghaiCGLConsulting/",
-        "Allow: /X-GhostSite-MBKSearch/",
-        "Allow: /X-GhostSite-ACLPartners/",
-        "Allow: /X-GhostSite-DVFRecruitment/",
-        "Allow: /X-GhostSite-HansonSearch/",
-        "Allow: /X-GhostSite-MetisSearch/",
-        "Allow: /X-GhostSite-SustainableMeans/",
-        "Allow: /X-GhostSite-Selectus/",
-        "Allow: /X-GhostSite-StoneManagement/",
-        "Allow: /X-GhostSite-BickhamMontgomery/",
-        "Allow: /X-GhostSite-HedleyMay/",
-        "Allow: /X-GhostSite-SaragosaLimited/",
-        "Allow: /X-GhostSite-InterExGroup/",
-        "Allow: /X-GhostSite-REKruitingAdvisors/",
-        "Allow: /X-GhostSite-StottAndMay/",
-        "Allow: /X_GhostSite_ISGF/",
-        "Allow: /X_GhostSite_TDACreative/",
-        "Allow: /X_GhostSite_InsightGlobal/",
-        "Allow: /X_GhostSite_AndersenSteinberg/",
-        "Allow: /X_GhostSite_ChilmarkSearchLLC/",
-        "Allow: /X-GhostSite-Rosefield-Advisors/",
-        "Allow: /X-GhostSite-edelta/",
-        "Allow: /Ghost_Technology_Event/",
-        "Allow: /X-GhostSite-RainesInternational/",
-        "Allow: /X-GhostSite-SignatureConsultants/",
-        "Allow: /X_GhostSite_LawsonChase/",
-        "Allow: /X-GhostSite-Tiger/",
-        "Allow: /X-GhostSite-StephenJamesPartnership/",
-        "Allow: /X-GhostSite-MontaRosa/",
-        "Allow: /X-GhostSite-NewenSearch/",
-        "Allow: /X-GhostSite-PER-People/",
-        "Allow: /X-GhostSite-LHH/",
-        "Allow: /X-GhostSite-Eleway/",
-        "Allow: /X-GhostSite-EJRSearch/",
-        "Allow: /X-GhostSite-JSmith/",
-        "Allow: /X-GhostSite-RicePartnership/",
-        "Allow: /X-GhostSite-AccuPoint/",
-        "Allow: /X-GhostSite-SolomonPageGroup/",
-        "Allow: /X-GhostSite-Develop/",
-        "Allow: /X-GhostSite-PagePersonnel/",
-        "Allow: /X-GhostSite-AstonCarter/",
-        "Allow: /X-GhostSite-TenetSearch/",
-        "Allow: /X-GhostSite-Walterspeople/",
-        "Allow: /X-GhostSite-Synkriom/",
-        "Allow: /X-GhostSite-JustLegal/",
-        "Allow: /X-GhostSite-REKruitingAdvisorsLLC/",
-        "Allow: /X-GhostSite-GreenKeyResources/",
-        "Allow: /X-GhostSite-Greene-Levin-Snyder/",
-        "Allow: /X-GhostSite-EuroluxConsulting/",
-        "Allow: /X-GhostSite-DocJobs/",
-        "Allow: /X-GhostSite-Vaco/",
-        "Allow: /X-GhostSite-HudsonDruce/",
-        "Allow: /X-GhostSite-CamdenRecruitment/",
-        "Allow: /X_GhostSite_SheridanMaine/",
-        "Allow: /X_GhostSite_ConsultancyGroup/",
-        "Allow: /X-GhostSite-BellCast/",
-        "Allow: /X-GhostSite-TandymGroup/",
-        "Allow: /X_GhostSite_ArcherReferrals/",
-        "Allow: /X-GhostSite-PlatinumPacificPartners/",
-        "Allow: /X-GhostSite-XGPartners/",
-        "Allow: /X-GhostSite-PythonTalent/",
-        "Allow: /X-GhostSite-DiamondTaxRecruiting/",
-        "Allow: /X_GhostSite_MichaelPageShanghai/",
-        "Allow: /X_GhostSite_BarberLimited/",
-        "Allow: /BXTI_UK/",
-        "Allow: /X-GhostSite-ElevatePartners/",
-        "Allow: /X_GhostSite_RAndersenPartners/",
-        "Allow: /X_GhostSite_CyperusGroup/",
-        "Allow: /X_GhostSite_RAndersenPartnersPteLtd/",
-        "Allow: /X_GhostSite_PearsePartners/",
-        "Allow: /X_GhostSite_UnicoSearchInc/",
-        "Allow: /X_GhostSite_AddingtonPartners/",
-        "Allow: /X-Ghost-Site-Christoph-Zeiss-Partners-Inc/",
-        "Allow: /X-GhostSite-StevenDouglas/",
-        "Allow: /X-GhostSite-HorizonRecruitment/",
-        "Allow: /X-GhostOliverJames/",
-        "Allow: /X_GhostSite_TheBundInternational/",
-        "Allow: /X-GhostSite-WilsonHCGJapan/",
-        "Allow: /X_GhostSite_GradusPartnershipPTYLTD/",
-        "Allow: /X-GhostSite-AndoverResearch/",
-        "Allow: /X-GhostSite-VestedSearch/",
-        "Allow: /X-GhostSite-Allbyn/",
-        "Allow: /X-GhostSite-WessexPartners/",
-        "Allow: /X_GhostSite_BlackTurtleIndiaPvtLtd/",
-        "Allow: /X_GhostSite_Aurion/",
-        "Allow: /X_GhostSite_TheEdgeinAsiaRecruitmentPrivateLimited/",
-        "Allow: /X-GhostSite-Aquissearch/",
-        "Allow: /X_GhostSite_PeopleRealmRecruitmentServicesPrivateLimited/",
-        "Allow: /X-GhostSite-Madison-DavisGroup/",
-        "Allow: /X-GhostSite-MomentumSearchGroupLLC/",
-        "Allow: /X_GhostSite_RockwoodSearchAssociatesLLC/",
-        "Allow: /X_GhostSite_CHARLESSTERLINGGROUP/",
-        "Allow: /X_GhostSite_MavenPartnership/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "boards-api.greenhouse.io": {
       "crawl_delay": null,
       "fetched_at": "2026-11-23T01:30:00+00:00",
       "rules": [
         "Disallow: /embed/"
-      ]
-    },
-    "broadcom.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External_Career/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "browserstack.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "capgroup.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /capitalgroupcareers/",
-        "Disallow: /privateposting/",
-        "Disallow: /refreshFacet/"
       ]
     },
     "careers.amd.com": {
@@ -551,49 +121,6 @@
       "crawl_delay": null,
       "fetched_at": "2026-11-22T07:30:00+00:00",
       "rules": []
-    },
-    "cboe.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External_Career_CBOE/",
-        "Disallow: /Confidential/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "cisco.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Cisco_Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "cmegroup.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /cme_careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "crowdstrike.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /crowdstrikecareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "db.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /DBWebsite/",
-        "Allow: /PBWebsite/",
-        "Allow: /DWSWebsite/",
-        "Disallow: /refreshFacet/"
-      ]
     },
     "expedia.wd108.myworkdayjobs.com": {
       "crawl_delay": null,
@@ -613,53 +140,6 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "ffive.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /f5jobs/",
-        "Allow: /f5events/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "fil.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /001/",
-        "Allow: /fidelitycanada/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "fis.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /SearchJobs/",
-        "Allow: /AgencyCareerSite/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "fiserv.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /EXT/",
-        "Allow: /NZ/",
-        "Allow: /blconsultant/",
-        "Disallow: /P3M/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "fmr.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /FidelityCareers/",
-        "Disallow: /targeted/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "gresearch.wd103.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-20T05:30:00+00:00",
@@ -669,50 +149,11 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "hl.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Corporate/",
-        "Allow: /Campus/",
-        "Allow: /Lateral/",
-        "Allow: /Events/",
-        "Disallow: /External/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "hp.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /ExternalCareerSite/",
-        "Disallow: /EXTEU-AC-CareerSite/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "intel.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-22T18:30:00+00:00",
       "rules": [
         "Allow: /External/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "invesco.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /IVZ/",
-        "Allow: /IVZearlycareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "jainglobal.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /LinkedInCareerSite/",
-        "Disallow: /ExternalSite/",
         "Disallow: /refreshFacet/"
       ]
     },
@@ -730,75 +171,6 @@
       "fetched_at": "2026-11-23T02:01:00+00:00",
       "rules": []
     },
-    "jpmc.fa.oraclecloud.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": []
-    },
-    "lbg.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /broadbean_external/",
-        "Allow: /LBG_Careers/",
-        "Allow: /LBG_HigherApprenticeCareers/",
-        "Allow: /Undergraduate_careers/",
-        "Allow: /LBG_Singapore/",
-        "Allow: /Graduate_careers/",
-        "Allow: /Lloyds_Technology_Centre/",
-        "Allow: /USA_Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "lseg.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Careers/",
-        "Allow: /Graduate_Careers/",
-        "Allow: /Microsoft_Partnership/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "mastercard.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /CorporateCareers/",
-        "Allow: /Campus/",
-        "Allow: /ContractorConversion/",
-        "Allow: /RYC/",
-        "Disallow: /CUOReqSite/",
-        "Disallow: /CampusApplyOnly/",
-        "Disallow: /Public_Posting_Site/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "mgpru.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /mandgprudential/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "mimecast.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Mimecast-Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "mizuho.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /mizuhoamericas/",
-        "Disallow: /Mizuho_Confidential/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "morganstanley.tal.net": {
       "crawl_delay": 10.0,
       "fetched_at": "2026-11-22T04:45:00+00:00",
@@ -806,35 +178,6 @@
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
         "Disallow: /*/channel/"
-      ]
-    },
-    "ms.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External/",
-        "Allow: /private/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "mufgub.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /MUFG-Careers/",
-        "Disallow: /MUFG-EarlyCareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "nasdaq.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Global_External_Site/",
-        "Allow: /US_External_Career_Site/",
-        "Allow: /eVestment/",
-        "Disallow: /job_postings/",
-        "Disallow: /refreshFacet/"
       ]
     },
     "nomuracampus.tal.net": {
@@ -846,16 +189,6 @@
         "Disallow: /*/channel/"
       ]
     },
-    "ntrs.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /northerntrust/",
-        "Allow: /ntcampus/",
-        "Disallow: /ntextprv/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "nvidia.wd5.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-22T14:01:00+00:00",
@@ -864,49 +197,6 @@
         "Disallow: /NVIDIAExternalCareerSiteResearch/",
         "Disallow: /talentcommunity/",
         "Disallow: /NVIDIARecruitAds/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "paypal.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /jobs/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "proofpoint.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /ProofpointCareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "qualys.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "rothschildandco.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Rothschildandco_Lateral/",
-        "Allow: /Rothschildandco_Interns/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "sailpoint.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /SailPoint/",
-        "Disallow: /SailPointInternships/",
-        "Disallow: /SailPointOps/",
         "Disallow: /refreshFacet/"
       ]
     },
@@ -926,27 +216,6 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "santander.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /SantanderCareers/",
-        "Disallow: /UKSantanderCareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "snapchat.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /snap/",
-        "Allow: /zenly/",
-        "Allow: /referral19/",
-        "Allow: /sourced/",
-        "Allow: /immigration/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "sonyglobal.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-22T18:30:00+00:00",
@@ -954,113 +223,6 @@
         "Allow: /SonyGlobalCareers/",
         "Allow: /SonyJapanCareers/",
         "Allow: /Sony_Europe_Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "spgi.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /SPGI_Careers/",
-        "Allow: /SPGI_Internal/",
-        "Allow: /OSTTRA_Careers/",
-        "Allow: /aM_Careers/",
-        "Allow: /Kensho_Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "statestreet.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Global/",
-        "Allow: /eQuest/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "td.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /TD_Bank_Careers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "trellix.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /EnterpriseCareers/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "trendmicro.wd3.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External/",
-        "Allow: /External_TrendLife/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "troweprice.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /TRowePrice/",
-        "Allow: /TRowePriceContingent/",
-        "Allow: /TRowePriceInternational/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "vanguard.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /vanguard_external/",
-        "Allow: /contractors_restricted/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "visa.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Visa/",
-        "Allow: /Visa_Early_Careers/",
-        "Disallow: /Visa_Talent_Portal/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "wellington.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /External/",
-        "Allow: /Agency/",
-        "Allow: /eFC/",
-        "Allow: /Campus/",
-        "Allow: /HBCU/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "wf.wd1.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /WellsFargoJobs/",
-        "Disallow: /WellsFargoJobsTargeted/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
-    "workday.wd5.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-16T04:29:00+00:00",
-      "rules": [
-        "Allow: /Workday/",
-        "Allow: /Workday_Early_Career/",
-        "Allow: /Workday_Executive_Site/",
-        "Allow: /Workday_Jobs/",
         "Disallow: /refreshFacet/"
       ]
     },
