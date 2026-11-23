@@ -1,12 +1,8 @@
 {
   "backoff": {
-    "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-23T02:00:53+00:00",
-      "strikes": 1
-    },
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-23T02:01:11+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-23T08:01:02+00:00",
+      "strikes": 5
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-23T07:01:03+00:00",
@@ -62,7 +58,7 @@
     },
     "apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-22T02:01:00+00:00",
+      "fetched_at": "2026-11-23T02:01:00+00:00",
       "rules": [
         "Disallow: /*shop/browse/overlay/*",
         "Disallow: /*shop/iphone/payments/overlay/*",
@@ -727,7 +723,7 @@
     },
     "jobs.apple.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-22T02:01:00+00:00",
+      "fetched_at": "2026-11-23T02:01:00+00:00",
       "rules": []
     },
     "jpmc.fa.oraclecloud.com": {
