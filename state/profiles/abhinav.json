@@ -812,6 +812,30 @@
     "workday:intel:JR0287533": {
       "status": "unknown",
       "tries": 1
+    },
+    "workday:nvidia:JR2025559": {
+      "status": "unknown",
+      "tries": 1
+    },
+    "workday:nvidia:JR2026170": {
+      "status": "unknown",
+      "tries": 1
+    },
+    "workday:nvidia:JR2026177": {
+      "status": "unknown",
+      "tries": 1
+    },
+    "workday:nvidia:JR2027829": {
+      "status": "unknown",
+      "tries": 1
+    },
+    "workday:nvidia:JR2029243-1": {
+      "status": "unknown",
+      "tries": 1
+    },
+    "workday:nvidia:JR2030226": {
+      "status": "unknown",
+      "tries": 1
     }
   },
   "eligibility_rules": "9bc7b15a981f5c27",
