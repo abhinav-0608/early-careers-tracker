@@ -1,5 +1,9 @@
 {
   "backoff": {
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-23T08:00:56+00:00",
+      "strikes": 1
+    },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-23T08:01:02+00:00",
       "strikes": 5
@@ -9,12 +13,12 @@
       "strikes": 16
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-23T07:31:07+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-23T08:30:56+00:00",
+      "strikes": 2
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-23T07:31:07+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-23T08:30:56+00:00",
+      "strikes": 2
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-23T12:31:03+00:00",
@@ -87,7 +91,7 @@
     },
     "apply.workable.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-22T07:30:00+00:00",
+      "fetched_at": "2026-11-23T07:30:00+00:00",
       "rules": []
     },
     "bankcampuscareers.tal.net": {
@@ -108,14 +112,14 @@
     },
     "careers.amd.com": {
       "crawl_delay": 5.0,
-      "fetched_at": "2026-11-22T07:30:00+00:00",
+      "fetched_at": "2026-11-23T07:30:00+00:00",
       "rules": [
         "Allow: /"
       ]
     },
     "careers.smartrecruiters.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-22T07:30:00+00:00",
+      "fetched_at": "2026-11-23T07:30:00+00:00",
       "rules": []
     },
     "expedia.wd108.myworkdayjobs.com": {
@@ -224,7 +228,7 @@
     },
     "www.amazon.jobs": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-22T07:30:00+00:00",
+      "fetched_at": "2026-11-23T07:30:00+00:00",
       "rules": [
         "Disallow: /internal",
         "Disallow: /en/internal",
@@ -242,7 +246,7 @@
     },
     "www.google.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-22T07:30:00+00:00",
+      "fetched_at": "2026-11-23T07:30:00+00:00",
       "rules": [
         "Disallow: /search",
         "Allow: /search/about",
