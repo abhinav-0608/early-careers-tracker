@@ -17,8 +17,8 @@
       "strikes": 2
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-24T05:01:08+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-24T07:01:14+00:00",
+      "strikes": 3
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-24T06:30:55+00:00",
@@ -101,13 +101,6 @@
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
         "Disallow: /*/channel/"
-      ]
-    },
-    "boards-api.greenhouse.io": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-24T01:30:00+00:00",
-      "rules": [
-        "Disallow: /embed/"
       ]
     },
     "careers.amd.com": {
