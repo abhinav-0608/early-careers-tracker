@@ -1,6 +1,7 @@
 {
   "alert_groups": {
-    "Microsoft: rate limited (429)": "2026-11-23T09:01:08+00:00"
+    "Microsoft: rate limited (429)": "2026-11-23T09:01:08+00:00",
+    "Workday: blocked (Cloudflare 429)": "2026-11-24T07:01:18+00:00"
   },
   "pauses": {
     "workday": {
@@ -891,7 +892,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-24T06:01:00+00:00",
+      "interval_polled_at": "2026-11-24T07:01:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -2429,7 +2430,7 @@
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-15T22:15:00+00:00",
-      "last_alert_at": "2026-11-22T06:01:05+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:cboe-global-markets": {
       "alerted": true,
@@ -2480,7 +2481,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T04:29:10+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-21T05:30:56+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:f5": {
       "alerted": true,
@@ -2497,7 +2498,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:30:53+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-21T05:30:56+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:fidelity-international": {
       "alerted": true,
@@ -2540,7 +2541,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-20T05:01:25+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:houlihan-lokey": {
       "alerted": true,
@@ -2565,7 +2566,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-20T05:01:25+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:intel": {
       "alerted": true,
@@ -2710,7 +2711,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-21T05:30:56+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:proofpoint": {
       "alerted": true,
@@ -2751,7 +2752,7 @@
       "failing_since": "2026-11-15T23:01:03+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-15T22:15:00+00:00",
-      "last_alert_at": "2026-11-22T06:01:05+00:00"
+      "last_alert_at": "2026-11-24T07:01:18+00:00"
     },
     "workday:samsung": {
       "alerted": true,
