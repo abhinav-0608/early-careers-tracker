@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-24T00:01:09+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-24T02:01:05+00:00",
+      "strikes": 3
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-24T02:01:10+00:00",
@@ -101,6 +101,13 @@
         "Disallow: /*/agent/",
         "Disallow: /*/ats/",
         "Disallow: /*/channel/"
+      ]
+    },
+    "boards-api.greenhouse.io": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-24T00:01:00+00:00",
+      "rules": [
+        "Disallow: /embed/"
       ]
     },
     "careers.amd.com": {
