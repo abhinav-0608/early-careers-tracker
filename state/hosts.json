@@ -13,12 +13,12 @@
       "strikes": 20
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-24T11:00:58+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-24T12:01:08+00:00",
+      "strikes": 2
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-24T11:01:18+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-24T17:01:08+00:00",
+      "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-24T12:30:55+00:00",
