@@ -13,8 +13,8 @@
       "strikes": 20
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-24T07:31:18+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-24T08:30:55+00:00",
+      "strikes": 2
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-24T11:01:18+00:00",
@@ -91,7 +91,7 @@
     },
     "apply.workable.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-23T07:30:00+00:00",
+      "fetched_at": "2026-11-24T07:30:00+00:00",
       "rules": []
     },
     "bankcampuscareers.tal.net": {
@@ -112,14 +112,14 @@
     },
     "careers.amd.com": {
       "crawl_delay": 5.0,
-      "fetched_at": "2026-11-23T07:30:00+00:00",
+      "fetched_at": "2026-11-24T07:30:00+00:00",
       "rules": [
         "Allow: /"
       ]
     },
     "careers.smartrecruiters.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-23T07:30:00+00:00",
+      "fetched_at": "2026-11-24T07:30:00+00:00",
       "rules": []
     },
     "expedia.wd108.myworkdayjobs.com": {
@@ -228,7 +228,7 @@
     },
     "www.amazon.jobs": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-23T07:30:00+00:00",
+      "fetched_at": "2026-11-24T07:30:00+00:00",
       "rules": [
         "Disallow: /internal",
         "Disallow: /en/internal",
@@ -246,7 +246,7 @@
     },
     "www.google.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-23T07:30:00+00:00",
+      "fetched_at": "2026-11-24T07:30:00+00:00",
       "rules": [
         "Disallow: /search",
         "Allow: /search/about",
@@ -383,7 +383,9 @@
         "Disallow: /urchin_test/",
         "Disallow: /movies?",
         "Disallow: /wapsearch?",
-        "Disallow: /reviews/search?",
+        "Disallow: /reviews",
+        "Disallow: /a/reviews",
+        "Disallow: /bookmarks",
         "Disallow: /cbk",
         "Disallow: /profiles/me",
         "Disallow: /s2/profiles/me",
@@ -397,7 +399,6 @@
         "Disallow: /aclk",
         "Disallow: /tbproxy/",
         "Disallow: /support/forum/search?",
-        "Disallow: /reviews/polls/",
         "Disallow: /hosted/images/",
         "Disallow: /accounts/ClientLogin",
         "Disallow: /accounts/ClientAuth",
