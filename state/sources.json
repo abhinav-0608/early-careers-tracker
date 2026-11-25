@@ -893,7 +893,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T06:01:00+00:00",
+      "interval_polled_at": "2026-11-25T07:01:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
@@ -923,12 +923,12 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": true,
-      "consecutive_failures": 3,
+      "alerted": false,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-24T17:30:59+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-24T16:30:00+00:00",
+      "interval_polled_at": "2026-11-25T07:01:00+00:00",
       "last_alert_at": null
     },
     "greenhouse:abnormal-ai": {
