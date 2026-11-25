@@ -1,5 +1,9 @@
 {
   "backoff": {
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-25T12:31:07+00:00",
+      "strikes": 1
+    },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-25T14:01:07+00:00",
       "strikes": 14
@@ -33,7 +37,7 @@
     },
     "api.lever.co": {
       "crawl_delay": 1.0,
-      "fetched_at": "2026-11-24T12:01:00+00:00",
+      "fetched_at": "2026-11-25T12:01:00+00:00",
       "rules": [
         "Allow: /"
       ]
