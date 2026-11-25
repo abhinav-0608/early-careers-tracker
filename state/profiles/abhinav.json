@@ -467,10 +467,6 @@
       "status": "ineligible",
       "why": "…or students enrolled in their penultimate/final year of education in an accredited full-ti…"
     },
-    "custom:google:96299220855595718": {
-      "status": "ineligible",
-      "why": "Enrolled in the [penultimate academic year] of a Bachelor's or Master's degree"
-    },
     "custom:hsbc:1a4a623890fc4f26": {
       "basis": "(private)",
       "status": "eligible"
