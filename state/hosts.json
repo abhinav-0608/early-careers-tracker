@@ -13,8 +13,8 @@
       "strikes": 23
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-25T03:30:54+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-25T04:00:54+00:00",
+      "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-25T04:01:04+00:00",
@@ -124,7 +124,7 @@
     },
     "expedia.wd108.myworkdayjobs.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-24T02:30:00+00:00",
+      "fetched_at": "2026-11-25T03:30:00+00:00",
       "rules": [
         "Allow: /search/",
         "Disallow: /private/",
