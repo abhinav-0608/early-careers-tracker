@@ -1,5 +1,9 @@
 {
   "backoff": {
+    "apply.careers.microsoft.com": {
+      "retry_at": "2026-11-25T17:01:01+00:00",
+      "strikes": 1
+    },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-25T20:01:21+00:00",
       "strikes": 15
@@ -21,8 +25,8 @@
       "strikes": 25
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-25T16:30:58+00:00",
-      "strikes": 6
+      "retry_at": "2026-11-25T17:01:01+00:00",
+      "strikes": 1
     }
   },
   "robots": {
@@ -187,7 +191,7 @@
     },
     "nvidia.wd5.myworkdayjobs.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-23T21:32:00+00:00",
+      "fetched_at": "2026-11-25T16:31:00+00:00",
       "rules": [
         "Allow: /NVIDIAExternalCareerSite/",
         "Disallow: /NVIDIAExternalCareerSiteResearch/",
