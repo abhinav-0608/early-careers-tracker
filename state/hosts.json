@@ -1,8 +1,8 @@
 {
   "backoff": {
     "wd1.myworkdayjobs.com": {
-      "retry_at": "2026-11-25T20:01:21+00:00",
-      "strikes": 15
+      "retry_at": "2026-11-26T02:01:04+00:00",
+      "strikes": 16
     },
     "wd103.myworkdayjobs.com": {
       "retry_at": "2026-11-26T01:01:07+00:00",
@@ -21,8 +21,8 @@
       "strikes": 26
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-25T20:01:06+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-26T00:01:04+00:00",
+      "strikes": 4
     }
   },
   "robots": {
