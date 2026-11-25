@@ -1,7 +1,6 @@
 {
   "alert_groups": {
     "Greenhouse: timing out": "2026-11-24T19:15:53+00:00",
-    "Microsoft: rate limited (429)": "2026-11-24T10:30:58+00:00",
     "Workday: blocked (Cloudflare 429)": "2026-11-25T08:01:07+00:00"
   },
   "pauses": {
@@ -875,7 +874,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:amd": {
@@ -884,7 +883,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:apple": {
@@ -902,7 +901,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:google-deepmind": {
@@ -911,7 +910,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": false,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "custom:hsbc": {
@@ -924,9 +923,9 @@
     },
     "custom:microsoft": {
       "alerted": false,
-      "consecutive_failures": 0,
+      "consecutive_failures": 1,
       "empty_runs": 0,
-      "failing_since": null,
+      "failing_since": "2026-11-25T10:30:58+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-25T09:31:00+00:00",
       "last_alert_at": null
@@ -2233,7 +2232,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "smartrecruiters:canva": {
@@ -2242,7 +2241,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "smartrecruiters:servicenow": {
@@ -2251,7 +2250,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "talnet:bank-of-america": {
@@ -2292,7 +2291,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "workable:hugging-face": {
@@ -2301,7 +2300,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "workable:portswigger": {
@@ -2310,7 +2309,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "workable:starling-bank": {
@@ -2319,7 +2318,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "workable:trail-of-bits": {
@@ -2328,7 +2327,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "workable:trexquant": {
@@ -2337,7 +2336,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T09:31:00+00:00",
+      "interval_polled_at": "2026-11-25T10:30:00+00:00",
       "last_alert_at": null
     },
     "workday:abrdn": {
