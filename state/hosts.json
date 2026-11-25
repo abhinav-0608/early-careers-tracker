@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-25T08:31:07+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-25T09:30:56+00:00",
+      "strikes": 2
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-25T14:01:07+00:00",
