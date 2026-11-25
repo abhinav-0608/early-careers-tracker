@@ -893,7 +893,7 @@
       "empty_runs": 0,
       "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-25T00:01:00+00:00",
+      "interval_polled_at": "2026-11-25T01:01:00+00:00",
       "last_alert_at": null
     },
     "custom:google": {
