@@ -13,12 +13,12 @@
       "strikes": 27
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T03:00:53+00:00",
+      "retry_at": "2026-11-26T03:31:01+00:00",
       "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T03:01:09+00:00",
-      "strikes": 5
+      "retry_at": "2026-11-26T03:31:01+00:00",
+      "strikes": 1
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-26T06:30:52+00:00",
@@ -210,7 +210,7 @@
     },
     "salesforce.wd12.myworkdayjobs.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-24T23:01:00+00:00",
+      "fetched_at": "2026-11-26T03:01:00+00:00",
       "rules": [
         "Allow: /External_Career_Site/",
         "Allow: /Futureforce_NewGradRoles/",
