@@ -9,8 +9,8 @@
       "strikes": 28
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T12:01:14+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-26T12:31:03+00:00",
+      "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-26T13:30:57+00:00",
@@ -41,7 +41,7 @@
     },
     "api.lever.co": {
       "crawl_delay": 1.0,
-      "fetched_at": "2026-11-25T12:01:00+00:00",
+      "fetched_at": "2026-11-26T12:01:00+00:00",
       "rules": [
         "Allow: /"
       ]
