@@ -2271,12 +2271,12 @@
       "last_alert_at": null
     },
     "talnet:morgan-stanley": {
-      "alerted": true,
-      "consecutive_failures": 3,
+      "alerted": false,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-26T14:01:08+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-26T14:15:42+00:00"
+      "last_alert_at": null
     },
     "talnet:nomura": {
       "alerted": false,
