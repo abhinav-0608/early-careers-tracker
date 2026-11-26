@@ -13,11 +13,11 @@
       "strikes": 27
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T03:31:01+00:00",
+      "retry_at": "2026-11-26T04:00:55+00:00",
       "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T03:31:01+00:00",
+      "retry_at": "2026-11-26T04:00:55+00:00",
       "strikes": 1
     },
     "wd3.myworkdayjobs.com": {
@@ -25,8 +25,8 @@
       "strikes": 27
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T03:30:54+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-26T04:00:55+00:00",
+      "strikes": 1
     }
   },
   "robots": {
@@ -132,7 +132,7 @@
     },
     "expedia.wd108.myworkdayjobs.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-25T03:30:00+00:00",
+      "fetched_at": "2026-11-26T03:30:00+00:00",
       "rules": [
         "Allow: /search/",
         "Disallow: /private/",
