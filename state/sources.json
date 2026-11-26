@@ -2688,8 +2688,8 @@
       "last_alert_at": "2026-11-25T08:01:07+00:00"
     },
     "workday:nvidia": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-26T03:30:55+00:00",
       "has_returned_jobs": true,
