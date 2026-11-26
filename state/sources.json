@@ -2689,7 +2689,7 @@
     },
     "workday:nvidia": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-26T03:30:55+00:00",
       "has_returned_jobs": true,

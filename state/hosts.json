@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-26T04:01:07+00:00",
-      "strikes": 4
+      "retry_at": "2026-11-26T10:01:07+00:00",
+      "strikes": 5
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-26T08:01:04+00:00",
@@ -13,20 +13,20 @@
       "strikes": 27
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T04:00:55+00:00",
+      "retry_at": "2026-11-26T04:31:07+00:00",
       "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T04:00:55+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-26T05:01:07+00:00",
+      "strikes": 2
     },
     "wd3.myworkdayjobs.com": {
       "retry_at": "2026-11-26T06:30:52+00:00",
       "strikes": 27
     },
     "wd5.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T04:00:55+00:00",
-      "strikes": 1
+      "retry_at": "2026-11-26T05:01:07+00:00",
+      "strikes": 2
     }
   },
   "robots": {
