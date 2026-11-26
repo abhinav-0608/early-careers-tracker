@@ -2688,12 +2688,12 @@
       "last_alert_at": "2026-11-25T08:01:07+00:00"
     },
     "workday:nvidia": {
-      "alerted": true,
-      "consecutive_failures": 3,
+      "alerted": false,
+      "consecutive_failures": 0,
       "empty_runs": 0,
-      "failing_since": "2026-11-24T01:01:02+00:00",
+      "failing_since": null,
       "has_returned_jobs": true,
-      "interval_polled_at": "2026-11-23T21:32:00+00:00",
+      "interval_polled_at": "2026-11-26T00:01:00+00:00",
       "last_alert_at": null
     },
     "workday:paypal": {
