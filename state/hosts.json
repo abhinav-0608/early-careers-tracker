@@ -17,8 +17,8 @@
       "strikes": 3
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-26T18:30:58+00:00",
-      "strikes": 29
+      "retry_at": "2026-11-27T00:30:58+00:00",
+      "strikes": 30
     },
     "wd5.myworkdayjobs.com": {
       "retry_at": "2026-11-26T23:01:12+00:00",
@@ -109,7 +109,7 @@
     },
     "boards-api.greenhouse.io": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-25T18:30:00+00:00",
+      "fetched_at": "2026-11-26T18:30:00+00:00",
       "rules": [
         "Disallow: /embed/"
       ]
