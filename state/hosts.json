@@ -144,15 +144,6 @@
         "Disallow: /refreshFacet/"
       ]
     },
-    "gresearch.wd103.myworkdayjobs.com": {
-      "crawl_delay": null,
-      "fetched_at": "2026-11-20T05:30:00+00:00",
-      "rules": [
-        "Allow: /G-Research/",
-        "Allow: /GRPlacements/",
-        "Disallow: /refreshFacet/"
-      ]
-    },
     "intel.wd1.myworkdayjobs.com": {
       "crawl_delay": null,
       "fetched_at": "2026-11-22T18:30:00+00:00",
