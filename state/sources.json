@@ -922,8 +922,8 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-27T15:31:01+00:00",
       "has_returned_jobs": true,
