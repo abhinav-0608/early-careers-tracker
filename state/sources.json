@@ -923,7 +923,7 @@
     },
     "custom:microsoft": {
       "alerted": false,
-      "consecutive_failures": 1,
+      "consecutive_failures": 2,
       "empty_runs": 0,
       "failing_since": "2026-11-27T07:30:56+00:00",
       "has_returned_jobs": true,
