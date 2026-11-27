@@ -41,7 +41,7 @@
     },
     "api.lever.co": {
       "crawl_delay": 1.0,
-      "fetched_at": "2026-11-26T12:01:00+00:00",
+      "fetched_at": "2026-11-27T12:01:00+00:00",
       "rules": [
         "Allow: /"
       ]
