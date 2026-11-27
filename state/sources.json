@@ -1,6 +1,5 @@
 {
   "alert_groups": {
-    "Workday: blocked (Cloudflare 429)": "2026-11-26T08:01:14+00:00",
     "tal.net: failing (error)": "2026-11-26T14:15:42+00:00"
   },
   "pauses": {
