@@ -17,8 +17,8 @@
       "strikes": 5
     },
     "wd3.myworkdayjobs.com": {
-      "retry_at": "2026-11-28T12:30:59+00:00",
-      "strikes": 36
+      "retry_at": "2026-11-28T13:15:53+00:00",
+      "strikes": 1
     },
     "wd5.myworkdayjobs.com": {
       "retry_at": "2026-11-28T17:01:05+00:00",
@@ -140,6 +140,15 @@
       "rules": [
         "Allow: /search/",
         "Disallow: /private/",
+        "Disallow: /refreshFacet/"
+      ]
+    },
+    "fil.wd3.myworkdayjobs.com": {
+      "crawl_delay": null,
+      "fetched_at": "2026-11-28T12:45:00+00:00",
+      "rules": [
+        "Allow: /001/",
+        "Allow: /fidelitycanada/",
         "Disallow: /refreshFacet/"
       ]
     },

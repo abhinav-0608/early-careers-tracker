@@ -2,7 +2,8 @@
   "alert_groups": {
     "Workday: blocked (Cloudflare 429)": "2026-11-28T09:30:55+00:00",
     "Workday: blocked by robots.txt": "2026-11-28T08:01:01+00:00",
-    "Workday: failing (HTTP 303)": "2026-11-28T08:01:01+00:00"
+    "Workday: failing (HTTP 303)": "2026-11-28T08:01:01+00:00",
+    "Workday: failing (error)": "2026-11-28T12:45:53+00:00"
   },
   "pauses": {
     "workday": {
@@ -2380,7 +2381,7 @@
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:blackrock": {
       "alerted": true,
@@ -2474,7 +2475,7 @@
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:expedia": {
       "alerted": true,
@@ -2601,7 +2602,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:lseg": {
       "alerted": true,
@@ -2618,7 +2619,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:mandg": {
       "alerted": true,
@@ -2669,7 +2670,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:nasdaq": {
       "alerted": true,
@@ -2736,7 +2737,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:sailpoint": {
       "alerted": true,
@@ -2762,7 +2763,7 @@
       "failing_since": "2026-11-16T07:30:55+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:santander-uk": {
       "alerted": true,
@@ -2771,7 +2772,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:snap": {
       "alerted": true,
@@ -2823,7 +2824,7 @@
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-16T06:15:00+00:00",
-      "last_alert_at": "2026-11-23T06:31:03+00:00"
+      "last_alert_at": "2026-11-28T12:45:53+00:00"
     },
     "workday:trellix": {
       "alerted": true,
