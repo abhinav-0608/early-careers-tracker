@@ -9,8 +9,8 @@
       "strikes": 3
     },
     "wd103.myworkdayjobs.com": {
-      "retry_at": "2026-11-28T10:30:55+00:00",
-      "strikes": 3
+      "retry_at": "2026-11-28T14:30:58+00:00",
+      "strikes": 4
     },
     "wd108.myworkdayjobs.com": {
       "retry_at": "2026-11-28T14:01:01+00:00",
