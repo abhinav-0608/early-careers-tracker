@@ -1,5 +1,6 @@
 {
   "alert_groups": {
+    "Microsoft: rate limited (429)": "2026-11-28T20:01:08+00:00",
     "Workday: blocked (Cloudflare 429)": "2026-11-28T09:30:55+00:00",
     "Workday: blocked by robots.txt": "2026-11-28T08:01:01+00:00",
     "Workday: failing (HTTP 303)": "2026-11-28T08:01:01+00:00",
@@ -924,13 +925,13 @@
       "last_alert_at": null
     },
     "custom:microsoft": {
-      "alerted": false,
-      "consecutive_failures": 2,
+      "alerted": true,
+      "consecutive_failures": 3,
       "empty_runs": 0,
       "failing_since": "2026-11-28T18:31:04+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-28T17:30:00+00:00",
-      "last_alert_at": null
+      "last_alert_at": "2026-11-28T20:01:08+00:00"
     },
     "greenhouse:abnormal-ai": {
       "alerted": false,

@@ -1,8 +1,8 @@
 {
   "backoff": {
     "apply.careers.microsoft.com": {
-      "retry_at": "2026-11-28T20:01:08+00:00",
-      "strikes": 2
+      "retry_at": "2026-11-28T22:01:08+00:00",
+      "strikes": 3
     },
     "wd1.myworkdayjobs.com": {
       "retry_at": "2026-11-28T21:31:00+00:00",
@@ -13,8 +13,8 @@
       "strikes": 5
     },
     "wd108.myworkdayjobs.com": {
-      "retry_at": "2026-11-28T20:01:10+00:00",
-      "strikes": 9
+      "retry_at": "2026-11-28T20:31:08+00:00",
+      "strikes": 1
     },
     "wd12.myworkdayjobs.com": {
       "retry_at": "2026-11-28T21:31:01+00:00",
@@ -140,7 +140,7 @@
     },
     "expedia.wd108.myworkdayjobs.com": {
       "crawl_delay": null,
-      "fetched_at": "2026-11-27T04:01:00+00:00",
+      "fetched_at": "2026-11-28T20:01:00+00:00",
       "rules": [
         "Allow: /search/",
         "Disallow: /private/",
