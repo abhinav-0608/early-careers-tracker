@@ -1,6 +1,5 @@
 {
   "alert_groups": {
-    "Microsoft: rate limited (429)": "2026-11-27T09:01:08+00:00",
     "Workday: blocked by robots.txt": "2026-11-28T08:01:01+00:00",
     "Workday: failing (HTTP 303)": "2026-11-28T08:01:01+00:00"
   },
