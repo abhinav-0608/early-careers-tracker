@@ -1,7 +1,9 @@
 {
   "alert_groups": {
     "Microsoft: rate limited (429)": "2026-11-27T09:01:08+00:00",
-    "Workday: blocked (Cloudflare 429)": "2026-11-27T08:30:56+00:00"
+    "Workday: blocked (Cloudflare 429)": "2026-11-27T08:30:56+00:00",
+    "Workday: blocked by robots.txt": "2026-11-28T08:01:01+00:00",
+    "Workday: failing (HTTP 303)": "2026-11-28T08:01:01+00:00"
   },
   "pauses": {
     "workday": {
@@ -2575,7 +2577,7 @@
       "failing_since": "2026-11-22T22:01:11+00:00",
       "has_returned_jobs": true,
       "interval_polled_at": "2026-11-22T18:30:00+00:00",
-      "last_alert_at": "2026-11-26T08:01:14+00:00"
+      "last_alert_at": "2026-11-28T08:01:01+00:00"
     },
     "workday:invesco": {
       "alerted": true,
@@ -2787,7 +2789,7 @@
       "empty_runs": 0,
       "failing_since": "2026-11-16T07:01:09+00:00",
       "has_returned_jobs": true,
-      "last_alert_at": "2026-11-26T08:01:14+00:00"
+      "last_alert_at": "2026-11-28T08:01:01+00:00"
     },
     "workday:sp-global": {
       "alerted": true,
